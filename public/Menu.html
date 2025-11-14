@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Registro ACOSA</title>
+  <link rel="stylesheet" href="Menu.css">
+</head>
+<body>
+
+  <!-- HEADER CON LOGO -->
+  <header>
+    <div class="header-left">
+      <button class="btn-toggle-menu" id="btnToggleMenu">☰</button>
+      <div class="logo">
+        <img src="imagenes/Img_Logo.png" alt="Logo ACOSA" style="width: 40px; height: 40px;">
+      </div>
+      <div class="header-titles">
+        <h1>SISTEMA DE REGISTRO</h1>
+        <h2>ACOSA S.A. DE C.V</h2>
+      </div>
+    </div>
+
+    <!-- BOTONES DE ACCESO RÁPIDO -->
+    <div class="quick-access">
+      <button class="quick-btn" title="Soporte">
+        <img src="imagenes/Img_Soporte.png" alt="Soporte">
+      </button>
+      <button class="quick-btn" title="Manuales">
+        <img src="imagenes/Img_Manual.png" alt="Manuales">
+      </button>
+      <button class="quick-btn" title="Configuración">
+        <img src="imagenes/Img_Configuracion.png" alt="Configuración">
+      </button>
+      <button class="quick-btn" title="Salir">
+        <img src="imagenes/Img_Salir.png" alt="Salir">
+      </button>
+    </div>
+  </header>
+
+  <!-- LAYOUT PRINCIPAL -->
+  <div class="main-layout">
+    <!-- SIDEBAR LATERAL IZQUIERDO -->
+    <aside class="sidebar" id="sidebar">
+      <nav id="menuContainer" class="sidebar-nav"></nav>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+      <!-- Barra de herramientas -->
+      <div id="barraHerramientas" class="barra-herramientas-container"></div>
+      
+      <!-- Sistema de pestañas -->
+      <div id="contenedorPestañas" class="sistema-pestañas"></div>
+      
+      <!-- Área de contenido principal -->
+      <div class="content-area">
+        <div class="welcome-message">
+          <h3>Bienvenido al Sistema ACOSA</h3>
+          <p>Selecciona un módulo del menú lateral para comenzar</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div id="usuarioLogeado">Usuario: admin | Rol: administrador</div>
+  </footer>
+
+  <script src="Src/Menu.js"></script>
+</body>
+</html>

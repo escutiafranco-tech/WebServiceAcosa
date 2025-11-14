@@ -1,0 +1,69 @@
+{
+  "proveedores": [
+    {
+      "id": 1,
+      "codigo": "PROV-001",
+      "nombre": "TRANSPORTES MEXICANOS SA DE CV",
+      "rfc": "TME890123456",
+      "contacto": "Juan Pérez",
+      "telefono": "+52 55 1234 5678",
+      "email": "juan@transportesmexicanos.com",
+      "direccion": {
+        "calle": "Av. Insurgentes",
+        "numero": "123",
+        "colonia": "Centro",
+        "municipio": "Cuauhtémoc",
+        "estado": "Ciudad de México",
+        "cp": "06000",
+        "pais": "México"
+      },
+      "activo": true,
+      "fecha_registro": "2024-01-15T10:30:00Z"
+    },
+    {
+      "id": 2,
+      "codigo": "PROV-002",
+      "nombre": "LOGISTICA INTEGRAL DEL NORTE",
+      "rfc": "LIN780456123",
+      "contacto": "María García",
+      "telefono": "+52 81 2345 6789",
+      "email": "maria@logisticaintegral.com",
+      "direccion": {
+        "calle": "Blvd. Constitución",
+        "numero": "456",
+        "colonia": "Industrial",
+        "municipio": "San Nicolás",
+        "estado": "Nuevo León",
+        "cp": "66400",
+        "pais": "México"
+      },
+      "activo": true,
+      "fecha_registro": "2024-01-15T10:30:00Z"
+    },
+    {
+      "id": 3,
+      "codigo": "PROV-003",
+      "nombre": "CARGA Y DESCARGA RAPIDA",
+      "rfc": "CDR670789012",
+      "contacto": "Carlos López",
+      "telefono": "+52 33 3456 7890",
+      "email": "carlos@cargadescarga.com",
+      "direccion": {
+        "calle": "Calz. Independencia",
+        "numero": "789",
+        "colonia": "Centro",
+        "municipio": "Guadalajara",
+        "estado": "Jalisco",
+        "cp": "44100",
+        "pais": "México"
+      },
+      "activo": true,
+      "fecha_registro": "2024-01-15T10:30:00Z"
+    }
+  ],
+  "metadata": {
+    "total_registros": 3,
+    "ultima_actualizacion": "2024-01-15T10:30:00Z",
+    "version": "1.0"
+  }
+}

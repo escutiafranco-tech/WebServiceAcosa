@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "username": "Franco",
+    "password": "F123",
+    "role": "Administrador"
+  },
+  {
+    "id": 2,
+    "username": "JJavier",
+    "password": "J123",
+    "role": "Contador"
+  },
+  {
+    "id": 3,
+    "username": "Lulu",
+    "password": "L123",
+    "role": "Recepcion"
+  },
+  {
+    "id": 4,
+    "username": "Alondra",
+    "password": "A123",
+    "role": "Logistica"
+  },
+  {
+    "id": 5,
+    "username": "Andrea",
+    "password": "A123",
+    "role": "Comercio Exterior"
+  },
+  {
+    "id": 6,
+    "username": "pagos",
+    "password": "pagos123",
+    "role": "pagos"
+  }
+]

@@ -1,0 +1,55 @@
+/* Sidebar container */
+#menus {
+    width: 250px;
+    background-color: #2e86de;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* Menú principal */
+.menu-item {
+    background-color: #2e86de;
+    margin: 5px 0;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.menu-item:hover {
+    background-color: #1e5fa8;
+}
+
+.menu-item img {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
+
+/* Submenus */
+.submenu {
+    display: none;
+    margin-left: 20px;
+    flex-direction: column;
+}
+
+.submenu-item {
+    padding: 5px 10px;
+    background-color: #4da6ff;
+    border-radius: 3px;
+    margin: 2px 0;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.submenu-item:hover {
+    background-color: #337ab7;
+}
+
+/* Mostrar submenú cuando se expande */
+.submenu.expanded {
+    display: flex;
+}

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- CONFIGURACIÓN BÁSICA DEL DOCUMENTO -->
+    <meta charset="UTF-8">                       <!-- Define la codificación de caracteres como UTF-8 para soportar español -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Hace la página responsive en dispositivos móviles -->
+    <title>Custodias - ACOSA</title>             <!-- Título que aparece en la pestaña del navegador -->
+    
+    <!-- ENLACES A HOJAS DE ESTILO -->
+    <link rel="stylesheet" href="custodias.css"> <!-- Carga los estilos específicos del módulo Custodias -->
+</head>
+<body>
+    <!-- CONTENEDOR PRINCIPAL DEL MÓDULO -->
+    <div class="module-container">
+        
+<!-- ====================================== -->
+<!-- BARRA SUPERIOR DIVIDIDA EN 2 SECCIONES -->
+<!-- ====================================== -->
+
+     <div class="barra-superior-custodias">
+     
+     <!-- SECCIÓN IZQUIERDA: BOTONES CON FONDO BLANCO -->
+     <div class="barra-izquierda">
+     <!-- Botón para crear nueva custodia -->
+          <button id="btnNuevaCustodia" class="btn btn-primary">
+           Nueva Custodia
+               </button>
+                <!-- Botón para exportar a Excel -->
+                <button id="btnExportar" class="btn btn-secondary">
+                Exportar Excel
+                </button>
+            </div>
+            
+     <!-- SECCIÓN DERECHA: BUSCADOR Y FILTRO DE FECHAS -->
+     <div class="barra-derecha">
+     <!-- Contenedor de la barra de búsqueda -->
+          <div class="search-box">
+          <!-- Campo de entrada para buscar custodias -->
+               <input type="text" id="buscarCustodias" placeholder="Buscar por ID, proveedor, estatus...">
+               <!-- Botón para ejecutar la búsqueda -->
+               <button class="btn btn-search">🔍</button>
+               </div>
+               <!-- Filtro de fechas (inicial y final) -->
+               <div class="filtro-fechas">
+                    <input type="date" id="fechaInicial" placeholder="Fecha inicial">
+                    <span class="separador-fechas">a</span>
+                    <input type="date" id="fechaFinal" placeholder="Fecha final">
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================ -->
+        <!-- TABLA DE CUSTODIAS -->
+        <!-- ================================ -->
+        <div class="table-container">
+            <!-- Encabezado de la tabla con título -->
+            <div class="table-header">
+            <h3>📋 Lista de Custodias</h3>                           <!-- Título de la sección de tabla -->
+            </div>
+            <!-- Contenedor de la tabla -->
+            <div class="custodias-table">
+                <!-- FILA DE ENCABEZADOS DE COLUMNAS -->
+                <div class="table-row header-row">
+                    <div class="col-id">ID Custodia</div>           <!-- Columna para ID de custodia -->
+                    <div class="col-proveedor">Proveedor</div>      <!-- Columna para nombre del proveedor -->
+                    <div class="col-fecha">Fecha Servicio</div>     <!-- Columna para fecha del servicio -->
+                    <div class="col-tipo">Tipo Movimiento</div>     <!-- Columna para tipo de movimiento -->
+                    <div class="col-ubicacion">Ubicaciones</div>    <!-- Columna para ubicaciones de origen/destino -->
+                    <div class="col-estatus">Estatus</div>          <!-- Columna para estatus de la custodia -->
+                    <div class="col-acciones">Acciones</div>        <!-- Columna para botones de acciones -->
+                </div>
+                
+                <!-- CUERPO DE LA TABLA - CONTENIDO DINÁMICO -->
+                <div class="table-body" id="listaCustodias">
+                    <!-- Estado inicial cuando no hay datos -->
+                    <div class="empty-state">
+                        <div>📭 No hay custodias registradas</div>  <!-- Mensaje de estado vacío -->
+                        <p>Comienza creando tu primera custodia usando el botón "➕ Nueva Custodia"</p> <!-- Instrucción -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================ -->
+        <!-- BARRA INFERIOR UNIFICADA - ESTADÍSTICAS, CONTADOR Y PAGINACIÓN -->
+        <!-- ================================ -->
+        <div class="barra-inferior-unificada">
+            <!-- SECCIÓN IZQUIERDA: ESTADÍSTICAS DE STATUS -->
+            <div class="estadisticas-inferiores">
+                <div class="stat-item-inferior">
+                    <span class="stat-label-inferior">En Pendientes:</span>
+                    <span class="stat-numero-inferior" id="enPendientes">0</span> <!-- Contador de pendientes -->
+                </div>
+                <div class="stat-item-inferior">
+                    <span class="stat-label-inferior">En Solicitadas:</span>
+                    <span class="stat-numero-inferior" id="enSolicitadas">0</span> <!-- Contador de solicitadas -->
+                </div>
+                <div class="stat-item-inferior">
+                    <span class="stat-label-inferior">En Facturación:</span>
+                    <span class="stat-numero-inferior" id="enFacturacion">0</span> <!-- Contador de facturación -->
+                </div>
+                <div class="stat-item-inferior">
+                    <span class="stat-label-inferior">En Pago:</span>
+                    <span class="stat-numero-inferior" id="enPago">0</span> <!-- Contador de pago -->
+                </div>
+            </div>
+            
+            <!-- SECCIÓN CENTRAL: CONTADOR DE REGISTROS -->
+            <div class="contador-registros">
+                <span id="mostrandoRegistros">Mostrando 1-0 de 0 registros</span> <!-- Texto del contador -->
+                <button id="btnRecargar" class="btn btn-icon">🔄</button> <!-- Botón de recarga -->
+            </div>
+            
+            <!-- SECCIÓN DERECHA: PAGINACIÓN -->
+            <div class="paginacion-inferior">
+                <button id="btnAnterior" class="btn btn-outline" disabled>← Anterior</button> <!-- Botón página anterior -->
+                <span id="infoPagina">Página 1 de 1</span> <!-- Información de página actual -->
+                <button id="btnSiguiente" class="btn btn-outline" disabled>Siguiente →</button> <!-- Botón página siguiente -->
+            </div>
+        </div>
+
+        <!-- ================================ -->
+        <!-- OVERLAY DE CARGA -->
+        <!-- ================================ -->
+        <div class="loading-overlay" id="loading">
+            <div class="loading-spinner"></div>                     <!-- Animación de carga circular -->
+            <p>Cargando custodias...</p>                            <!-- Mensaje durante la carga -->
+        </div>
+    </div>
+
+    <!-- SCRIPTS JAVASCRIPT -->
+    <script src="custodias.js"></script>                           <!-- Carga la lógica del módulo Custodias -->
+</body>
+</html>

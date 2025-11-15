@@ -34,5 +34,11 @@
     "username": "pagos",
     "password": "pagos123",
     "role": "pagos"
+  },
+  {
+    "id": 7,
+    "username": "Dayeni",
+    "password": "D123",
+    "role": "Direc"
   }
 ]

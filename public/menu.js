@@ -1,7 +1,7 @@
 // Menu.js - Sistema de Gestión para ACOSA (VERSIÓN COMPLETA CON TOOLTIPS Y NOMENCLATURA AUTOMÁTICA)
 document.addEventListener('DOMContentLoaded', function() {
     // ================================
-    // CONFIGURACIÓN Y VARIABLES GLOBALES
+    // 01. CONFIGURACIÓN Y VARIABLES GLOBALES
     // ================================
     
     // Elementos del DOM - Referencias a los componentes principales
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const MAX_PESTAÑAS = 6;              // Límite máximo de pestañas permitidas
 
     // ================================
-    // INICIALIZACIÓN PRINCIPAL DEL SISTEMA
+    // 02. INICIALIZACIÓN PRINCIPAL DEL SISTEMA
     // ================================
     async function inicializar() {
         try {
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ================================
-    // CARGA DE DATOS DESDE ARCHIVOS EXTERNOS
+    // 03. CARGA DE DATOS DESDE ARCHIVOS EXTERNOS
     // ================================
     async function cargarMenusDesdeJSON() {
         try {
@@ -71,26 +71,50 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-     // ================================
-     // CONFIGURACIÓN INICIAL DE ELEMENTOS DEL DOM
-     // ================================
-     function configurarElementosDOM() {
-     // Asegurar que el content-area tenga la clase inicial correcta
-     if (contentArea) {
+// ================================
+// 04. CONFIGURACIÓN INICIAL DE ELEMENTOS DEL DOM
+// ================================
+function configurarElementosDOM() {
+    // Asegurar que el content-area tenga la clase inicial correcta
+    if (contentArea) {
         contentArea.classList.add('contenido-inicial');
-     }
+    }
     
-     // Configurar botones de acceso rápido con eventos click
-     document.querySelectorAll('.quick-btn').forEach(btn => {
+    // Configurar botones de acceso rápido con eventos click
+    document.querySelectorAll('.quick-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const titulo = this.getAttribute('title');
-            alert(`🔧 Accediendo a: ${titulo}`);
+            
+            // Si es el botón de Salir, ejecutar función salir
+            if (titulo === 'Salir') {
+                salir();
+            } else {
+                // Para los otros botones, mostrar alerta temporal
+                alert(`🔧 Accediendo a: ${titulo}`);
+            }
         });
     });
     }
 
     // ================================
-    // GESTIÓN DE INFORMACIÓN DE USUARIO
+    // FUNCIÓN DE SALIR - MOVER AFUERA PARA QUE SEA GLOBAL
+    // ================================
+    function salir() {
+    // Limpiar datos de sesión
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    sessionStorage.clear();
+    
+    // Redirigir al login
+    window.location.href = 'Login.html';
+    }
+
+    // Hacerla global
+    window.salir = salir;
+
+
+    // ================================
+    // 05. GESTIÓN DE INFORMACIÓN DE USUARIO
     // ================================
     function cargarInformacionUsuario() {
         // Simular información de usuario (en producción vendría del token de autenticación)
@@ -109,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ================================
-    // SISTEMA DE MENÚS - RENDERIZADO PRINCIPAL CORREGIDO CON TOOLTIPS
+    // 06. SISTEMA DE MENÚS - RENDERIZADO PRINCIPAL CORREGIDO CON TOOLTIPS
     // ================================
     function renderMenuPrincipal(modules, role) {
         if (!menuContainer) return;
@@ -232,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ================================
-    // CREACIÓN DE ITEMS DE SUBMENÚ - FUNCIÓN AUXILIAR CON TOOLTIPS Y NOMENCLATURA AUTOMÁTICA CON FALLBACK
+    // 07. CREACIÓN DE ITEMS DE SUBMENÚ - FUNCIÓN AUXILIAR CON TOOLTIPS Y NOMENCLATURA AUTOMÁTICA CON FALLBACK
     // ================================
     function crearItemSubmenu(submenu, itemData, modulo, paddingLeft) {
         const submenuItem = document.createElement('button');
@@ -289,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ================================
-    // OBTENCIÓN DE ICONOS PARA MÓDULOS - NOMENCLATURA AUTOMÁTICA
+    // 08. OBTENCIÓN DE ICONOS PARA MÓDULOS - NOMENCLATURA AUTOMÁTICA
     // ================================
     function obtenerIconoModulo(nombreModulo, moduleData) {
     // Generar nombre de archivo automáticamente: Mod_NombreModulo
@@ -301,7 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ================================
-    // TOGGLE DEL SIDEBAR - EXPANDIR/COLAPSAR CON TOOLTIP
+    // 09. TOGGLE DEL SIDEBAR - EXPANDIR/COLAPSAR CON TOOLTIP
     // ================================
     function inicializarSidebarToggle() {
         if (!btnToggleMenu || !sidebar) return;
@@ -361,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ================================
-    // SISTEMA DE PESTAÑAS Y VISIBILIDAD
+    // 10. SISTEMA DE PESTAÑAS Y VISIBILIDAD
     // ================================
     function abrirModulo(action, moduleName) {
         console.log('🔗 Abriendo módulo:', moduleName, action);
@@ -377,7 +401,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ================================
-    // GESTIÓN DE PESTAÑAS INTERNAS
+    // 11. GESTIÓN DE PESTAÑAS INTERNAS
     // ================================
     function abrirPestañaInterna(nombreModulo, archivoHTML) {
         // Verificar si ya existe la pestaña para evitar duplicados
@@ -411,7 +435,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ================================
-    // CONTROL DE LÍMITES DE PESTAÑAS
+    // 12. CONTROL DE LÍMITES DE PESTAÑAS
     // ================================
     function verificarLimitePestañas() {
         if (pestañasAbiertas.length >= MAX_PESTAÑAS) {
@@ -422,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ================================
-    // ALERTA DE LÍMITE DE PESTAÑAS
+    // 13. ALERTA DE LÍMITE DE PESTAÑAS
     // ================================
     function mostrarAlertaLimitePestañas() {
         const alerta = document.createElement('div');
@@ -433,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function() {
             background: #ff4444;
             color: white;
             padding: 15px 20px;
-            border-radius: 5px;
+            border-radius: 3px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             z-index: 10000;
             font-family: var(--fuente-principal);
@@ -459,7 +483,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ================================
-    // GENERACIÓN DE CONTENIDO PARA PESTAÑAS
+    // 14. GENERACIÓN DE CONTENIDO PARA PESTAÑAS
     // ================================
     function generarContenidoPestaña(nombreModulo, archivoHTML) {
         // Si hay archivo HTML específico, cargarlo en iframe
@@ -490,7 +514,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ================================
-    // INTERFAZ DE USUARIO PARA PESTAÑAS
+    // 15. INTERFAZ DE USUARIO PARA PESTAÑAS
     // ================================
     function agregarPestañaUI(pestaña) {
         // Asegurar que el contenedor de pestañas existe
@@ -542,7 +566,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ================================
-    // FUNCIONES AUXILIARES PARA CREACIÓN DE UI
+    // 16. FUNCIONES AUXILIARES PARA CREACIÓN DE UI
     // ================================
     function crearBarraPestañas(contenedor) {
         const barraPestañas = document.createElement('div');
@@ -559,7 +583,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ================================
-    // ACTIVACIÓN DE PESTAÑAS
+    // 17. ACTIVACIÓN DE PESTAÑAS
     // ================================
     function activarPestaña(pestañaId) {
         // Desactivar pestaña actual
@@ -578,7 +602,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ================================
-    // CONTROL DE VISIBILIDAD DEL CONTENIDO
+    // 18. CONTROL DE VISIBILIDAD DEL CONTENIDO
     // ================================
     function actualizarVisibilidadContenido() {
         const tienePestañas = pestañasAbiertas.length > 0;
@@ -625,7 +649,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ================================
-    // FUNCIONES GLOBALES ACCESIBLES DESDE HTML
+    // 19. FUNCIONES GLOBALES ACCESIBLES DESDE HTML
     // ================================
     window.cerrarPestañaDesdeJS = function(pestañaId) {
         cerrarPestaña(pestañaId);
@@ -636,7 +660,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // ================================
-    // CERRADO DE PESTAÑAS
+    // 20. CERRADO DE PESTAÑAS
     // ================================
     function cerrarPestaña(pestañaId) {
         const pestañaACerrar = pestañasAbiertas.find(p => p.id === pestañaId);
@@ -669,7 +693,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ================================
-    // INICIALIZACIÓN FINAL DEL SISTEMA
+    // 21.INICIALIZACIÓN FINAL DEL SISTEMA
     // ================================
     
     // Agregar estilos CSS para la animación de alertas

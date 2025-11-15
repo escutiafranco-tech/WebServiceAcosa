@@ -86,37 +86,37 @@
         "submenus": [
           {
             "name": "Cargas",
-            "action": "cargas.html",
+            "action": "modules/logistica/expedientes-carga/cargas/cargas.html",
             "roles": ["Administrador", "Custodia", "Operador"]
           },
           {
             "name": "Seguro",
-            "action": "seguro.html",
+            "action": "modules/logistica/expedientes-carga/seguros-y-polizas/seguros.html",
             "roles": ["Administrador", "Asegurador"]
           },
           {
             "name": "Fletes",
-            "action": "fletes.html",
+            "action": "modules/logistica/expedientes-carga/fletes/fletes.html", 
             "roles": ["Administrador", "Transportista"]
           },
           {
             "name": "Custodia",
-            "action": "/Logistica/expedientes-carga/custodias/custodias.html",
+            "action": "modules/logistica/expedientes-carga/custodias/custodias.html",
             "roles": ["Administrador", "Custodia"]
           },
           {
             "name": "Bill of Landing",
-            "action": "bill-of-landing.html",
+            "action": "modules/logistica/expedientes-carga/bill-of-landing/bill-of-landing.html",
             "roles": ["Administrador", "Documentacion"]
           },
           {
             "name": "Packing List",
-            "action": "packing-list.html",
+            "action": "modules/logistica/expedientes-carga/packing-list/packing-list.html",
             "roles": ["Administrador", "Almacen"]
           },
           {
             "name": "Reportes de Logística",
-            "action": "reportes-logistica.html",
+            "action": "modules/logistica/expedientes-carga/reportes-logistica/reportes-logistica.html",
             "roles": ["Administrador", "Gerente"]
           }
         ]

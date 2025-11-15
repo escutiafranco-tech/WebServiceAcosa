@@ -8,7 +8,10 @@ const menuRoutes = require('./routes/menus');
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ✅ AGREGA ESTA LÍNEA PARA SERVIR ARCHIVOS JSON
+// ✅ SERVIR ARCHIVOS ESTÁTICOS DE modules
+app.use('/modules', express.static(path.join(__dirname, 'modules')));
+
+// ✅ SERVIR ARCHIVOS JSON
 app.use('/data', express.static(path.join(__dirname, 'data')));
 
 // Rutas
@@ -22,4 +25,3 @@ app.get('/', (req, res) => {
 
 const PORT = 3000;
 app.listen(PORT, '0.0.0.0', () => console.log(`Servidor corriendo en http://localhost:${PORT} y http://192.168.0.75:${PORT}`));
-app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));

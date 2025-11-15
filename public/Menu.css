@@ -140,7 +140,7 @@ header {
     border: none;                        /* Elimina borde por defecto */
     color: var(--color-blanco);          /* Texto blanco */
     padding: var(--espacio-pequeño) var(--espacio-mediano); /* Padding: 5px vertical, 10px horizontal */
-    border-radius: var(--radio-borde-pequeño); /* Bordes redondeados pequeños */
+    border-radius: var(--radio-borde); /* Bordes redondeados pequeños */
     cursor: pointer;                     /* Cursor de mano al pasar sobre el botón */
     font-size: 16px;                     /* Tamaño de fuente específico */
     margin-right: var(--espacio-pequeño); /* Margen derecho de 5px */
@@ -368,7 +368,7 @@ header {
     flex-shrink: 0;                      /* Mantiene tamaño fijo */
     font-size: 12px;                     /* Tamaño de fuente para emoticones */
     background: rgba(47, 49, 88, 0.1);  /* Fondo sutil para placeholders */
-    border-radius: 4px;                  /* Bordes ligeramente redondeados */
+    border-radius: 3px;                  /* Bordes ligeramente redondeados */
 }
 
 /* ================================ */
@@ -378,8 +378,9 @@ header {
     flex: 1;                             /* Ocupa todo el espacio restante */
     background: var(--color-fondo);      /* Fondo gris claro */
     min-height: calc(100vh - 100px);     /* Altura mínima calculada */
+    margin-top: 5px;                     /* Marguen superior */
     margin-left: 5px;                    /* Margen izquierdo pequeño */
-    border-radius: var(--radio-borde);   /* Bordes redondeados */
+    border-radius: 0 !important;         /* Bordes redondeados */ 
     display: flex;                       /* Flexbox para organización interna */
     flex-direction: column;              /* Dirección vertical */
     height: calc(100vh - 100px) !important; /* Altura fija calculada */
@@ -395,7 +396,7 @@ header {
     align-items: center;                 /* Centra verticalmente */
     justify-content: center;             /* Centra horizontalmente */
     background: var(--color-blanco);     /* Fondo blanco */
-    border-radius: var(--radio-borde);   /* Bordes redondeados */
+    border-radius: 0 !important;         /* Bordes redondeados */
 }
 
 .welcome-message {
@@ -487,30 +488,34 @@ header {
     width: 100%;                         /* Ancho completo */
 }
 
+
+
 .barra-pestañas {
-    display: flex;                       /* Organización horizontal */
+    display: flex;                       /* Flexbox para pestañas */
     background: var(--color-blanco) !important; /* Fondo blanco forzado */
-    border-bottom: 2px solid var(--color-borde); /* Línea inferior más gruesa */
-    padding: 5px 5px 0px 15px;          /* Padding asimétrico para pestañas */
-    gap: 6px;                           /* Espacio entre pestañas */
+    border-bottom: 2px solid var(--color-borde); /* Línea inferior */
+    padding: 5px 3px 0px 5px;          /* Padding asimétrico */
+    gap: 2px;                           /* Espacio entre pestañas */
     overflow-x: auto;                   /* Scroll horizontal si es necesario */
+    flex-shrink: 0;                     /* No se reduce */
 }
+
 
 .pestana {
     display: flex;                       /* Flexbox para alinear contenido */
     align-items: center;                 /* Centra verticalmente */
-    gap: 8px;                           /* Espacio entre icono y texto */
-    padding: 8px 15px;                  /* Padding: 8px arriba/abajo, 15px izquierda/derecha */
+    gap: 3px;                           /* Espacio entre icono y texto */
+    padding: 6px 8px;                  /* Padding: 6px arriba/abajo, 8px izquierda/derecha - AJUSTADO */
     background: var(--color-blanco);     /* Fondo blanco */
     border: 1px solid var(--color-borde); /* Borde completo gris claro */
     border-bottom: none;                /* Quita borde inferior */
-    border-radius: 6px 6px 0 0;         /* Esquinas redondeadas solo arriba */
+    border-radius: 3px 3px 0 0;         /* Esquinas redondeadas solo arriba */
     cursor: pointer;                    /* Cursor de mano al pasar */
     transition: all 0.2s ease;          /* Transición suave para hover */
-    min-width: 120px;                   /* Ancho mínimo para pestañas */
+    min-width: 110px;                   /* Ancho mínimo para pestañas - AJUSTADO */
     max-width: 200px;                   /* Ancho máximo para pestañas */
     position: relative;                 /* Para posicionamiento interno */
-    font-size: 13px;                    /* Tamaño de fuente específico para pestañas */
+    font-size: 12px;                    /* Tamaño de fuente específico para pestañas */
     font-weight: var(--peso-seminegrita); /* Peso de fuente semi-negrita */
     color: var(--color-secundario);     /* Color de texto secundario */
 }
@@ -627,12 +632,13 @@ header {
 
 .barra-pestañas::-webkit-scrollbar-thumb {
     background: var(--color-borde);     /* Color del thumb del scrollbar */
-    border-radius: 2px;                 /* Bordes redondeados del thumb */
+    border-radius: 3px;                 /* Bordes redondeados del thumb */
 }
 
 .barra-pestañas::-webkit-scrollbar-thumb:hover {
     background: var(--color-secundario); /* Color del thumb al hacer hover */
 }
+
 
 /* ================================ */
 /* 14. CLASES DE CONTROL DE VISIBILIDAD */
@@ -641,15 +647,12 @@ header {
     display: none !important;           /* Oculta mensaje de bienvenida forzadamente */
 }
 
+/* Garantizar que el sistema de pestañas ocupe todo el espacio disponible */
 .sistema-pestañas.visible {
-    display: flex !important;           /* Muestra sistema de pestañas forzadamente */
+    display: flex !important;           /* Muestra con flexbox */
     flex-direction: column;             /* Dirección vertical */
-    height: calc(100vh - 100px) !important; /* Altura fija calculada */
-    flex: 1;                            /* Para expandirse */
-}
-
-.barra-herramientas-container.visible {
-    display: block;                     /* Muestra barra de herramientas */
+    height: calc(100vh - 100px) !important; /* Misma altura base */
+    flex: 0;                            /* Expande */
 }
 
 .content-area.sin-pestañas {
@@ -792,12 +795,12 @@ footer {
 
 .sidebar::-webkit-scrollbar-track {
     background: var(--color-fondo);     /* Track del scrollbar con color de fondo */
-    border-radius: 4px;                 /* Bordes redondeados del track */
+    border-radius: 3px;                 /* Bordes redondeados del track */
 }
 
 .sidebar::-webkit-scrollbar-thumb {
     background: var(--color-borde);     /* Thumb del scrollbar con color de borde */
-    border-radius: 4px;                 /* Bordes redondeados del thumb */
+    border-radius: 3px;                 /* Bordes redondeados del thumb */
 }
 
 .sidebar::-webkit-scrollbar-thumb:hover {
@@ -870,16 +873,10 @@ footer {
 .contenido-pestana-container {
     height: 100%;                       /* Altura completa */
     width: 100%;                        /* Ancho completo */
-    flex: 1;                            /* Expande para llenar espacio */
+    flex: 0;                            /* Expande para llenar espacio */
 }
 
-/* Garantizar que el sistema de pestañas ocupe todo el espacio disponible */
-.sistema-pestañas.visible {
-    display: flex !important;           /* Muestra con flexbox */
-    flex-direction: column;             /* Dirección vertical */
-    height: calc(100vh - 100px) !important; /* Misma altura base */
-    flex: 1;                            /* Expande */
-}
+
 
 /* Asegurar que los iframes en pestañas ocupen todo el espacio */
 .contenido-pestana iframe {
@@ -894,17 +891,6 @@ footer {
 /* 21. CORRECCIÓN ESPACIO BLANCO EN PESTAÑAS - NUEVA SECCIÓN */
 /* ================================ */
 
-/* CONTENEDOR PRINCIPAL CORREGIDO */
-.main-content {
-    flex: 1;                             /* Ocupa espacio disponible */
-    background: var(--color-fondo);      /* Fondo gris claro */
-    min-height: calc(100vh - 100px);     /* Altura mínima calculada */
-    margin-left: 5px;                    /* Margen izquierdo */
-    border-radius: var(--radio-borde);   /* Bordes redondeados */
-    display: flex;                       /* Flex para organizar pestañas */
-    flex-direction: column;              /* Dirección vertical */
-    height: calc(100vh - 100px) !important; /* Altura fija */
-}
 
 /* SISTEMA DE PESTAÑAS - CORREGIDO */
 .sistema-pestañas.visible {
@@ -913,6 +899,11 @@ footer {
     height: 100% !important;            /* 100% en lugar de cálculo fijo */
     flex: 1;                            /* Expande para llenar espacio */
     min-height: 0;                      /* Permite que flex funcione correctamente */
+}
+
+/* OCULTAR CONTENT-AREA CUANDO HAY PESTAÑAS */
+.sistema-pestañas.visible ~ .content-area {
+    display: none !important;           /* Oculta completamente el área de bienvenida */
 }
 
 /* ÁREA DE CONTENIDO DE PESTAÑAS - CORREGIDO */
@@ -948,21 +939,7 @@ footer {
     min-height: auto !important;         /* Altura mínima automática */
 }
 
-/* BARRA DE PESTAÑAS - CORREGIDO */
-.barra-pestañas {
-    display: flex;                       /* Flexbox para pestañas */
-    background: var(--color-blanco) !important; /* Fondo blanco forzado */
-    border-bottom: 2px solid var(--color-borde); /* Línea inferior */
-    padding: 5px 5px 0px 15px;          /* Padding asimétrico */
-    gap: 6px;                           /* Espacio entre pestañas */
-    overflow-x: auto;                   /* Scroll horizontal si es necesario */
-    flex-shrink: 0;                     /* No se reduce */
-}
 
-/* OCULTAR CONTENT-AREA CUANDO HAY PESTAÑAS */
-.sistema-pestañas.visible ~ .content-area {
-    display: none !important;           /* Oculta completamente el área de bienvenida */
-}
 
 /* GARANTIZAR QUE EL LAYOUT PRINCIPAL TENGA ALTURA CORRECTA */
 .main-layout {

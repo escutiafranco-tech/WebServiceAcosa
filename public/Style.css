@@ -4,7 +4,7 @@
     background-color: #2e86de;
     color: white;
     padding: 10px;
-    border-radius: 10px;
+    border-radius: 3px;
 }
 
 /* Menú principal */
@@ -15,7 +15,7 @@
     cursor: pointer;
     display: flex;
     align-items: center;
-    border-radius: 5px;
+    border-radius: 3px;
     transition: background 0.3s;
 }
 
@@ -53,3 +53,91 @@
 .submenu.expanded {
     display: flex;
 }
+
+/* ================================
+   ESTILOS GLOBALES DE BOTONES - PARA TODOS LOS MÓDULOS
+   ================================ */
+
+/* Estilos base para botones */
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 3px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+/* Botones principales con fondo blanco y borde azul */
+.btn-primary, .btn-secondary {
+    background: white !important;
+    color: #2F3158 !important;
+    border: 2px solid #2F3158 !important;
+    padding: 8px 16px !important;
+    border-radius: 3px;
+    font-size: 14px !important;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.btn-primary:hover, .btn-secondary:hover {
+    background: #2F3158 !important;
+    color: white !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(47, 49, 88, 0.3);
+}
+
+.btn-primary:disabled, .btn-secondary:disabled {
+    background: #f8f9fa !important;
+    color: #6c757d !important;
+    border-color: #dee2e6 !important;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Botones outline */
+.btn-outline {
+    background: transparent;
+    color: #2F3158;
+    border: 1px solid #2F3158;
+    padding: 8px 16px;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+.btn-outline:hover {
+    background: #2F3158;
+    color: white;
+}
+
+.btn-outline:disabled {
+    background: #f8f9fa;
+    color: #6c757d;
+    border-color: #dee2e6;
+    cursor: not-allowed;
+}
+
+/* Botones de acción pequeños */
+.btn-action {
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+    border-radius: 3px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-action.view { background: #17a2b8; color: white; }
+.btn-action.edit { background: #ffc107; color: black; }
+.btn-action.delete { background: #dc3545; color: white; }

@@ -1,4 +1,4 @@
-// Menu.js - Sistema de Gestión para ACOSA (VERSIÓN COMPLETA CON TOOLTIPS Y NOMENCLATURA AUTOMÁTICA)
+// Menu.js - Sistema de Gestión para ACOSA (VERSIÓN COMPLETA CON PERSISTENCIA CORREGIDA)
 document.addEventListener('DOMContentLoaded', function() {
     // ================================
     // 01. CONFIGURACIÓN Y VARIABLES GLOBALES
@@ -36,6 +36,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (modules && modules.length > 0) {
                 renderMenuPrincipal(modules, 'Administrador');
                 console.log('✅ Menús cargados desde JSON correctamente');
+                
+                // ✅ INICIALIZAR PERSISTENCIA - ESTA LÍNEA ES CLAVE
+                inicializarPersistenciaCompleta();
             } else {
                 throw new Error('No se pudieron cargar los menús');
             }
@@ -71,47 +74,46 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-// ================================
-// 04. CONFIGURACIÓN INICIAL DE ELEMENTOS DEL DOM
-// ================================
-function configurarElementosDOM() {
-    // Asegurar que el content-area tenga la clase inicial correcta
-    if (contentArea) {
-        contentArea.classList.add('contenido-inicial');
-    }
-    
-    // Configurar botones de acceso rápido con eventos click
-    document.querySelectorAll('.quick-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const titulo = this.getAttribute('title');
-            
-            // Si es el botón de Salir, ejecutar función salir
-            if (titulo === 'Salir') {
-                salir();
-            } else {
-                // Para los otros botones, mostrar alerta temporal
-                alert(`🔧 Accediendo a: ${titulo}`);
-            }
+    // ================================
+    // 04. CONFIGURACIÓN INICIAL DE ELEMENTOS DEL DOM
+    // ================================
+    function configurarElementosDOM() {
+        // Asegurar que el content-area tenga la clase inicial correcta
+        if (contentArea) {
+            contentArea.classList.add('contenido-inicial');
+        }
+        
+        // Configurar botones de acceso rápido con eventos click
+        document.querySelectorAll('.quick-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const titulo = this.getAttribute('title');
+                
+                // Si es el botón de Salir, ejecutar función salir
+                if (titulo === 'Salir') {
+                    salir();
+                } else {
+                    // Para los otros botones, mostrar alerta temporal
+                    alert(`🔧 Accediendo a: ${titulo}`);
+                }
+            });
         });
-    });
     }
 
     // ================================
     // FUNCIÓN DE SALIR - MOVER AFUERA PARA QUE SEA GLOBAL
     // ================================
     function salir() {
-    // Limpiar datos de sesión
-    localStorage.removeItem('token');
-    localStorage.removeItem('usuario');
-    sessionStorage.clear();
-    
-    // Redirigir al login
-    window.location.href = 'Login.html';
+        // Limpiar datos de sesión
+        localStorage.removeItem('token');
+        localStorage.removeItem('usuario');
+        sessionStorage.clear();
+        
+        // Redirigir al login
+        window.location.href = 'Login.html';
     }
 
     // Hacerla global
     window.salir = salir;
-
 
     // ================================
     // 05. GESTIÓN DE INFORMACIÓN DE USUARIO
@@ -218,11 +220,11 @@ function configurarElementosDOM() {
             moduleHeader.addEventListener('click', function(e) {
                 e.stopPropagation(); // Prevenir propagación del evento
                 
-                const isOpen = submenu.classList.contains('open');
+                const isOpen = submenu.classList.contains('open'); // ✅ CORRECTO: usa 'open'
                 
                 // Cerrar todos los acordeones abiertos (comportamiento de acordeón)
                 document.querySelectorAll('.submenu').forEach(sm => {
-                    if (sm !== submenu) sm.classList.remove('open');
+                    if (sm !== submenu) sm.classList.remove('open'); // ✅ CORRECTO: usa 'open'
                 });
                 document.querySelectorAll('.module-arrow').forEach(arrow => {
                     if (arrow !== this.querySelector('.module-arrow')) {
@@ -235,11 +237,11 @@ function configurarElementosDOM() {
                 
                 // Abrir/cerrar este acordeón específico
                 if (!isOpen) {
-                    submenu.classList.add('open');
+                    submenu.classList.add('open'); // ✅ CORRECTO: usa 'open'
                     this.querySelector('.module-arrow').classList.add('rotated');
                     this.classList.add('active');
                 } else {
-                    submenu.classList.remove('open');
+                    submenu.classList.remove('open'); // ✅ CORRECTO: usa 'open'
                     this.querySelector('.module-arrow').classList.remove('rotated');
                     this.classList.remove('active');
                 }
@@ -266,11 +268,11 @@ function configurarElementosDOM() {
         let nombreArchivo, rutaImagen;
     
         if (itemData.name.includes('Expedientes') || itemData.name.includes('Pagos')) {
-        // Para menús principales: Men_NombreMenu
-        nombreArchivo = `Men_${itemData.name.replace(/\s+/g, '')}`;
+            // Para menús principales: Men_NombreMenu
+            nombreArchivo = `Men_${itemData.name.replace(/\s+/g, '')}`;
         } else {
-        // Para submenús: Ico_NombreSubmenu  
-        nombreArchivo = `Ico_${itemData.name.replace(/\s+/g, '')}`;
+            // Para submenús: Ico_NombreSubmenu  
+            nombreArchivo = `Ico_${itemData.name.replace(/\s+/g, '')}`;
         }
     
         rutaImagen = `Imagenes/${nombreArchivo}.png`;
@@ -294,34 +296,34 @@ function configurarElementosDOM() {
     
         // Configurar evento click para el item del submenú
         submenuItem.addEventListener('click', function(e) {
-        e.stopPropagation(); // Prevenir propagación
-        
-        // Remover estado activo de todos los items
-        document.querySelectorAll('.submenu-item').forEach(item => {
-            item.classList.remove('active');
+            e.stopPropagation(); // Prevenir propagación
+            
+            // Remover estado activo de todos los items
+            document.querySelectorAll('.submenu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Activar item clickeado
+            this.classList.add('active');
+            
+            // Abrir el módulo correspondiente en una pestaña
+            abrirModulo(itemData.action, itemData.name);
         });
-        
-        // Activar item clickeado
-        this.classList.add('active');
-        
-        // Abrir el módulo correspondiente en una pestaña
-        abrirModulo(itemData.action, itemData.name);
-    });
     
-    // Agregar item al submenú
-    submenu.appendChild(submenuItem);
+        // Agregar item al submenú
+        submenu.appendChild(submenuItem);
     }
 
     // ================================
     // 08. OBTENCIÓN DE ICONOS PARA MÓDULOS - NOMENCLATURA AUTOMÁTICA
     // ================================
     function obtenerIconoModulo(nombreModulo, moduleData) {
-    // Generar nombre de archivo automáticamente: Mod_NombreModulo
-    const nombreArchivo = `Mod_${nombreModulo.replace(/\s+/g, '')}`;
-    const rutaImagen = `Imagenes/${nombreArchivo}.png`;
-    const rutaImagenDefault = 'Imagenes/Mod_Default.png'; // Imagen por defecto
-    
-    return `<img src="${rutaImagen}" alt="${nombreModulo}" class="module-icon-img" onerror="this.src='${rutaImagenDefault}'; this.style.display='inline-block'">`;
+        // Generar nombre de archivo automáticamente: Mod_NombreModulo
+        const nombreArchivo = `Mod_${nombreModulo.replace(/\s+/g, '')}`;
+        const rutaImagen = `Imagenes/${nombreArchivo}.png`;
+        const rutaImagenDefault = 'Imagenes/Mod_Default.png'; // Imagen por defecto
+        
+        return `<img src="${rutaImagen}" alt="${nombreModulo}" class="module-icon-img" onerror="this.src='${rutaImagenDefault}'; this.style.display='inline-block'">`;
     }
 
     // ================================
@@ -660,6 +662,20 @@ function configurarElementosDOM() {
     };
 
     // ================================
+    // 20.5 FUNCIÓN GUARDAR ESTADO COMPLETO - FALTANTE (AGREGAR)
+    // ================================
+    function guardarEstadoCompleto() {
+        const estadoCompleto = {
+            pestañasAbiertas: pestañasAbiertas,
+            pestañaActiva: pestañaActiva,
+            menusExpandidos: obtenerEstadoMenus()
+        };
+        
+        sessionStorage.setItem('estadoSistemaCompleto', JSON.stringify(estadoCompleto));
+        console.log('💾 Estado guardado:', estadoCompleto);
+    }
+
+    // ================================
     // 20. CERRADO DE PESTAÑAS
     // ================================
     function cerrarPestaña(pestañaId) {
@@ -690,13 +706,190 @@ function configurarElementosDOM() {
         
         // ACTUALIZAR VISIBILIDAD - Mostrar bienvenida si no hay pestañas
         actualizarVisibilidadContenido();
+        
+        // GUARDAR ESTADO INMEDIATAMENTE AL CERRAR
+        guardarEstadoCompleto(); // ✅ ESTA LLAMADA AHORA FUNCIONARÁ
     }
 
     // ================================
-    // 21.INICIALIZACIÓN FINAL DEL SISTEMA
+    // 21.5 FUNCIÓN OBTENER ESTADO MENUS - FALTANTE (AGREGAR)
+    // ================================
+    function obtenerEstadoMenus() {
+        const estado = {};
+        document.querySelectorAll('.module-header').forEach(header => {
+            const submenu = header.nextElementSibling;
+            if (submenu && submenu.classList.contains('submenu')) {
+                const moduloId = header.closest('.module-group').dataset.module;
+                estado[moduloId] = submenu.classList.contains('open'); // ✅ CORRECTO: usa 'open'
+            }
+        });
+        return estado;
+    }
+
+    // ================================
+    // 21. PERSISTENCIA COMPLETA DEL SISTEMA - SIN PARPADEO
+    // ================================
+    function inicializarPersistenciaCompleta() {
+        const pantallaCarga = document.getElementById('pantallaCarga');
+        
+        // Mostrar pantalla de carga inmediatamente
+        if (pantallaCarga) {
+            pantallaCarga.classList.remove('oculto');
+        }
+
+        // Función para cargar TODO el estado SIN PARPADEO
+        function cargarEstadoCompleto() {
+            return new Promise((resolve) => {
+                try {
+                    const guardado = sessionStorage.getItem('estadoSistemaCompleto');
+                    
+                    if (guardado) {
+                        const estado = JSON.parse(guardado);
+                        
+                        // 1. CARGAR PESTAÑAS PRIMERO
+                        if (estado.pestañasAbiertas && estado.pestañasAbiertas.length > 0) {
+                            pestañasAbiertas = estado.pestañasAbiertas;
+                            pestañaActiva = estado.pestañaActiva;
+                            
+                            // Recrear TODAS las pestañas
+                            estado.pestañasAbiertas.forEach(pestaña => {
+                                recrearPestañaCompleta(pestaña);
+                            });
+                        }
+                        
+                        // 2. CARGAR MENÚS EXPANDIDOS DESPUÉS
+                        if (estado.menusExpandidos) {
+                            aplicarEstadoMenus(estado.menusExpandidos);
+                        }
+                        
+                        // 3. ACTUALIZAR VISIBILIDAD INMEDIATAMENTE
+                        actualizarVisibilidadContenido();
+                        
+                        console.log('✅ Sistema restaurado sin parpadeo');
+                    }
+                    
+                    resolve();
+                } catch (error) {
+                    console.error('❌ Error cargando estado:', error);
+                    sessionStorage.removeItem('estadoSistemaCompleto');
+                    resolve();
+                }
+            });
+        }
+
+        // Función para recrear una pestaña completamente
+        function recrearPestañaCompleta(pestaña) {
+            let contenedorPestañas = document.getElementById('contenedorPestañas');
+            if (!contenedorPestañas) {
+                contenedorPestañas = document.createElement('div');
+                contenedorPestañas.id = 'contenedorPestañas';
+                contenedorPestañas.className = 'sistema-pestañas';
+                
+                const contentArea = document.querySelector('.content-area');
+                if (contentArea) {
+                    contentArea.parentNode.insertBefore(contenedorPestañas, contentArea.nextSibling);
+                }
+            }
+            
+            const barraPestañas = document.querySelector('.barra-pestañas') || crearBarraPestañas(contenedorPestañas);
+            
+            const elementoPestaña = document.createElement('div');
+            elementoPestaña.className = 'pestana';
+            elementoPestaña.dataset.pestanaId = pestaña.id;
+            elementoPestaña.innerHTML = `
+                <span class="nombre-pestana">${pestaña.nombre}</span>
+                <button class="btn-cerrar-pestana" onclick="cerrarPestañaDesdeJS('${pestaña.id}')">×</button>
+            `;
+            
+            elementoPestaña.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('btn-cerrar-pestana')) {
+                    activarPestaña(pestaña.id);
+                }
+            });
+            
+            barraPestañas.appendChild(elementoPestaña);
+            
+            const areaContenido = document.querySelector('.area-contenido-pestañas') || crearAreaContenido(contenedorPestañas);
+            
+            const contenidoPestaña = document.createElement('div');
+            contenidoPestaña.className = 'contenido-pestana-container';
+            contenidoPestaña.id = `contenido-${pestaña.id}`;
+            contenidoPestaña.style.display = 'none';
+            contenidoPestaña.innerHTML = pestaña.contenido || generarContenidoPestaña(pestaña.nombre, pestaña.archivo);
+            
+            areaContenido.appendChild(contenidoPestaña);
+        }
+
+        // Función para aplicar estado de menús
+        function aplicarEstadoMenus(estadoMenus) {
+            Object.keys(estadoMenus).forEach(moduloId => {
+                if (estadoMenus[moduloId]) {
+                    const moduleGroup = document.querySelector(`[data-module="${moduloId}"]`);
+                    if (moduleGroup) {
+                        const header = moduleGroup.querySelector('.module-header');
+                        const submenu = moduleGroup.querySelector('.submenu');
+                        const arrow = header.querySelector('.module-arrow');
+                        
+                        if (submenu) {
+                            submenu.classList.add('open'); // ✅ CORRECTO: usa 'open'
+                            header.classList.add('active');
+                            if (arrow) arrow.classList.add('rotated');
+                        }
+                    }
+                }
+            });
+        }
+
+        // Configurar eventos de guardado automático
+        function configurarAutoGuardado() {
+            window.addEventListener('beforeunload', guardarEstadoCompleto);
+            
+            const originalAbrirPestaña = abrirPestañaInterna;
+            abrirPestañaInterna = function(...args) {
+                const resultado = originalAbrirPestaña.apply(this, args);
+                setTimeout(guardarEstadoCompleto, 100);
+                return resultado;
+            };
+            
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.module-header')) {
+                    setTimeout(guardarEstadoCompleto, 100);
+                }
+            });
+        }
+
+        // Inicializar persistencia SIN PARPADEO
+        setTimeout(async () => {
+            await cargarEstadoCompleto();
+            configurarAutoGuardado();
+            
+            // OCULTAR PANTALLA DE CARGA SUAVEMENTE
+            if (pantallaCarga) {
+                setTimeout(() => {
+                    pantallaCarga.classList.add('oculto');
+                    // Remover del DOM después de la animación
+                    setTimeout(() => {
+                        if (pantallaCarga.parentNode) {
+                            pantallaCarga.parentNode.removeChild(pantallaCarga);
+                        }
+                    }, 500);
+                }, 500);
+            }
+            
+            // ACTIVAR PESTAÑA DESPUÉS DE TODO ESTÉ LISTO
+            if (pestañaActiva) {
+                setTimeout(() => {
+                    activarPestaña(pestañaActiva);
+                }, 300);
+            }
+        }, 300);
+    }
+
+    // ================================
+    // 22. INICIALIZACIÓN FINAL DEL SISTEMA
     // ================================
     
-    // Agregar estilos CSS para la animación de alertas
+    // Agregar estilos CSS
     const style = document.createElement('style');
     style.textContent = `
         @keyframes slideIn {
@@ -708,6 +901,27 @@ function configurarElementosDOM() {
                 transform: translateX(0);
                 opacity: 1;
             }
+        }
+        
+        .module-header.active { 
+            background-color: var(--color-primario-oscuro) !important; 
+        }
+        
+        .module-arrow.rotated { 
+            transform: rotate(90deg) !important; 
+        }
+        
+        .submenu.open { 
+            display: block !important; 
+        }
+        
+        /* Asegurar que el sistema de pestañas sea visible cuando hay pestañas */
+        .sistema-pestañas.visible {
+            display: block !important;
+        }
+        
+        .barra-herramientas.visible {
+            display: flex !important;
         }
     `;
     document.head.appendChild(style);

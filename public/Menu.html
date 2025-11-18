@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistema de Registro ACOSA</title>
-  <link rel="stylesheet" href="Menu.css">
+  <!-- SOLO UN ARCHIVO CSS - CON TUS ESTILOS ORIGINALES -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -54,7 +55,7 @@
       <div id="contenedorPestañas" class="sistema-pestañas"></div>
       
       <!-- Área de contenido principal -->
-      <div class="content-area">
+      <div class="content-area contenido-inicial">
         <div class="welcome-message">
           <h3>Bienvenido al Sistema ACOSA</h3>
           <p>Selecciona un módulo del menú lateral para comenzar</p>
@@ -68,6 +69,13 @@
     <div id="usuarioLogeado">Usuario: admin | Rol: administrador</div>
   </footer>
 
-  <script src="Menu.js"></script>
+  <!-- Pantalla de carga -->
+  <div id="pantallaCarga" class="pantalla-carga">
+    <div class="spinner"></div>
+    <div class="texto-carga">Actualizando sistema...</div>
+  </div>
+
+  <!-- SOLO UN ARCHIVO JS -->
+  <script src="menu.js"></script>
 </body>
 </html>

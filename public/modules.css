@@ -1,0 +1,1057 @@
+/* ==========================================================================
+   PUBLIC/MODULES.CSS
+   Estilos compartidos para módulos del sistema (tablas, formularios, barras, botones)
+   Variables globales tomadas de `public/style.css`
+   ========================================================================== */
+
+/* ==========================================================================
+   CONTENEDORES PRINCIPALES Y ESTRUCTURA DEL MÓDULO
+   ========================================================================== */
+
+/**
+ * Contenedores principales para módulos y formularios
+ * Diseño flexbox para layout completo de pantalla
+ */
+.module-container,
+.form-container {
+    height: 100vh;                    /* Ocupa toda la altura de la ventana */
+    background: white;                /* Fondo blanco para contraste */
+    margin: 0 5px;                    /* Márgenes laterales mínimos */
+    box-shadow: none;                 /* Sin sombra por defecto */
+    display: flex;                    /* Layout flexbox */
+    flex-direction: column;           /* Dirección vertical */
+    overflow: hidden;                 /* Oculta overflow */
+    position: relative;               /* Posicionamiento relativo para elementos hijos */
+    border-left: 0px solid var(--primary-color); /* Borde izquierdo (0px por defecto) */
+}
+
+/**
+ * Ocultar headers duplicados en módulos para evitar redundancia visual
+ */
+.module-header,
+.form-header {
+    display: none !important;         /* Oculta completamente */
+}
+
+.header-content h1,
+.header-content p {
+    display: none;                    /* Oculta títulos y párrafos del header */
+}
+
+/* ==========================================================================
+   BARRA SUPERIOR - NAVEGACIÓN Y CONTROLES
+   ========================================================================== */
+
+/**
+ * Barra superior compacta para controles de módulo
+ */
+.barra-superior-custodias {
+    background: var(--light-color);   /* Fondo claro usando variable CSS */
+    padding: 3px 3px;                 /* Padding compacto */
+    border-bottom: 1px solid var(--border-color); /* Línea separadora inferior */
+    display: flex;                    /* Layout flexbox */
+    justify-content: space-between;   /* Distribuye espacio entre elementos */
+    align-items: center;              /* Centra verticalmente */
+    flex-wrap: wrap;                  /* Permite wrap en pantallas pequeñas */
+    gap: 10px;                        /* Espacio entre elementos */
+    margin-left: 20px;                /* Margen izquierdo */
+}
+
+/* Contenedores izquierdo y derecho de la barra */
+.barra-izquierda {
+    display: flex;
+    align-items: center;
+    gap: 10px;                        /* Espacio entre elementos */
+    margin-left: 20px;                /* Margen izquierdo */
+}
+
+.barra-derecha {
+    display: flex;
+    align-items: center;
+    gap: 10px;                        /* Espacio entre elementos */
+}
+
+/* ==========================================================================
+   COMPONENTES DE BÚSQUEDA Y FILTROS
+   ========================================================================== */
+
+/**
+ * Caja de búsqueda con input integrado
+ */
+.search-box {
+    display: flex;
+    background: white;                /* Fondo blanco */
+    border: 2px solid var(--border-color); /* Borde definido */
+    border-radius: var(--border-radius); /* Bordes redondeados usando variable */
+    overflow: hidden;                 /* Oculta overflow interno */
+    min-width: 300px;                 /* Ancho mínimo */
+}
+
+.search-box input {
+    border: none;                     /* Sin borde propio */
+    padding: 8px 12px;                /* Padding interno */
+    flex: 1;                          /* Ocupa todo el espacio disponible */
+    outline: none;                    /* Sin outline por defecto */
+    font-size: 14px;                  /* Tamaño de fuente */
+}
+
+/**
+ * Filtro de fechas con rango
+ */
+.filtro-fechas {
+    display: flex;
+    align-items: center;
+    gap: 8px;                         /* Espacio entre inputs */
+    background: white;                /* Fondo blanco */
+    border: 2px solid var(--border-color); /* Borde definido */
+    border-radius: var(--border-radius); /* Bordes redondeados */
+    padding: 0 8px;                   /* Padding horizontal */
+}
+
+.filtro-fechas input {
+    border: none;                     /* Sin borde propio */
+    padding: 8px 0;                   /* Padding vertical */
+    outline: none;                    /* Sin outline */
+    font-size: 13px;                  /* Fuente más pequeña */
+    width: 110px;                     /* Ancho fijo */
+}
+
+.separador-fechas {
+    color: var(--secondary-color);    /* Color secundario */
+    font-size: 12px;                  /* Tamaño pequeño */
+}
+
+/* ==========================================================================
+   CONTENEDOR PRINCIPAL Y SISTEMA DE TABLAS
+   ========================================================================== */
+
+/**
+ * Contenedor principal del contenido
+ */
+.main-content {
+    flex: 1;                          /* Ocupa todo el espacio disponible */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;                 /* Oculta overflow */
+    padding: 0 15px;                  /* Padding lateral */
+    min-height: 0;                    /* Permite reducción */
+    padding-bottom: 80px;             /* Espacio para barra inferior */
+}
+
+/**
+ * Contenedor de tabla con scroll
+ */
+.table-container {
+    flex: 1;                          /* Ocupa espacio disponible */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;                 /* Controla overflow */
+    padding: 0;                       /* Sin padding */
+    min-height: 0;                    /* Permite reducción */
+    margin-top: 0;                    /* Sin margen superior */
+}
+
+.table-header {
+    display: none !important;         /* Oculta header de tabla duplicado */
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 15px 0;
+    border-bottom: 2px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+/**
+ * Tabla principal de custodias
+ */
+.custodias-table {
+    background: white;                /* Fondo blanco */
+    border-radius: var(--border-radius); /* Bordes redondeados */
+    overflow: auto;                   /* Scroll automático */
+    box-shadow: var(--shadow);        /* Sombra usando variable */
+    display: flex;
+    flex-direction: column;
+    flex: 1;                          /* Ocupa espacio disponible */
+    min-height: 0;                    /* Permite reducción */
+}
+
+/* Cabecera fija de la tabla */
+.table-header-fixed {
+    flex-shrink: 0;                   /* No se reduce */
+    min-width: max-content;           /* Ancho mínimo según contenido */
+}
+
+/* Cuerpo de tabla con scroll */
+.table-body-scroll {
+    flex: 1;                          /* Ocupa espacio disponible */
+    overflow-y: auto;                 /* Scroll vertical */
+    overflow-x: auto;                 /* Scroll horizontal */
+    min-width: max-content;           /* Ancho mínimo según contenido */
+}
+
+/* ==========================================================================
+   SISTEMA DE GRILLA Y FILAS DE TABLA
+   ========================================================================== */
+
+/**
+ * Sistema de grilla para filas de tabla
+ * 7 columnas con tamaños responsivos mínimos y máximos
+ */
+.table-row {
+    display: grid;
+    grid-template-columns: 
+        minmax(100px, 1fr)    /* Columna 1: ID/Referencia */
+        minmax(200px, 2fr)    /* Columna 2: Descripción/Nombre */
+        minmax(140px, 1fr)    /* Columna 3: Fecha */
+        minmax(110px, 1fr)    /* Columna 4: Estado */
+        minmax(180px, 1.5fr)  /* Columna 5: Responsable */
+        minmax(130px, 1fr)    /* Columna 6: Monto */
+        minmax(140px, 1fr);   /* Columna 7: Acciones */
+    gap: 0;                           /* Sin espacio entre celdas */
+    padding: 0;                       /* Sin padding */
+    align-items: stretch;             /* Estira elementos verticalmente */
+    min-width: max-content;           /* Ancho mínimo según contenido */
+}
+
+/**
+ * Estilos comunes para celdas de tabla y header
+ */
+.table-row > div,
+.header-row > div {
+    padding: 12px 10px;               /* Padding interno */
+    min-width: 60px;                  /* Ancho mínimo */
+    max-width: 400px;                 /* Ancho máximo */
+    overflow: hidden;                 /* Oculta overflow */
+    text-overflow: ellipsis;          /* Texto largo con puntos suspensivos */
+    white-space: nowrap;              /* Sin wrap de texto */
+    border-right: 1px solid #f0f0f0;  /* Borde derecho sutil */
+    display: flex;
+    align-items: center;              /* Centra contenido verticalmente */
+    position: relative;
+}
+
+/* ==========================================================================
+   CABECERA DE TABLA CON REDIMENSIONAMIENTO Y ARRASTRE
+   ========================================================================== */
+
+/**
+ * Fila de cabecera de tabla con funcionalidad de redimensionamiento
+ */
+.header-row {
+    background: #f8f9fa !important;   /* Fondo gris claro */
+    color: #212529 !important;        /* Texto oscuro */
+    font-weight: 600;                 /* Texto en negrita */
+    font-size: 13px;                  /* Tamaño de fuente reducido */
+    position: sticky;                 /* Posición fija al hacer scroll */
+    top: 0;                           /* Pegado al top */
+    z-index: 10;                      /* Por encima del contenido */
+    border-bottom: 2px solid #dee2e6; /* Borde inferior destacado */
+    display: grid;
+    grid-template-columns: 
+        minmax(100px, 1fr)
+        minmax(200px, 2fr)
+        minmax(140px, 1fr)
+        minmax(110px, 1fr)
+        minmax(180px, 1.5fr)
+        minmax(130px, 1fr)
+        minmax(140px, 1fr);
+    gap: 0;
+}
+
+.header-row > div {
+    cursor: col-resize;               /* Cursor indicando redimensionamiento */
+    user-select: none;                /* No permite selección de texto */
+    position: relative;
+    border-right: 2px solid #ced4da;  /* Borde derecho más destacado */
+    border-bottom: 2px solid #dee2e6; /* Borde inferior */
+}
+
+/**
+ * Área de redimensionamiento invisible en cabeceras
+ */
+.header-row > div::after {
+    content: '';
+    position: absolute;
+    right: -3px;                      /* Posicionado a la derecha */
+    top: 0;
+    bottom: 0;
+    width: 6px;                       /* Área clickeable */
+    background: transparent;          /* Invisible por defecto */
+    cursor: col-resize;               /* Cursor de redimensionamiento */
+    z-index: 20;                      /* Por encima del contenido */
+}
+
+.header-row > div:hover::after {
+    background: rgba(0, 123, 255, 0.3); /* Color azul al hover */
+}
+
+/**
+ * Estados de redimensionamiento y arrastre
+ */
+.header-row > div.resizing {
+    background: rgba(0, 123, 255, 0.1); /* Fondo azul claro durante redimensionamiento */
+    border-right: 2px solid #007bff;  /* Borde azul */
+}
+
+.header-row > div.dragging {
+    background: rgba(40, 167, 69, 0.1); /* Fondo verde claro durante arrastre */
+    border: 2px dashed #28a745;       /* Borde verde punteado */
+    opacity: 0.7;                     /* Transparencia */
+}
+
+.header-row > div.drop-zone {
+    background: rgba(255, 193, 7, 0.1); /* Fondo amarillo para zona de drop */
+    border: 2px dashed #ffc107;       /* Borde amarillo punteado */
+}
+
+/* ==========================================================================
+   CUERPO DE TABLA Y ESTADOS VISUALES
+   ========================================================================== */
+
+/**
+ * Filas del cuerpo de la tabla
+ */
+.table-body .table-row {
+    border-bottom: 1px solid var(--border-color); /* Línea separadora */
+    transition: var(--transition);    /* Transición suave */
+}
+
+.table-body .table-row:hover {
+    background: #f8f9fa;              /* Fondo gris claro al hover */
+}
+
+/**
+ * Badges de estado para diferentes situaciones
+ */
+.status-badge {
+    padding: 4px 8px;                 /* Padding compacto */
+    border-radius: 12px;              /* Bordes muy redondeados */
+    font-size: 11px;                  /* Texto pequeño */
+    font-weight: 600;                 /* Texto en negrita */
+    text-transform: uppercase;        /* Texto en mayúsculas */
+}
+
+.status-badge.pendiente {
+    background: #fff3cd;              /* Fondo amarillo claro */
+    color: #856404;                   /* Texto amarillo oscuro */
+}
+
+.status-badge.completado {
+    background: #d4edda;              /* Fondo verde claro */
+    color: #155724;                   /* Texto verde oscuro */
+}
+
+/* ==========================================================================
+   COLUMNA DE ACCIONES Y BOTONES
+   ========================================================================== */
+
+/**
+ * Contenedor de botones de acción
+ */
+.col-acciones {
+    display: flex;
+    gap: 6px;                         /* Espacio entre botones */
+}
+
+/**
+ * Botones de acción genéricos
+ */
+.btn-action {
+    padding: 4px 8px;                 /* Padding compacto */
+    font-size: 11px;                  /* Texto pequeño */
+    border-radius: 4px;               /* Bordes ligeramente redondeados */
+    border: none;                     /* Sin borde */
+    cursor: pointer;                  /* Cursor pointer */
+    transition: var(--transition);    /* Transición suave */
+}
+
+.btn-action.view {
+    background: var(--info-color);    /* Fondo azul */
+    color: white;                     /* Texto blanco */
+}
+
+.btn-action.edit {
+    background: var(--warning-color); /* Fondo amarillo */
+    color: black;                     /* Texto negro */
+}
+
+.btn-action.delete {
+    background: var(--danger-color);  /* Fondo rojo */
+    color: white;                     /* Texto blanco */
+}
+
+/* ==========================================================================
+   ESTADO VACÍO Y MENSAJES INFORMATIVOS
+   ========================================================================== */
+
+/**
+ * Estado vacío para tablas sin datos
+ */
+.empty-state {
+    grid-column: 1 / -1;              /* Ocupa todas las columnas */
+    text-align: center;               /* Texto centrado */
+    padding: 60px 20px;               /* Padding generoso */
+    color: var(--secondary-color);    /* Color secundario */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;          /* Centra verticalmente */
+    align-items: center;              /* Centra horizontalmente */
+    flex: 1;                          /* Ocupa espacio disponible */
+    min-height: 200px;                /* Altura mínima */
+}
+
+.empty-state div {
+    font-size: 18px;                  /* Título más grande */
+    margin-bottom: 10px;              /* Espacio inferior */
+}
+
+.empty-state p {
+    margin-bottom: 0;                 /* Sin margen inferior */
+    font-size: 14px;                  /* Texto normal */
+}
+
+/* ==========================================================================
+   BARRA INFERIOR UNIFICADA - ESTADÍSTICAS Y CONTROLES
+   ========================================================================== */
+
+/**
+ * Barra inferior con estadísticas y controles de paginación
+ */
+.barra-inferior-unificada {
+    display: flex;
+    justify-content: space-between;   /* Espacio entre secciones */
+    align-items: center;              /* Centra verticalmente */
+    background: #f8f9fa;              /* Fondo gris claro */
+    padding: 8px 20px;                /* Padding interno */
+    border-top: 1px solid #dee2e6;    /* Línea separadora superior */
+    margin-top: auto;                 /* Empuja al fondo del contenedor */
+    flex-wrap: wrap;                  /* Permite wrap en móviles */
+    gap: 15px;                        /* Espacio entre elementos */
+    position: absolute;               /* Posicionamiento absoluto */
+    bottom: 40px;                     /* Posicionado desde abajo */
+    left: 0;
+    right: 0;
+    z-index: 100;                     /* Por encima del contenido */
+    flex-shrink: 0;                   /* No se reduce */
+    width: 100%;                      /* Ancho completo */
+}
+
+/**
+ * Contenedor de estadísticas inferiores
+ */
+.estadisticas-inferiores {
+    display: flex;
+    gap: 20px;                        /* Espacio entre estadísticas */
+    align-items: center;
+    flex-wrap: wrap;                  /* Wrap en pantallas pequeñas */
+    flex: 1;                          /* Ocupa espacio disponible */
+}
+
+/**
+ * Items individuales de estadística
+ */
+.stat-item-inferior {
+    display: flex;
+    align-items: center;
+    gap: 5px;                         /* Espacio entre label y número */
+}
+
+.stat-label-inferior {
+    font-size: 12px;                  /* Texto pequeño */
+    color: #6c757d;                   /* Color gris */
+    font-weight: 600;                 /* Texto seminegrita */
+    white-space: nowrap;              /* Sin wrap */
+}
+
+.stat-numero-inferior {
+    font-size: 13px;                  /* Texto ligeramente mayor */
+    font-weight: 700;                 /* Texto en negrita */
+    color: var(--primary-color);      /* Color primario */
+    background: white;                /* Fondo blanco */
+    padding: 2px 6px;                 /* Padding compacto */
+    border-radius: 4px;               /* Bordes redondeados */
+    min-width: 20px;                  /* Ancho mínimo */
+    text-align: center;               /* Texto centrado */
+    border: 1px solid #dee2e6;        /* Borde sutil */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* Sombra muy sutil */
+}
+
+/**
+ * Contador de registros
+ */
+.contador-registros {
+    display: flex;
+    align-items: center;
+    gap: 8px;                         /* Espacio entre elementos */
+    color: #6c757d;                   /* Color gris */
+    font-size: 13px;                  /* Texto pequeño */
+    font-weight: 500;                 /* Peso medio */
+    justify-content: center;          /* Centra horizontalmente */
+    flex: 1;                          /* Ocupa espacio disponible */
+}
+
+/**
+ * Botones de icono genéricos
+ */
+.btn-icon {
+    background: white;                /* Fondo blanco */
+    border: 1px solid #dee2e6;        /* Borde sutil */
+    padding: 4px 8px;                 /* Padding compacto */
+    border-radius: var(--border-radius); /* Bordes redondeados */
+    cursor: pointer;                  /* Cursor pointer */
+    transition: var(--transition);    /* Transición suave */
+    color: #6c757d;                   /* Color gris */
+}
+
+.btn-icon:hover {
+    background: #e9ecef;              /* Fondo gris al hover */
+    transform: rotate(90deg);         /* Rotación animada */
+    border-color: #adb5bd;            /* Borde más oscuro */
+}
+
+/**
+ * Controles de paginación inferior
+ */
+.paginacion-inferior {
+    display: flex;
+    align-items: center;
+    gap: 10px;                        /* Espacio entre controles */
+    color: #6c757d;                   /* Color gris */
+    font-size: 13px;                  /* Texto pequeño */
+    justify-content: flex-end;        /* Alineado a la derecha */
+    flex: 1;                          /* Ocupa espacio disponible */
+}
+
+/* ==========================================================================
+   ESTADOS DE CARGA Y ANIMACIONES
+   ========================================================================== */
+
+/**
+ * Overlay de carga para operaciones asíncronas
+ */
+.loading-overlay {
+    display: none;                    /* Oculto por defecto */
+    position: fixed;                  /* Posición fija */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9); /* Fondo blanco semitransparente */
+    z-index: 1000;                    /* Por encima de todo */
+    justify-content: center;          /* Centra horizontalmente */
+    align-items: center;              /* Centra verticalmente */
+    flex-direction: column;           /* Disposición vertical */
+}
+
+/**
+ * Spinner de carga animado
+ */
+.loading-spinner {
+    border: 4px solid #f3f3f3;        /* Borde exterior gris */
+    border-top: 4px solid var(--primary-color); /* Borde superior color primario */
+    border-radius: 50%;               /* Forma circular */
+    width: 50px;                      /* Tamaño fijo */
+    height: 50px;                     /* Tamaño fijo */
+    animation: spin 1s linear infinite; /* Animación infinita */
+}
+
+/**
+ * Animación keyframes para el spinner
+ */
+@keyframes spin {
+    0% { transform: rotate(0deg); }   /* Inicio: 0 grados */
+    100% { transform: rotate(360deg); } /* Fin: 360 grados (rotación completa) */
+}
+
+/* ==========================================================================
+   REGLAS RESPONSIVE - DISEÑO ADAPTATIVO
+   ========================================================================== */
+
+/**
+ * Tablet: 1024px y menos
+ */
+@media (max-width: 1024px) {
+    .table-row,
+    .header-row {
+        /* Columnas más compactas para tablet */
+        grid-template-columns: 
+            minmax(90px, 1fr) 
+            minmax(150px, 2fr) 
+            minmax(120px, 1fr) 
+            minmax(100px, 1fr) 
+            minmax(160px, 1.5fr) 
+            minmax(120px, 1fr) 
+            minmax(130px, 1fr);
+    }
+}
+
+/**
+ * Móvil: 768px y menos
+ */
+@media (max-width: 768px) {
+    .header-row > div { 
+        cursor: default;               /* Cursor normal en móvil */
+    }
+    .header-row > div::after { 
+        display: none;                 /* Oculta redimensionamiento en móvil */
+    }
+    .barra-superior-custodias { 
+        flex-direction: column;        /* Disposición vertical */
+        gap: 12px; 
+        padding: 12px 15px; 
+    }
+    .barra-izquierda, .barra-derecha { 
+        width: 100%; 
+        justify-content: center;       /* Centra contenido */
+    }
+    .search-box { 
+        min-width: 250px;              /* Ancho reducido */
+    }
+    .filtro-fechas { 
+        min-width: 200px;              /* Ancho reducido */
+    }
+    .main-content { 
+        padding: 0 15px; 
+        padding-bottom: 100px;         /* Más espacio para barra inferior */
+    }
+    .barra-inferior-unificada { 
+        position: fixed;               /* Fijo en móvil */
+        bottom: 40px; 
+        padding: 8px 15px; 
+        gap: 12px; 
+    }
+    .estadisticas-inferiores { 
+        gap: 15px; 
+        width: 100%; 
+        justify-content: space-between; /* Distribuye espacio */
+        order: 1;                      /* Primera posición */
+        flex: none;                    /* Tamaño fijo */
+    }
+    .stat-item-inferior { 
+        flex: 1; 
+        min-width: 110px; 
+        justify-content: center;       /* Centra contenido */
+    }
+    .contador-registros { 
+        width: 100%; 
+        justify-content: space-between; /* Distribuye espacio */
+        order: 2;                      /* Segunda posición */
+        flex: none; 
+    }
+    .paginacion-inferior { 
+        width: 100%; 
+        justify-content: center;       /* Centra controles */
+        order: 3;                      /* Tercera posición */
+        flex: none; 
+    }
+    .table-row { 
+        grid-template-columns: 1fr;    /* Una columna en móvil */
+        gap: 8px; 
+        text-align: center;            /* Texto centrado */
+        padding: 10px 12px; 
+    }
+    .col-acciones { 
+        justify-content: center;       /* Centra botones */
+    }
+    .empty-state { 
+        padding: 40px 15px; 
+        min-height: 150px;             /* Altura reducida */
+    }
+}
+
+/**
+ * Móvil pequeño: 480px y menos
+ */
+@media (max-width: 480px) {
+    .barra-superior-custodias { 
+        padding: 8px 12px; 
+    }
+    .search-box { 
+        min-width: 200px;              /* Ancho mínimo reducido */
+    }
+    .filtro-fechas { 
+        flex-direction: column;        /* Disposición vertical */
+        gap: 5px; 
+        padding: 6px; 
+    }
+    .filtro-fechas input { 
+        width: 100%;                   /* Inputs a ancho completo */
+    }
+    .btn { 
+        padding: 6px 10px; 
+        font-size: 12px;               /* Texto más pequeño */
+    }
+    .barra-inferior-unificada { 
+        bottom: 35px; 
+        padding: 6px 12px; 
+    }
+    .estadisticas-inferiores { 
+        flex-direction: column;        /* Disposición vertical */
+        gap: 6px; 
+        align-items: flex-start;       /* Alineado a la izquierda */
+    }
+    .stat-item-inferior { 
+        width: 100%; 
+        justify-content: space-between; /* Espacio entre label y número */
+    }
+    .stat-label-inferior { 
+        font-size: 11px;               /* Texto más pequeño */
+    }
+    .stat-numero-inferior { 
+        font-size: 12px; 
+        padding: 1px 4px;              /* Padding reducido */
+    }
+    .contador-registros { 
+        font-size: 12px;               /* Texto más pequeño */
+    }
+    .paginacion-inferior { 
+        font-size: 12px;               /* Texto más pequeño */
+    }
+    .empty-state { 
+        padding: 30px 10px; 
+        min-height: 120px;             /* Altura mínima reducida */
+    }
+}
+
+/* ==================================================================
+   MOVED FROM: modules/logistica/expedientes-carga/custodias/custodias.css
+   NOTE: variables and global resets were intentionally removed —
+   variables are provided by `public/style.css`. This block contains
+   module-specific layout and table rules moved here for global reuse.
+   ================================================================== */
+
+/* ================================
+   CONTENEDORES PRINCIPALES - CORREGIDO
+   ================================ */
+
+/* Contenedores principales del módulo y formulario */
+.module-container,
+.form-container {
+    height: 100vh; /* Altura exacta de viewport */
+    background: white; /* Fondo blanco */
+    margin: 0 5px; /* a la derecha e izquierda */
+    box-shadow: none; /* Sin sombra */
+    display: flex; /* Flexbox para el layout */
+    flex-direction: column; /* Dirección columna */
+    overflow: hidden; /* Sin overflow */
+    position: relative; /* Contexto de posicionamiento */
+    border-left: 0px solid var(--primary-color); /* Indicador visual de pestaña activa */
+}
+
+/* ================================
+   HEADERS - COMPLETAMENTE OCULTOS
+   ================================ */
+
+/* Ocultar completamente los headers duplicados */
+.module-header,
+.form-header {
+    display: none !important;
+}
+
+.header-content h1,
+.header-content p {
+    display: none; /* Ocultar títulos duplicados */
+}
+
+/* ================================
+   BARRA SUPERIOR COMPACTA - 2 SECCIONES
+   ================================ */
+
+.barra-superior-custodias {
+    background: var(--light-color); /* Fondo gris muy claro */
+    padding: 8px 8px; /* Menos padding lateral */
+    border-bottom: 1px solid var(--border-color); /* Línea separadora */
+    display: flex; /* Layout flexible */
+    justify-content: space-between; /* Dos secciones: izquierda y derecha */
+    align-items: center; /* Centrado vertical */
+    flex-wrap: wrap; /* Responsive: envolver en móviles */
+    gap: 15px; /* Espacio entre secciones */
+    flex-shrink: 0; /* No se reduce */
+}
+
+.barra-izquierda {
+    display: flex; /* Botones en fila */
+    align-items: center; /* Centrado vertical */
+    gap: 10px; /* Espacio entre botones */
+    margin-left: 20px; /* Mover 20px a la izquierda */
+}
+
+.barra-derecha {
+    display: flex; /* Elementos en fila */
+    align-items: center; /* Centrado vertical */
+    gap: 10px; /* Espacio entre elementos */
+}
+
+/* ================================
+   BUSCADOR Y FILTROS COMPACTOS
+   ================================ */
+
+.search-box {
+    display: flex; /* Layout flexible */
+    background: white; /* Fondo blanco */
+    border: 2px solid var(--border-color); /* Borde gris */
+    border-radius: var(--border-radius); /* Bordes redondeados */
+    overflow: hidden; /* Oculta desbordamiento */
+    min-width: 300px; /* Ancho mínimo adecuado */
+}
+
+.search-box input {
+    border: none; /* Sin borde interno */
+    padding: 8px 12px; /* Espaciado interno compacto */
+    flex: 1; /* Ocupar todo el espacio disponible */
+    outline: none; /* Sin outline */
+    font-size: 14px; /* Tamaño de fuente */
+}
+
+.filtro-fechas {
+    display: flex; /* Layout flexible para dos inputs */
+    align-items: center; /* Centrado vertical */
+    gap: 8px; /* Espacio entre inputs */
+    background: white; /* Fondo blanco */
+    border: 2px solid var(--border-color); /* Borde gris */
+    border-radius: var(--border-radius); /* Bordes redondeados */
+    padding: 0 8px; /* Espaciado interno lateral */
+}
+
+.filtro-fechas input {
+    border: none; /* Sin borde interno */
+    padding: 8px 0; /* Espaciado interno vertical */
+    outline: none; /* Sin outline */
+    font-size: 13px; /* Tamaño de fuente pequeño */
+    width: 110px; /* Ancho fijo para consistencia */
+}
+
+.separador-fechas {
+    color: var(--secondary-color); /* Color gris para el separador */
+    font-size: 12px; /* Tamaño pequeño */
+}
+
+/* ================================
+   CONTENEDOR PRINCIPAL DE CONTENIDO - CORREGIDO
+   ================================ */
+
+.main-content {
+    flex: 1; /* Ocupa todo el espacio disponible */
+    display: flex; /* Flexbox para layout */
+    flex-direction: column; /* Dirección columna */
+    overflow: hidden; /* Sin overflow */
+    padding: 0 15px; /* Menos padding para alineación con menús */
+    min-height: 0; /* Permite reducción */
+    padding-bottom: 80px; /* Espacio para la barra inferior absoluta */
+}
+
+/* ================================
+   TABLA CON REDIMENSIONAMIENTO Y REORDENAMIENTO REAL
+   ================================ */
+
+.table-container {
+    flex: 1; /* Ocupa todo el espacio disponible */
+    display: flex; /* Flexbox */
+    flex-direction: column; /* Dirección columna */
+    overflow: hidden; /* Sin overflow */
+    padding: 0; /* Sin padding */
+    min-height: 0; /* Permite reducción */
+    margin-top: 0; /* Eliminar margen superior del título eliminado */
+}
+
+.table-header {
+    display: none !important; /* Ocultar el título eliminado */
+    justify-content: space-between; /* Espacio entre título y acciones */
+    align-items: center; /* Centrado vertical */
+    margin-bottom: 15px; /* Espacio inferior */
+    padding: 15px 0; /* Espaciado vertical */
+    border-bottom: 2px solid var(--border-color); /* Borde inferior */
+    flex-shrink: 0; /* No se reduce */
+}
+
+.custodias-table {
+    background: white; /* Fondo blanco */
+    border-radius: var(--border-radius); /* Bordes redondeados */
+    overflow: auto; /* Permitir scroll horizontal */
+    box-shadow: var(--shadow); /* Sombra sutil */
+    display: flex; /* Flexbox */
+    flex-direction: column; /* Dirección columna */
+    flex: 1; /* Ocupa todo el espacio */
+    min-height: 0; /* Permite reducción */
+}
+
+.table-header-fixed {
+    flex-shrink: 0;
+    min-width: max-content; /* 🔥 Forzar ancho mínimo */
+}
+
+.table-body-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: auto; /* 🔥 CAMBIO: Scroll horizontal también */
+    min-width: max-content;
+}
+
+.table-row {
+    display: grid;
+    grid-template-columns: minmax(100px, 1fr) minmax(200px, 2fr) minmax(140px, 1fr) minmax(110px, 1fr) minmax(180px, 1.5fr) minmax(130px, 1fr) minmax(140px, 1fr);
+    gap: 0;
+    padding: 0; /* 🔥 CAMBIO: Sin padding en la fila */
+    align-items: stretch;
+    min-width: max-content;
+}
+
+.table-row > div,
+.header-row > div {
+    padding: 12px 10px;
+    min-width: 60px;
+    max-width: 400px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border-right: 1px solid #f0f0f0; /* 🔥 Divisor sutil entre celdas */
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.header-row {
+    background: #f8f9fa !important; /* Gris institucional claro */
+    color: #212529 !important; /* Texto negro */
+    font-weight: 600; /* Negrita */
+    font-size: 13px; /* Tamaño de fuente */
+    position: sticky; /* Cabecera fija */
+    top: 0; /* Pegada arriba */
+    z-index: 10; /* Por encima del contenido */
+    border-bottom: 2px solid #dee2e6;
+    display: grid;
+    grid-template-columns: minmax(100px, 1fr) minmax(200px, 2fr) minmax(140px, 1fr) minmax(110px, 1fr) minmax(180px, 1.5fr) minmax(130px, 1fr) minmax(140px, 1fr);
+    gap: 0;
+}
+
+/* Remaining rows and responsive rules moved from custodias.css */
+
+.header-row > div {
+    cursor: col-resize;
+    user-select: none;
+    position: relative;
+    border-right: 2px solid #ced4da;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.header-row > div::after {
+    content: '';
+    position: absolute;
+    right: -3px;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: transparent;
+    cursor: col-resize;
+    z-index: 20;
+}
+
+.header-row > div:hover::after {
+    background: rgba(0, 123, 255, 0.3);
+}
+
+.header-row > div.resizing {
+    background: rgba(0, 123, 255, 0.1);
+    border-right: 2px solid #007bff;
+}
+
+.header-row > div.dragging {
+    background: rgba(40, 167, 69, 0.1);
+    border: 2px dashed #28a745;
+    opacity: 0.7;
+}
+
+.header-row > div.drop-zone {
+    background: rgba(255, 193, 7, 0.1);
+    border: 2px dashed #ffc107;
+}
+
+.table-body .table-row {
+    border-bottom: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+.table-body .table-row:hover {
+    background: #f8f9fa;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-badge.pendiente {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-badge.completado {
+    background: #d4edda;
+    color: #155724;
+}
+
+.col-acciones { display: flex; gap: 6px; }
+.btn-action { padding: 4px 8px; font-size: 11px; border-radius: 4px; border: none; cursor: pointer; transition: var(--transition); }
+.btn-action.view { background: var(--info-color); color: white; }
+.btn-action.edit { background: var(--warning-color); color: black; }
+.btn-action.delete { background: var(--danger-color); color: white; }
+
+.empty-state { grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--secondary-color); display: flex; flex-direction: column; justify-content: center; align-items: center; flex: 1; min-height: 200px; }
+.empty-state div { font-size: 18px; margin-bottom: 10px; }
+.empty-state p { margin-bottom: 0; font-size: 14px; }
+
+.barra-inferior-unificada { display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 8px 20px; border-top: 1px solid #dee2e6; margin-top: auto; flex-wrap: wrap; gap: 15px; position: absolute; bottom: 40px; left: 0; right: 0; z-index: 100; flex-shrink: 0; width: 100%; }
+.estadisticas-inferiores { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; flex: 1; }
+.stat-item-inferior { display: flex; align-items: center; gap: 5px; }
+.stat-label-inferior { font-size: 12px; color: #6c757d; font-weight: 600; white-space: nowrap; }
+.stat-numero-inferior { font-size: 13px; font-weight: 700; color: var(--primary-color); background: white; padding: 2px 6px; border-radius: 4px; min-width: 20px; text-align: center; border: 1px solid #dee2e6; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.contador-registros { display: flex; align-items: center; gap: 8px; color: #6c757d; font-size: 13px; font-weight: 500; justify-content: center; flex: 1; }
+.btn-icon { background: white; border: 1px solid #dee2e6; padding: 4px 8px; border-radius: var(--border-radius); cursor: pointer; transition: var(--transition); color: #6c757d; }
+.btn-icon:hover { background: #e9ecef; transform: rotate(90deg); border-color: #adb5bd; }
+.paginacion-inferior { display: flex; align-items: center; gap: 10px; color: #6c757d; font-size: 13px; justify-content: flex-end; flex: 1; }
+
+/* Responsive adjustments moved from custodias.css */
+@media (max-width: 1024px) {
+    .table-row, .header-row { grid-template-columns: minmax(90px,1fr) minmax(150px,2fr) minmax(120px,1fr) minmax(100px,1fr) minmax(160px,1.5fr) minmax(120px,1fr) minmax(130px,1fr); }
+}
+
+@media (max-width: 768px) {
+    .header-row > div { cursor: default; }
+    .header-row > div::after { display: none; }
+    .barra-superior-custodias { flex-direction: column; gap: 12px; padding: 12px 15px; }
+    .barra-izquierda, .barra-derecha { width: 100%; justify-content: center; }
+    .search-box { min-width: 250px; }
+    .filtro-fechas { min-width: 200px; }
+    .main-content { padding: 0 15px; padding-bottom: 100px; }
+    .barra-inferior-unificada { position: fixed; bottom: 40px; padding: 8px 15px; gap: 12px; }
+    .estadisticas-inferiores { gap: 15px; width: 100%; justify-content: space-between; order: 1; flex: none; }
+    .stat-item-inferior { flex: 1; min-width: 110px; justify-content: center; }
+    .contador-registros { width: 100%; justify-content: space-between; order: 2; flex: none; }
+    .paginacion-inferior { width: 100%; justify-content: center; order: 3; flex: none; }
+    .table-row { grid-template-columns: 1fr; gap: 8px; text-align: center; padding: 10px 12px; }
+    .col-acciones { justify-content: center; }
+    .empty-state { padding: 40px 15px; min-height: 150px; }
+}
+
+@media (max-width: 480px) {
+    .barra-superior-custodias { padding: 8px 12px; }
+    .search-box { min-width: 200px; }
+    .filtro-fechas { flex-direction: column; gap: 5px; padding: 6px; }
+    .filtro-fechas input { width: 100%; }
+    .btn { padding: 6px 10px; font-size: 12px; }
+    .barra-inferior-unificada { bottom: 35px; padding: 6px 12px; }
+    .estadisticas-inferiores { flex-direction: column; gap: 6px; align-items: flex-start; }
+    .stat-item-inferior { width: 100%; justify-content: space-between; }
+    .stat-label-inferior { font-size: 11px; }
+    .stat-numero-inferior { font-size: 12px; padding: 1px 4px; }
+    .contador-registros { font-size: 12px; }
+    .paginacion-inferior { font-size: 12px; }
+    .empty-state { padding: 30px 10px; min-height: 120px; }
+    .empty-state div { font-size: 16px; }
+    .empty-state p { font-size: 13px; }
+}
+
+/* End of moved custodias module rules */

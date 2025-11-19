@@ -20,7 +20,7 @@ app.use('/menus', menuRoutes);
 
 // Redirigir raíz al login
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'Login.html'));
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
 const PORT = 3000;

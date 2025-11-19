@@ -39,6 +39,28 @@
     --transicion-base: 0.2s ease;        /* Transición estándar para animaciones */
 }
 
+/* ================================
+   Alias para compatibilidad con módulos
+   Algunos módulos (antiguos) usan variables con nombres en inglés
+   Las siguientes alias mapean esas variables a las definidas arriba
+   ================================ */
+:root {
+    --primary-color: var(--color-primario);
+    --primary-dark: var(--color-primario-oscuro);
+    --primary-light: var(--color-primario);
+    --secondary-color: var(--color-secundario);
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #17a2b8;
+    --light-color: var(--color-blanco);
+    --dark-color: var(--color-texto);
+    --border-color: var(--color-borde);
+    --shadow: var(--sombra-suave);
+    --border-radius: var(--radio-borde);
+    --transition: var(--transicion-base);
+}
+
 /* ================================ */
 /* 2. ESTILOS BASE                  */
 /* ================================ */
@@ -130,6 +152,55 @@ header {
     width: 18px;                         /* Tamaño estándar para iconos de botones */
     height: 18px;                        /* Tamaño estándar para iconos de botones */
     filter: brightness(0) invert(1);     /* Convierte iconos a blanco (invertir colores) */
+}
+
+/* ================================ */
+/* 5. BOTONES DE MÓDULO              */
+/* ================================ */
+
+/* 5.1 BOTONES (CENTRALIZADO) */
+/* Clase global para botones para mantener consistencia entre módulos y componentes. */
+.btn {
+    display: inline-flex;               /* Permite centrar contenido y usar gap */
+    align-items: center;
+    justify-content: center;
+    gap: 8px;                           /* Separación entre icono y texto */
+    padding: 10px 16px;                 /* Alto y ancho de relleno */
+    font-size: 14px;                    /* Tamaño de texto legible */
+    min-width: 140px;                   /* Ancho mínimo para consistencia */
+    border-radius: var(--radio-borde);  /* Radio de borde homologado */
+    box-shadow: var(--sombra-suave);    /* Sombra sutil por defecto */
+    transition: var(--transition);      /* Transición homogénea */
+    cursor: pointer;
+}
+
+/* Variante primaria (acción principal) */
+.btn.btn-primary {
+    background: var(--color-primario);
+    color: var(--color-blanco);
+    border: 1px solid var(--color-primario);
+}
+
+/* Variante secundaria (fondo claro, borde) */
+.btn.btn-secondary {
+    background: var(--color-blanco);
+    color: var(--color-texto);
+    border: 1px solid var(--color-borde);
+}
+
+/* Hover states */
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-media);
+}
+
+/* Responsive: botones más compactos en pantallas estrechas */
+@media (max-width: 480px) {
+    .btn {
+        padding: 8px 10px;
+        font-size: 13px;
+        min-width: 110px;
+    }
 }
 
 /* ================================ */
@@ -997,3 +1068,28 @@ footer {
     height: auto;                       /* Altura automática en móviles */
   }
 }
+
+/* ================================ */
+/* FIX: sincronizar altura de pestañas con la sidebar
+   Queremos que la ventana de pestañas tenga la misma altura
+   calculada que la `sidebar` (calc(100vh - 100px)).
+   Este bloque sobrescribe reglas anteriores y asegura que
+   el contenido interno tenga scroll cuando sea necesario. */
+.sistema-pestañas.visible {
+    display: flex !important;
+    flex-direction: column !important;
+    height: calc(100vh - 100px) !important; /* igual que .sidebar */
+    max-height: calc(100vh - 100px) !important;
+    overflow: auto !important;               /* scroll si el contenido excede */
+    flex: 0 0 auto !important;
+    min-height: 0 !important;
+}
+
+.area-contenido-pestañas {
+    height: calc(100vh - 100px) !important;
+    max-height: calc(100vh - 100px) !important;
+    overflow: auto !important;               /* scroll interno para iframes/contenido */
+    flex: 1 1 auto !important;
+}
+
+/* Fin del fix de pestañas (sincronizado con sidebar) */

@@ -16,7 +16,7 @@
 .form-container {
     height: 100vh;                    /* Ocupa toda la altura de la ventana */
     background: white;                /* Fondo blanco para contraste */
-    margin: 0 5px;                    /* Márgenes laterales mínimos */
+    margin: 0;                        /* Sin márgenes */
     box-shadow: none;                 /* Sin sombra por defecto */
     display: flex;                    /* Layout flexbox */
     flex-direction: column;           /* Dirección vertical */
@@ -133,9 +133,8 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;                 /* Oculta overflow */
-    padding: 0 15px;                  /* Padding lateral */
+    padding: 0;                       /* Sin padding */
     min-height: 0;                    /* Permite reducción */
-    padding-bottom: 80px;             /* Espacio para barra inferior */
 }
 
 /**

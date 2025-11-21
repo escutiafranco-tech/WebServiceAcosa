@@ -14,7 +14,7 @@
  */
 .module-container,
 .form-container {
-    height: 100vh;                    /* Ocupa toda la altura de la ventana */
+    height: 100%;                     /* Ocupa toda la altura del contenedor padre (iframe) */
     background: white;                /* Fondo blanco para contraste */
     margin: 0;                        /* Sin márgenes */
     box-shadow: none;                 /* Sin sombra por defecto */
@@ -54,7 +54,7 @@
     align-items: center;              /* Centra verticalmente */
     flex-wrap: wrap;                  /* Permite wrap en pantallas pequeñas */
     gap: 10px;                        /* Espacio entre elementos */
-    margin-left: 20px;                /* Margen izquierdo */
+    margin-left: 0;                   /* Sin margen izquierdo */
 }
 
 /* Contenedores izquierdo y derecho de la barra */
@@ -62,7 +62,7 @@
     display: flex;
     align-items: center;
     gap: 10px;                        /* Espacio entre elementos */
-    margin-left: 20px;                /* Margen izquierdo */
+    margin-left: 0;                   /* Sin margen izquierdo */
 }
 
 .barra-derecha {

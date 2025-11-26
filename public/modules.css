@@ -1,22 +1,13 @@
-/* ==========================================================================
-   PUBLIC/MODULES.CSS
-   Estilos compartidos para módulos del sistema (tablas, formularios, barras, botones)
-   Variables globales tomadas de `public/style.css`
-   ========================================================================== */
-
-/* ==========================================================================
+﻿/* ==========================================================================
    CONTENEDORES PRINCIPALES Y ESTRUCTURA DEL MÓDULO
    ========================================================================== */
 
-/**
- * Contenedores principales para módulos y formularios
- * Diseño flexbox para layout completo de pantalla
- */
+/*** Contenedores principales para módulos y formularios, Diseño flexbox para layout completo de pantalla*/
 .module-container,
 .form-container {
     height: 100%;                     /* Altura 100% del iframe contenedor */
     max-height: 100%;                 /* Altura máxima 100% */
-    background: white;                /* Fondo blanco para contraste */
+    background: white;              /* Fondo blanco para contraste */
     margin: 0;                        /* Sin márgenes */
     padding: 0;                       /* Sin padding */
     box-shadow: none;                 /* Sin sombra por defecto */
@@ -24,12 +15,11 @@
     flex-direction: column;           /* Dirección vertical */
     overflow: hidden;                 /* Oculta overflow para forzar contenido interno */
     position: relative;               /* Posicionamiento relativo para elementos hijos */
-    border-left: 0;                   /* Sin borde */
+    -left: 0;                         /* Sin borde */
+    justify-content: space-between;   /* Empuja barra inferior al fondo */
 }
 
-/**
- * Ocultar headers duplicados en módulos para evitar redundancia visual
- */
+/** Ocultar headers duplicados en módulos para evitar redundancia visual */
 .module-header,
 .form-header {
     display: none !important;         /* Oculta completamente */
@@ -44,10 +34,8 @@
    BARRA SUPERIOR - NAVEGACIÓN Y CONTROLES
    ========================================================================== */
 
-/**
- * Barra superior compacta para controles de módulo
- */
-.barra-superior-custodias {
+/*** Barra superior compacta para controles de módulo*/
+.barra-superior-modulo {
     background: var(--light-color);   /* Fondo claro usando variable CSS */
     padding: 0;                       /* Sin padding */
     margin: 0;                        /* Sin margen */
@@ -62,17 +50,17 @@
 
 /* Contenedores izquierdo y derecho de la barra */
 .barra-izquierda {
-    display: flex;
-    align-items: center;
-    gap: 0;                           /* Sin gap */
+    display: flex;                    /* Botones en fila */
+    align-items: center;              /* Centrado vertical */
+    gap: var(--spacing-small);        /* Espacio entre botones (5px) */
     margin: 0;                        /* Sin margen */
-    padding: 0;                       /* Sin padding */
+    padding: 0 0 0 8px;               /* Padding izquierdo para separar del borde */
 }
 
 .barra-derecha {
     display: flex;
     align-items: center;
-    gap: 0;                           /* Sin gap */
+    gap: var(--spacing-small);        /* Espacio entre elementos (5px) */
     margin: 0;                        /* Sin margen */
     padding: 0;                       /* Sin padding */
 }
@@ -81,13 +69,12 @@
    COMPONENTES DE BÚSQUEDA Y FILTROS
    ========================================================================== */
 
-/**
- * Caja de búsqueda con input integrado
- */
+   /*** Caja de búsqueda con input integrado */
+
 .search-box {
     display: flex;
     background: white;                /* Fondo blanco */
-    border: 2px solid var(--border-color); /* Borde definido */
+    border: 1.5px solid var(--border-color); /* Borde definido */
     border-radius: var(--border-radius); /* Bordes redondeados usando variable */
     overflow: hidden;                 /* Oculta overflow interno */
     min-width: 300px;                 /* Ancho mínimo */
@@ -101,17 +88,16 @@
     font-size: 14px;                  /* Tamaño de fuente */
 }
 
-/**
- * Filtro de fechas con rango
- */
+/** Filtro de fechas con rango*/
+
 .filtro-fechas {
     display: flex;
     align-items: center;
     gap: 8px;                         /* Espacio entre inputs */
     background: white;                /* Fondo blanco */
-    border: 2px solid var(--border-color); /* Borde definido */
+    border: 1.5px solid var(--border-color); /* Borde definido */
     border-radius: var(--border-radius); /* Bordes redondeados */
-    padding: 0 8px;                   /* Padding horizontal */
+    padding: 2px 8px;                   /* Padding horizontal */
 }
 
 .filtro-fechas input {
@@ -309,13 +295,13 @@
 
 .header-row > div.dragging {
     background: rgba(40, 167, 69, 0.1); /* Fondo verde claro durante arrastre */
-    border: 2px dashed #28a745;       /* Borde verde punteado */
+    border: 1.5px dashed #28a745;       /* Borde verde punteado */
     opacity: 0.7;                     /* Transparencia */
 }
 
 .header-row > div.drop-zone {
     background: rgba(255, 193, 7, 0.1); /* Fondo amarillo para zona de drop */
-    border: 2px dashed #ffc107;       /* Borde amarillo punteado */
+    border: 1.5px dashed #ffc107;       /* Borde amarillo punteado */
 }
 
 /* ==========================================================================
@@ -440,8 +426,8 @@
     margin-top: auto;                 /* Empuja al fondo del contenedor */
     flex-wrap: wrap;                  /* Permite wrap en móviles */
     gap: 15px;                        /* Espacio entre elementos */
-    position: relative;               /* Posicionamiento relativo */
-    bottom: 0;                        /* En el fondo */
+    position: absolute;               /* Absolute para posicionar en el fondo */
+    bottom: 0;                        /* SIN espacio - pegada al fondo */
     left: 0;
     right: 0;
     z-index: 100;                     /* Por encima del contenido */
@@ -577,6 +563,98 @@
 }
 
 /* ==========================================================================
+   INPUTS Y FORMULARIOS EN TABLAS
+   ========================================================================== */
+
+.table-input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    background: white;
+}
+
+.table-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(47, 49, 88, 0.1);
+}
+
+.table-input:hover:not([readonly]) {
+    border-color: #adb5bd;
+}
+
+.table-input[readonly] {
+    background: var(--background-color);
+    color: #6c757d;
+    cursor: not-allowed;
+    border-color: #dee2e6;
+}
+
+.table-input::placeholder {
+    color: #adb5bd;
+    font-style: italic;
+}
+
+/* Select específico en tablas */
+select.table-input {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+}
+
+/* Textarea en tablas */
+textarea.table-input {
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* ==========================================================================
+   LOADING OVERLAY Y SPINNER
+   ========================================================================== */
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(4px);
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-overlay p {
+    color: white;
+    margin-top: 16px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* ==========================================================================
    REGLAS RESPONSIVE - DISEÑO ADAPTATIVO
    ========================================================================== */
 
@@ -608,7 +686,7 @@
     .header-row > div::after { 
         display: none;                 /* Oculta redimensionamiento en móvil */
     }
-    .barra-superior-custodias { 
+    .barra-superior-modulo { 
         flex-direction: column;        /* Disposición vertical */
         gap: 12px; 
         padding: 12px 15px; 
@@ -676,7 +754,7 @@
  * Móvil pequeño: 480px y menos
  */
 @media (max-width: 480px) {
-    .barra-superior-custodias { 
+    .barra-superior-modulo { 
         padding: 8px 12px; 
     }
     .search-box { 
@@ -767,107 +845,9 @@
 }
 
 /* ================================
-   BARRA SUPERIOR COMPACTA - 2 SECCIONES
+   SECCIÓN DUPLICADA ELIMINADA
+   Las definiciones están en líneas 38-200
    ================================ */
-
-.barra-superior-custodias {
-    background: var(--light-color); /* Fondo gris muy claro */
-    padding: 0; /* Sin padding */
-    border-bottom: 1px solid var(--border-color); /* Línea separadora */
-    display: flex; /* Layout flexible */
-    justify-content: space-between; /* Dos secciones: izquierda y derecha */
-    align-items: center; /* Centrado vertical */
-    flex-wrap: wrap; /* Responsive: envolver en móviles */
-    gap: 0; /* Sin gap */
-    flex-shrink: 0; /* No se reduce */
-}
-
-.barra-izquierda {
-    display: flex; /* Botones en fila */
-    align-items: center; /* Centrado vertical */
-    gap: 0; /* Sin gap */
-    margin: 0; /* Sin margen */
-}
-
-.barra-derecha {
-    display: flex; /* Elementos en fila */
-    align-items: center; /* Centrado vertical */
-    gap: 0; /* Sin gap */
-}
-
-/* ================================
-   BUSCADOR Y FILTROS COMPACTOS
-   ================================ */
-
-.search-box {
-    display: flex; /* Layout flexible */
-    background: white; /* Fondo blanco */
-    border: 2px solid var(--border-color); /* Borde gris */
-    border-radius: var(--border-radius); /* Bordes redondeados */
-    overflow: hidden; /* Oculta desbordamiento */
-    min-width: 300px; /* Ancho mínimo adecuado */
-}
-
-.search-box input {
-    border: none; /* Sin borde interno */
-    padding: 8px 12px; /* Espaciado interno compacto */
-    flex: 1; /* Ocupar todo el espacio disponible */
-    outline: none; /* Sin outline */
-    font-size: 14px; /* Tamaño de fuente */
-}
-
-.filtro-fechas {
-    display: flex; /* Layout flexible para dos inputs */
-    align-items: center; /* Centrado vertical */
-    gap: 8px; /* Espacio entre inputs */
-    background: white; /* Fondo blanco */
-    border: 2px solid var(--border-color); /* Borde gris */
-    border-radius: var(--border-radius); /* Bordes redondeados */
-    padding: 0 8px; /* Espaciado interno lateral */
-}
-
-.filtro-fechas input {
-    border: none; /* Sin borde interno */
-    padding: 8px 0; /* Espaciado interno vertical */
-    outline: none; /* Sin outline */
-    font-size: 13px; /* Tamaño de fuente pequeño */
-    width: 110px; /* Ancho fijo para consistencia */
-}
-
-.separador-fechas {
-    color: var(--secondary-color); /* Color gris para el separador */
-    font-size: 12px; /* Tamaño pequeño */
-}
-
-/* ================================
-   CONTENEDOR PRINCIPAL DE CONTENIDO - CORREGIDO
-   ================================ */
-
-/* NOTA: Definición de .main-content movida a línea 131 para evitar duplicidad */
-
-/* ================================
-   TABLA CON REDIMENSIONAMIENTO Y REORDENAMIENTO REAL
-   ================================ */
-
-.table-container {
-    flex: 1; /* Ocupa todo el espacio disponible */
-    display: flex; /* Flexbox */
-    flex-direction: column; /* Dirección columna */
-    overflow: hidden; /* Sin overflow */
-    padding: 0; /* Sin padding */
-    min-height: 0; /* Permite reducción */
-    margin-top: 0; /* Eliminar margen superior del título eliminado */
-}
-
-.table-header {
-    display: none !important; /* Ocultar el título eliminado */
-    justify-content: space-between; /* Espacio entre título y acciones */
-    align-items: center; /* Centrado vertical */
-    margin-bottom: 15px; /* Espacio inferior */
-    padding: 15px 0; /* Espaciado vertical */
-    border-bottom: 2px solid var(--border-color); /* Borde inferior */
-    flex-shrink: 0; /* No se reduce */
-}
 
 .custodias-table {
     background: white; /* Fondo blanco */
@@ -964,13 +944,13 @@
 
 .header-row > div.dragging {
     background: rgba(40, 167, 69, 0.1);
-    border: 2px dashed #28a745;
+    border: 1.5px dashed #28a745;
     opacity: 0.7;
 }
 
 .header-row > div.drop-zone {
     background: rgba(255, 193, 7, 0.1);
-    border: 2px dashed #ffc107;
+    border: 1.5px dashed #ffc107;
 }
 
 .table-body .table-row {
@@ -1010,7 +990,7 @@
 .empty-state div { font-size: 18px; margin-bottom: 10px; }
 .empty-state p { margin-bottom: 0; font-size: 14px; }
 
-.barra-inferior-unificada { display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 8px 20px; border-top: 1px solid #dee2e6; margin-top: auto; flex-wrap: wrap; gap: 15px; position: absolute; bottom: 40px; left: 0; right: 0; z-index: 100; flex-shrink: 0; width: 100%; }
+.barra-inferior-unificada { display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 8px 20px; border-top: 1px solid #dee2e6; margin-top: auto; flex-wrap: wrap; gap: 15px; position: absolute; bottom: 0px; left: 0; right: 0; z-index: 100; flex-shrink: 0; width: 100%; }
 .estadisticas-inferiores { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; flex: 1; }
 .stat-item-inferior { display: flex; align-items: center; gap: 5px; }
 .stat-label-inferior { font-size: 12px; color: #6c757d; font-weight: 600; white-space: nowrap; }
@@ -1028,7 +1008,7 @@
 @media (max-width: 768px) {
     .header-row > div { cursor: default; }
     .header-row > div::after { display: none; }
-    .barra-superior-custodias { flex-direction: column; gap: 12px; padding: 12px 15px; }
+    .barra-superior-modulo { flex-direction: column; gap: 12px; padding: 12px 15px; }
     .barra-izquierda, .barra-derecha { width: 100%; justify-content: center; }
     .search-box { min-width: 250px; }
     .filtro-fechas { min-width: 200px; }
@@ -1044,7 +1024,7 @@
 }
 
 @media (max-width: 480px) {
-    .barra-superior-custodias { padding: 8px 12px; }
+    .barra-superior-modulo { padding: 8px 12px; }
     .search-box { min-width: 200px; }
     .filtro-fechas { flex-direction: column; gap: 5px; padding: 6px; }
     .filtro-fechas input { width: 100%; }
@@ -1060,5 +1040,3 @@
     .empty-state div { font-size: 16px; }
     .empty-state p { font-size: 13px; }
 }
-
-/* End of moved custodias module rules */

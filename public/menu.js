@@ -462,7 +462,7 @@ document.addEventListener('DOMContentLoaded', function() {
             border-radius: 3px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             z-index: 10000;
-            font-family: var(--fuente-principal);
+            font-family: var(--font-family);
             font-size: 14px;
             max-width: 300px;
             animation: slideIn 0.3s ease;
@@ -904,7 +904,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         .module-header.active { 
-            background-color: var(--color-primario-oscuro) !important; 
+            background-color: var(--primary-dark) !important; 
         }
         
         .module-arrow.rotated { 

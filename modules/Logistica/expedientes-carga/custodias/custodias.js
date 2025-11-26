@@ -277,7 +277,7 @@ class CustodiasManager {
         if (btnNuevaCustodia) {
             btnNuevaCustodia.addEventListener('click', () => {
                 console.log('🔄 Navegando a formulario de nueva custodia');
-                window.location.href = 'custodias-form.html';
+                window.location.href = 'custodias-form-new.html';
             });
         }
 

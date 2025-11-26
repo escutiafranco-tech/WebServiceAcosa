@@ -1,197 +1,192 @@
 /* ================================ */
-/* 1️. VARIABLES GLOBALES - HOMOLOGADAS (DE TU MENU.CSS) */
+/* VARIABLES GLOBALES CSS */
 /* ================================ */
 :root {
-    /* COLORES CORPORATIVOS - HOMOLOGADOS */
-    --color-primario: #2F3158;       /* Azul corporativo principal para branding */
-    --color-primario-oscuro: #1a1c3a; /* Azul oscuro para estados hover y activos */
-    --color-secundario: #666;        /* Gris para textos secundarios y detalles */
-    --color-fondo: #F2F2F2;          /* Gris claro para fondo general de la app */
-    --color-blanco: #FFFFFF;         /* Blanco puro para fondos y textos */
-    --color-borde: #e0e0e0;          /* Gris muy claro para bordes y separadores */
-    --color-texto: #333;             /* Negro suave para texto principal */
+    /* COLORES CORPORATIVOS */
+    --primary-color: #2F3158;           /* Azul corporativo principal para branding */
+    --primary-dark: #1a1c3a;            /* Azul oscuro para estados hover y activos */
+    --secondary-color: #666;            /* Gris para textos secundarios y detalles */
+    --background-color: #F2F2F2;        /* Gris claro para fondo general de la app */
+    --white-color: #FFFFFF;             /* Blanco puro para fondos y textos */
+    --border-color: #e0e0e0;            /* Gris muy claro para bordes y separadores */
+    --text-color: #333;                 /* Negro suave para texto principal */
     
-    /* TIPOGRAFÍA - TAMAÑOS HOMOLOGADOS */
-    --fuente-principal: 'Geneva', Tahoma, Geneva, Verdana, sans-serif; /* Stack de fuentes corporativas */
-    --tamaño-texto-enorme: 16px;     /* Para títulos principales del sistema */
-    --tamaño-texto-grande: 14px;     /* Para subtítulos y textos importantes */
-    --tamaño-texto-normal: 12px;     /* Texto base para módulos y contenido */
-    --tamaño-texto-pequeño: 10px;    /* Textos secundarios, labels y detalles */
+    /* COLORES DE ESTADO */
+    --success-color: #28a745;           /* Verde para estados de éxito */
+    --warning-color: #ffc107;           /* Amarillo para estados de advertencia */
+    --danger-color: #dc3545;            /* Rojo para estados de error/peligro */
+    --info-color: #17a2b8;              /* Azul para estados informativos */
     
-    /* PESOS DE FUENTE - HOMOLOGADOS */
-    --peso-negrita: 800;             /* Peso extra negrita para títulos principales */
-    --peso-seminegrita: 600;         /* Peso semi-negrita para elementos destacados */
-    --peso-normal: 500;              /* Peso normal para texto regular */
+    /* TIPOGRAFÍA - TAMAÑOS */
+    --font-family: 'Geneva', Tahoma, Verdana; /* Stack de fuentes corporativas */
+    --text-size-xlarge: 16px;           /* Para títulos principales del sistema */
+    --text-size-large: 14px;            /* Para subtítulos y textos importantes */
+    --text-size-normal: 12px;           /* Texto base para módulos y contenido */
+    --text-size-small: 10px;            /* Textos secundarios, labels y detalles */
     
-    /* ESPACIADOS - HOMOLOGADOS */
-    --espacio-pequeño: 5px;          /* Espacios mínimos entre elementos cercanos */
-    --espacio-mediano: 10px;         /* Espacios estándar para separación general */
-    --espacio-grande: 14px;          /* Espacios amplios para secciones */
-    --espacio-xl: 20px;              /* Espacios extra grandes para márgenes principales */
+    /* TIPOGRAFÍA - PESOS */
+    --font-weight-bold: 800;            /* Peso extra negrita para títulos principales */
+    --font-weight-semibold: 600;        /* Peso semi-negrita para elementos destacados */
+    --font-weight-normal: 500;          /* Peso normal para texto regular */
     
-    /* BORDES Y SOMBRAS - HOMOLOGADOS */
-    --radio-borde: 6px;              /* Radio para bordes redondeados estándar */
-    --radio-borde-pequeño: 4px;      /* Radio para bordes redondeados pequeños */
-    --sombra-suave: 0 2px 8px rgba(0,0,0,0.1); /* Sombra ligera para elevación sutil */
-    --sombra-media: 0 4px 12px rgba(0,0,0,0.15); /* Sombra media para más profundidad */
-
+    /* ESPACIADOS */
+    --spacing-small: 5px;               /* Espacios mínimos entre elementos cercanos */
+    --spacing-medium: 10px;             /* Espacios estándar para separación general */
+    --spacing-large: 14px;              /* Espacios amplios para secciones */
+    --spacing-xlarge: 20px;             /* Espacios extra grandes para márgenes principales */
+    
+    /* BORDES Y SOMBRAS */
+    --border-radius: 6px;               /* Radio para bordes redondeados estándar */
+    --border-radius-small: 4px;         /* Radio para bordes redondeados pequeños */
+    --shadow-soft: 0 2px 8px rgba(0,0,0,0.1);   /* Sombra ligera para elevación sutil */
+    --shadow-medium: 0 4px 12px rgba(0,0,0,0.15); /* Sombra media para más profundidad */
+    
     /* TRANSICIONES */
-    --transicion-base: 0.2s ease;    /* Transición estándar para animaciones */
-}
-
-/* ================================
-   Alias para compatibilidad con módulos
-   Algunos módulos (antiguos) usan variables con nombres en inglés
-   Las siguientes alias mapean esas variables a las definidas arriba
-   ================================ */
-:root {
-    --primary-color: var(--color-primario);
-    --primary-dark: var(--color-primario-oscuro);
-    --primary-light: var(--color-primario);
-    --secondary-color: var(--color-secundario);
-    --success-color: #28a745;
-    --warning-color: #ffc107;
-    --danger-color: #dc3545;
-    --info-color: #17a2b8;
-    --light-color: var(--color-blanco);
-    --dark-color: var(--color-texto);
-    --border-color: var(--color-borde);
-    --shadow: var(--sombra-suave);
-    --border-radius: var(--radio-borde);
-    --transition: var(--transicion-base);
+    --transition-base: 0.2s ease;       /* Transición estándar para animaciones */
 }
 
 /* ================================ */
 /* 2. ESTILOS BASE                  */
 /* ================================ */
 * {
-    margin: 0;                       /* Reset de márgenes para todos los elementos */
-    padding: 0;                      /* Reset de padding para todos los elementos */
-    box-sizing: border-box;          /* Modelo de caja que incluye padding y border */
+    margin: 0;                          /* Reset de márgenes para todos los elementos */
+    padding: 0;                         /* Reset de padding para todos los elementos */
+    box-sizing: border-box;             /* Modelo de caja que incluye padding y border */
 }  
 
 body {
-    font-family: var(--fuente-principal); /* Aplica la fuente corporativa global */
-    background-color: var(--color-fondo); /* Establece el color de fondo de toda la página */
-    margin: 0;                       /* Elimina margen exterior del body */
-    padding: var(--espacio-pequeño);  /* Padding general de 5px alrededor del body */
-    padding-bottom: var(--espacio-mediano); /* Espacio adicional inferior de 10px para footer */
+    font-family: var(--font-family);  /* Aplica la fuente corporativa global */
+    background-color: var(--background-color);  /* Establece el color de fondo de toda la página */
+    margin: 0;                             /* Elimina margen exterior del body */
+    padding: 0;                            /* Sin padding */
 }
 
 /* ================================ */
 /* 3. HEADER PROFESIONAL CON LOGO   */
 /* ================================ */
 header {
-    background: var(--color-blanco);  /* Fondo blanco para la barra superior */
-    color: Black;                    /* Color de texto negro para contraste */
-    padding: 5px 10px;               /* Padding: 5px arriba/abajo, 10px izquierda/derecha */
-    display: flex;                   /* Flexbox para alinear logo y botones */
-    justify-content: space-between;  /* Logo a la izquierda, botones a la derecha */
-    align-items: center;             /* Centra verticalmente todos los elementos */
-    border-bottom: 1px solid var(--color-borde); /* Línea inferior sutil de separación */
+    background: var(--white-color);     /* Fondo blanco para la barra superior */
+    color: Black;                        /* Color de texto negro para contraste */
+    display: flex;                       /* Flexbox para alinear logo y botones */
+    justify-content: space-between;      /* Logo a la izquierda, botones a la derecha */
+    align-items: center;                 /* Centra verticalmente todos los elementos */
+    padding: 5px 8px;                   /* Padding: 5px arriba/abajo, 10px izquierda/derecha */      
+    border: 1.5px solid var(--border-color); /* Borde externo: 2px Global */ 
+    margin: 0px 3px;          /* Marguen externo: 5px arriba/abajo, 5px derecha, 2.5px izquierda */  
+
 }
 
 .header-left {
-    display: flex;                   /* Flexbox para alinear logo y títulos */
-    align-items: center;             /* Centra verticalmente logo y textos */
-    gap: 0px;                        /* Sin espacio entre logo y títulos */
+    display: flex;                       /* Flexbox para alinear logo y títulos */
+    align-items: center;                 /* Centra verticalmente logo y textos */
+    gap: 0px;                            /* Sin espacio entre logo y títulos */
 }
 
 .logo {
-    width: 50px;                     /* Ancho fijo para el contenedor del logo */
-    height: 50px;                    /* Alto fijo para el contenedor del logo */
-    display: flex;                   /* Flexbox para centrar la imagen del logo */
-    align-items: center;             /* Centra verticalmente la imagen del logo */
-    justify-content: left;           /* Alinea el logo a la izquierda */
+    width: 45px;                         /* Ancho fijo para el contenedor del logo */
+    height: 50px;                        /* Alto fijo para el contenedor del logo */
+    display: flex;                       /* Flexbox para centrar la imagen del logo */
+    align-items: center;                 /* Centra verticalmente la imagen del logo */
+    justify-content: left;               /* Alinea el logo a la izquierda */
 }
 
 .header-titles h1 {
-    font-size: var(--tamaño-texto-enorme); /* Título principal con tamaño enorme */
-    font-weight: var(--peso-negrita); /* Texto en negrita para destacar */
-    margin: 0;                       /* Elimina margen por defecto */
-    color: var(--color-primario);    /* Color corporativo para el título */
+    font-size: var(--text-size-xlarge); /* Título principal con tamaño enorme */
+    font-weight: var(--font-weight-bold);    /* Texto en negrita para destacar */
+    color: var(--primary-color);        /* Color corporativo para el título */
 }
 
 .header-titles h2 {
-    font-size: var(--tamaño-texto-grande); /* Subtítulo con tamaño grande */
-    font-weight: var(--peso-seminegrita); /* Semi-negrita para jerarquía visual */
-    margin: 0;                       /* Elimina margen por defecto */
-    color: var(--color-secundario);  /* Color gris para el subtítulo */
+    font-size: var(--text-size-large); /* Subtítulo con tamaño grande */
+    font-weight: var(--font-weight-semibold); /* Semi-negrita para jerarquía visual */
+    color: var(--secondary-color);      /* Color gris para el subtítulo */
 }
 
 /* ================================ */
 /* 4. BOTONES DE ACCESO RÁPIDO      */
 /* ================================ */
 .quick-access {
-    display: flex;                   /* Flexbox para alinear botones en fila horizontal */
-    gap: var(--espacio-mediano);     /* Espacio de 10px entre cada botón */
+    display: flex;                       /* Flexbox para alinear botones en fila horizontal */
+    gap: var(--spacing-small);          /* Espacio de 5px entre cada botón */
 }
 
 .quick-btn {
-    width: 38px;                     /* Ancho fijo para botones cuadrados */
-    height: 38px;                    /* Alto fijo para botones cuadrados */
-    background: var(--color-primario); /* Fondo corporativo para los botones */
-    border: 1px solid var(--color-primario); /* Borde del mismo color que el fondo */
-    border-radius: var(--radio-borde); /* Esquinas redondeadas */
-    cursor: pointer;                 /* Cursor de mano para indicar clickeable */
-    display: flex;                   /* Flexbox para centrar los iconos */
-    align-items: center;             /* Centra verticalmente los iconos */
-    justify-content: center;         /* Centra horizontalmente los iconos */
-    transition: all 0.2s ease-in-out; /* Transición suave para efectos hover */
-    box-shadow: var(--sombra-suave); /* Sombra sutil corporativa */
+    width: 38px;                         /* Ancho fijo para botones cuadrados */
+    height: 38px;                        /* Alto fijo para botones cuadrados */
+    background: var(--primary-color);   /* Fondo corporativo para los botones */
+    border: 1px solid var(--primary-color); /* Borde del mismo color que el fondo */
+    border-radius: var(--border-radius);   /* Esquinas redondeadas */
+    cursor: pointer;                     /* Cursor de mano para indicar clickeable */
+    display: flex;                       /* Flexbox para centrar los iconos */
+    align-items: center;                 /* Centra verticalmente los iconos */
+    justify-content: center;             /* Centra horizontalmente los iconos */
+    transition: all 0.2s ease-in-out;    /* Transición suave para efectos hover */
+    box-shadow: var(--shadow-soft);     /* Sombra sutil corporativa */
 }
 
 .quick-btn:hover {
-    background: var(--color-primario-oscuro); /* Fondo más oscuro al hacer hover */
-    border-color: var(--color-primario-oscuro); /* Borde más oscuro al hacer hover */
-    transform: translateY(-2px);     /* Efecto de elevación al hacer hover */
-    box-shadow: var(--sombra-media); /* Sombra más pronunciada al hover */
+    background: var(--primary-dark); /* Fondo más oscuro al hacer hover */
+    border-color: var(--primary-dark); /* Borde más oscuro al hacer hover */
+    transform: translateY(-2px);         /* Efecto de elevación al hacer hover */
+    box-shadow: var(--shadow-medium);     /* Sombra más pronunciada al hover */
 }
 
 .quick-btn img {
-    width: 18px;                     /* Tamaño estándar para iconos de botones */
-    height: 18px;                    /* Tamaño estándar para iconos de botones */
-    filter: brightness(0) invert(1); /* Convierte iconos a blanco (invertir colores) */
+    width: 18px;                         /* Tamaño estándar para iconos de botones */
+    height: 18px;                        /* Tamaño estándar para iconos de botones */
+    filter: brightness(0) invert(1);     /* Convierte iconos a blanco (invertir colores) */
 }
 
 /* ================================ */
 /* 5. BOTONES DE MÓDULO              */
 /* ================================ */
 
-/* 5.1 BOTONES (CENTRALIZADO) */
-/* Clase global para botones para mantener consistencia entre módulos y componentes. */
 .btn {
     display: inline-flex;               /* Permite centrar contenido y usar gap */
     align-items: center;
     justify-content: center;
     gap: 8px;                           /* Separación entre icono y texto */
-    padding: 10px 16px;                 /* Alto y ancho de relleno */
-    font-size: 14px;                    /* Tamaño de texto legible */
-    min-width: 140px;                   /* Ancho mínimo para consistencia */
-    border-radius: var(--radio-borde);  /* Radio de borde homologado */
-    box-shadow: var(--sombra-suave);    /* Sombra sutil por defecto */
-    transition: var(--transition);      /* Transición homogénea */
+    padding: 5px 5px;                 /* Alto y ancho de relleno */
+    font-size: 12px;                    /* Tamaño de texto legible */
+    min-width: 100px;                   /* Ancho mínimo para consistencia */
+    border-radius: var(--border-radius);  /* Radio de borde homologado */
+    box-shadow: var(--shadow-soft);    /* Sombra sutil por defecto */
+    transition: var(--transition-base);      /* Transición homogénea */
     cursor: pointer;
 }
 
 /* Variante primaria (acción principal) */
 .btn.btn-primary {
-    background: var(--color-primario);
-    color: var(--color-blanco);
-    border: 1px solid var(--color-primario);
+    background: var(--primary-color);
+    color: var(--white-color);
+    border: 1px solid var(--primary-color);
+    font-weight: var(--font-weight-semibold); /* Peso semi-negrita para destacar */
+    box-shadow: var(--shadow-medium);    /* Sombra más pronunciada */
 }
 
 /* Variante secundaria (fondo claro, borde) */
 .btn.btn-secondary {
-    background: var(--color-blanco);
-    color: var(--color-texto);
-    border: 1px solid var(--color-borde);
+    background: var(--white-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    font-weight: var(--font-weight-normal); /* Peso normal para contraste con primary */
 }
 
 /* Hover states */
 .btn:hover {
     transform: translateY(-2px);
-    box-shadow: var(--sombra-media);
+    box-shadow: var(--shadow-medium);
+}
+
+.btn.btn-primary:hover {
+    background: var(--primary-dark);     /* Fondo más oscuro al hover */
+    border-color: var(--primary-dark);   /* Borde más oscuro */
+}
+
+.btn.btn-secondary:hover {
+    background: var(--background-color); /* Fondo gris claro */
+    border-color: var(--primary-color);  /* Borde azul corporativo */
+    color: var(--primary-color);         /* Texto azul corporativo */
 }
 
 /* Responsive: botones más compactos en pantallas estrechas */
@@ -207,128 +202,130 @@ header {
 /* 5. BOTÓN TOGGLE MENU             */
 /* ================================ */
 .btn-toggle-menu {
-    background: var(--color-primario); /* Fondo con color primario */
-    border: none;                    /* Elimina borde por defecto */
-    color: var(--color-blanco);      /* Texto blanco */
-    padding: var(--espacio-pequeño) var(--espacio-mediano); /* Padding: 5px vertical, 10px horizontal */
-    border-radius: var(--radio-borde); /* Bordes redondeados pequeños */
-    cursor: pointer;                 /* Cursor de mano al pasar sobre el botón */
-    font-size: 16px;                 /* Tamaño de fuente específico */
-    margin-right: var(--espacio-pequeño); /* Margen derecho de 5px */
-    transition: all 0.2s ease;       /* Transición suave para efectos hover */
+    background: var(--primary-color);   /* Fondo con color primario */
+    border: none;                        /* Elimina borde por defecto */
+    color: var(--white-color);          /* Texto blanco */
+    padding: var(--spacing-small) var(--spacing-medium); /* Padding: 5px vertical, 10px horizontal */
+    border-radius: var(--border-radius); /* Bordes redondeados pequeños */
+    cursor: pointer;                     /* Cursor de mano al pasar sobre el botón */
+    font-size: 16px;                     /* Tamaño de fuente específico */
+    margin-right: var(--spacing-small); /* Margen derecho de 5px */
+    transition: all 0.2s ease;           /* Transición suave para efectos hover */
 }
 
 .btn-toggle-menu:hover {
-    background: var(--color-primario-oscuro); /* Color más oscuro al hacer hover */
-    transform: scale(1.05);          /* Efecto de escala al hacer hover */
+    background: var(--primary-dark); /* Color más oscuro al hacer hover */
+    transform: scale(1.05);              /* Efecto de escala al hacer hover */
 }
 
 /* ================================ */
 /* 6. SIDEBAR LATERAL               */
 /* ================================ */
 .main-layout {
-    display: flex;                   /* Flexbox para layout principal */
+    display: flex;                       /* Flexbox para layout principal */
     height: calc(100vh - 100px) !important; /* Altura fija calculada dinámicamente */
     min-height: calc(100vh - 100px) !important; /* Altura mínima calculada dinámicamente */
 }
 
 .sidebar {
-    width: 220px;                    /* Ancho del sidebar cuando está expandido */
-    background: var(--color-blanco); /* Fondo blanco para el sidebar */
-    border-right: 1px solid var(--color-borde); /* Línea divisoria derecha */
-    transition: all 0.3s ease;       /* Transición suave para animaciones */
-    text-align: left;                /* Alineación de texto a la izquierda */
-    overflow-y: auto;                /* Scroll vertical si el contenido excede */
-    margin: 5px 0px;                 /* Margen superior e inferior de 5px */
+    width: 220px;                        /* Ancho del sidebar cuando está expandido */
+    background: var(--white-color);     /* Fondo blanco para el sidebar */
+    transition: all 0.3s ease;           /* Transición suave para animaciones */
+    text-align: left;                    /* Alineación de texto a la izquierda */
+    overflow-y: auto;                    /* Scroll vertical si el contenido excede */
     height: calc(100vh - 100px) !important; /* Altura fija calculada */
     min-height: calc(100vh - 100px) !important; /* Altura mínima fija */
     max-height: calc(100vh - 100px) !important; /* Altura máxima fija */
+    padding: 0px;                   /* Padding: 5px arriba/abajo, 10px izquierda/derecha */      
+    border: 1.5px solid var(--border-color); /* Borde externo: 2px Global */ 
+    margin: 3px 3px 3px 2px;          /* Marguen externo: 5px arriba/abajo, 5px derecha, 2.5px izquierda */  
+
 }
 
 .sidebar.collapsed {
-    width: 55px;                     /* Ancho reducido cuando está colapsado */
-    max-height: calc(100vh - 100px); /* Altura máxima mantenida */
+    width: 55px;                         /* Ancho reducido cuando está colapsado */
+    max-height: calc(100vh - 100px);     /* Altura máxima mantenida */
 }
 
 .sidebar-nav {
-    padding: var(--espacio-mediano); /* Espaciado interno de 10px */
-    text-align: left;                /* Alineación general izquierda */
-    min-height: min-content;         /* Permite crecer según el contenido */
+    padding: var(--spacing-medium);     /* Espaciado interno de 10px */
+    text-align: left;                    /* Alineación general izquierda */
+    min-height: min-content;             /* Permite crecer según el contenido */
 }
 
 /* ================================ */
 /* 7. MÓDULOS PRINCIPALES           */
 /* ================================ */
 .module-group {
-    margin-bottom: 5px;              /* Espacio pequeño entre grupos de módulos */
-    text-align: left;                /* Alineación izquierda */
+    margin-bottom: 5px;                  /* Espacio pequeño entre grupos de módulos */
+    text-align: left;                    /* Alineación izquierda */
 }
 
 .module-header {
-    display: flex;                   /* Flexbox para alinear icono, texto y flecha */
-    align-items: center;             /* Centra verticalmente los elementos */
-    justify-content: flex-start;     /* Distribuye espacio comenzando desde la izquierda */
-    padding: 6px 12px;               /* Padding: 6px vertical, 12px horizontal */
-    background: var(--color-primario); /* Fondo color primario */
-    color: var(--color-blanco);      /* Texto blanco */
-    border: none;                    /* Sin borde */
-    border-radius: var(--radio-borde); /* Bordes redondeados */
-    cursor: pointer;                 /* Cursor de mano para indicar clickeable */
-    font-weight: var(--peso-seminegrita); /* Peso de fuente seminegrita */
-    font-size: var(--tamaño-texto-normal); /* Tamaño de texto normal homologado */
-    transition: all 0.2s ease;       /* Transición suave para efectos */
-    width: 100%;                     /* Ancho completo del contenedor */
-    text-align: left;                /* Alineación de texto a la izquierda */
-    min-height: 20px;                /* Altura mínima consistente */
+    display: flex;                       /* Flexbox para alinear icono, texto y flecha */
+    align-items: center;                 /* Centra verticalmente los elementos */
+    justify-content: flex-start;         /* Distribuye espacio comenzando desde la izquierda */
+    padding: 6px 12px;                   /* Padding: 6px vertical, 12px horizontal */
+    background: var(--primary-color);   /* Fondo color primario */
+    color: var(--white-color);          /* Texto blanco */
+    border: none;                        /* Sin borde */
+    border-radius: var(--border-radius);   /* Bordes redondeados */
+    cursor: pointer;                     /* Cursor de mano para indicar clickeable */
+    font-weight: var(--font-weight-semibold);  /* Peso de fuente seminegrita */
+    font-size: var(--text-size-normal); /* Tamaño de texto normal homologado */
+    transition: all 0.2s ease;           /* Transición suave para efectos */
+    width: 100%;                         /* Ancho completo del contenedor */
+    text-align: left;                    /* Alineación de texto a la izquierda */
+    min-height: 20px;                    /* Altura mínima consistente */
 }
 
 .module-header:hover {
-    background: var(--color-primario-oscuro); /* Color más oscuro al hacer hover */
+    background: var(--primary-dark); /* Color más oscuro al hacer hover */
 }
 
 .module-header.active {
-    background: var(--color-primario-oscuro); /* Color cuando está activo */
+    background: var(--primary-dark); /* Color cuando está activo */
 }
 
 .module-icon {
-    display: flex;                   /* Flexbox para centrar contenido */
-    align-items: center;             /* Centra verticalmente */
-    justify-content: center;         /* Centra horizontalmente */
-    width: 20px;                     /* Ancho fijo para iconos - tamaño homologado */
-    height: 20px;                    /* Alto fijo para iconos - tamaño homologado */
-    margin-right: 8px;               /* Espacio de 8px entre icono y texto */
-    margin-left: 0;                  /* Sin margen izquierdo */
-    font-size: 13px;                 /* Tamaño de fuente para emoticones */
-    flex-shrink: 0;                  /* Evita que el icono se reduzca */
+    display: flex;                       /* Flexbox para centrar contenido */
+    align-items: center;                 /* Centra verticalmente */
+    justify-content: center;             /* Centra horizontalmente */
+    width: 20px;                         /* Ancho fijo para iconos - tamaño homologado */
+    height: 20px;                        /* Alto fijo para iconos - tamaño homologado */
+    margin-right: 8px;                   /* Espacio de 8px entre icono y texto */
+    margin-left: 0;                      /* Sin margen izquierdo */
+    font-size: 13px;                     /* Tamaño de fuente para emoticones */
+    flex-shrink: 0;                      /* Evita que el icono se reduzca */
 }
 
 .module-icon-img {
-    width: 20px;                     /* Ancho igual que module-icon - homologado */
-    height: 20px;                    /* Alto igual que module-icon - homologado */
-    object-fit: contain;             /* Mantiene proporciones de la imagen */
-    filter: brightness(0) invert(1); /* Convierte iconos a blanco */
+    width: 20px;                         /* Ancho igual que module-icon - homologado */
+    height: 20px;                        /* Alto igual que module-icon - homologado */
+    object-fit: contain;                 /* Mantiene proporciones de la imagen */
+    filter: brightness(0) invert(1);     /* Convierte iconos a blanco */
 }
 
 .module-arrow {
-    transition: transform 0.3s ease; /* Transición para rotación de flecha */
-    font-size: 8px;                  /* Tamaño pequeño para flechas */
-    margin-left: auto;               /* Empuja la flecha a la derecha (flexbox) */
-    margin-right: 8px;               /* Espacio a la derecha de la flecha */
-    flex-shrink: 0;                  /* Evita que la flecha se reduzca */
+    transition: transform 0.3s ease;     /* Transición para rotación de flecha */
+    font-size: 8px;                      /* Tamaño pequeño para flechas */
+    margin-left: auto;                   /* Empuja la flecha a la derecha (flexbox) */
+    margin-right: 8px;                   /* Espacio a la derecha de la flecha */
+    flex-shrink: 0;                      /* Evita que la flecha se reduzca */
 }
 
 .module-arrow.rotated {
-    transform: rotate(90deg);        /* Rota la flecha 90 grados cuando está expandido */
+    transform: rotate(90deg);            /* Rota la flecha 90 grados cuando está expandido */
 }
 
 .module-text {
-    flex: 1;                         /* Toma el espacio disponible restante */
-    text-align: left;                /* Alineación de texto a la izquierda */
-    margin-left: 0;                  /* Sin margen izquierdo */
-    padding-left: 0;                 /* Sin padding izquierdo */
-    white-space: nowrap;             /* Evita salto de línea */
-    overflow: hidden;                /* Oculta texto que sobresalga */
-    text-overflow: ellipsis;         /* Muestra "..." si el texto es muy largo */
+    flex: 1;                             /* Toma el espacio disponible restante */
+    text-align: left;                    /* Alineación de texto a la izquierda */
+    margin-left: 0;                      /* Sin margen izquierdo */
+    padding-left: 0;                     /* Sin padding izquierdo */
+    white-space: nowrap;                 /* Evita salto de línea */
+    overflow: hidden;                    /* Oculta texto que sobresalga */
+    text-overflow: ellipsis;             /* Muestra "..." si el texto es muy largo */
     font-size: var(--tamaño-texto-normal); /* Tamaño de texto normal homologado */
 }
 
@@ -336,274 +333,276 @@ header {
 /* 8. SUBMENÚS 			    */
 /* ================================ */
 .submenu {
-    max-height: 0;                   /* Altura inicial cero (colapsado) */
-    overflow: hidden;                /* Oculta el contenido que excede */
-    transition: max-height 0.3s ease; /* Transición para animación de altura */
-    background: var(--color-fondo);  /* Color de fondo gris claro */
-    border-radius: 0 0 var(--radio-borde) var(--radio-borde); /* Bordes redondeados solo abajo */
-    text-align: left;                /* Alineación izquierda */
+    max-height: 0;                       /* Altura inicial cero (colapsado) */
+    overflow: hidden;                    /* Oculta el contenido que excede */
+    transition: max-height 0.3s ease;    /* Transición para animación de altura */
+    background: var(--background-color);      /* Color de fondo gris claro */
+    border-radius: 0 0 var(--border-radius) var(--border-radius); /* Bordes redondeados solo abajo */
+    text-align: left;                    /* Alineación izquierda */
 }
 
 .submenu.open {
-    max-height: 250px;               /* Altura máxima reducida para mejor scroll */
-    overflow-y: auto;                /* Scroll interno cuando hay muchos items */
+    max-height: 250px;                   /* Altura máxima reducida para mejor scroll */
+    overflow-y: auto;                    /* Scroll interno cuando hay muchos items */
 }
 
 /* SCROLL PERSONALIZADO PARA SUBMENÚS - MEJORA VISUAL */
 .submenu.open::-webkit-scrollbar {
-    width: 6px;                      /* Scrollbar más delgado para submenús */
+    width: 6px;                         /* Scrollbar más delgado para submenús */
 }
 
 .submenu.open::-webkit-scrollbar-track {
-    background: rgba(47, 49, 88, 0.1); /* Track sutil con color corporativo */
-    border-radius: 3px;              /* Bordes redondeados del track */
+    background: rgba(47, 49, 88, 0.1);  /* Track sutil con color corporativo */
+    border-radius: 3px;                  /* Bordes redondeados del track */
 }
 
 .submenu.open::-webkit-scrollbar-thumb {
-    background: rgba(47, 49, 88, 0.3); /* Thumb con color corporativo */
-    border-radius: 3px;              /* Bordes redondeados del thumb */
+    background: rgba(47, 49, 88, 0.3);  /* Thumb con color corporativo */
+    border-radius: 3px;                  /* Bordes redondeados del thumb */
 }
 
 .submenu.open::-webkit-scrollbar-thumb:hover {
-    background: rgba(47, 49, 88, 0.5); /* Thumb más oscuro al hover */
+    background: rgba(47, 49, 88, 0.5);  /* Thumb más oscuro al hover */
 }
 
 .submenu-item {
-    display: flex;                   /* Flexbox para alinear elementos */
-    align-items: center;             /* Centra verticalmente */
-    justify-content: flex-start;     /* Alineación a la izquierda */
-    padding: 6px 12px 6px 15px;      /* Padding: 6px vertical, 12px derecha, 6px abajo, 15px izquierda */
-    color: var(--color-texto);       /* Color de texto normal */
-    text-decoration: none;           /* Sin subrayado en enlaces */
-    border: none;                    /* Sin borde */
-    background: none;                /* Sin fondo */
-    cursor: pointer;                 /* Cursor de mano */
-    font-size: var(--tamaño-texto-normal); /* Tamaño de texto normal homologado */
-    transition: all 0.2s ease;       /* Transición suave para efectos */
-    width: 100%;                     /* Ancho completo */
-    text-align: left;                /* Alineación de texto a la izquierda */
-    min-height: 20px;                /* Altura mínima consistente */
-    line-height: 1.1;                /* Altura de línea compacta */
+    display: flex;                       /* Flexbox para alinear elementos */
+    align-items: center;                 /* Centra verticalmente */
+    justify-content: flex-start;         /* Alineación a la izquierda */
+    padding: 6px 12px 6px 15px;         /* Padding: 6px vertical, 12px derecha, 6px abajo, 15px izquierda */
+    color: var(--text-color);           /* Color de texto normal */
+    text-decoration: none;               /* Sin subrayado en enlaces */
+    border: none;                        /* Sin borde */
+    background: none;                    /* Sin fondo */
+    cursor: pointer;                     /* Cursor de mano */
+    font-size: var(--text-size-normal); /* Tamaño de texto normal homologado */
+    transition: all 0.2s ease;           /* Transición suave para efectos */
+    width: 100%;                         /* Ancho completo */
+    text-align: left;                    /* Alineación de texto a la izquierda */
+    min-height: 20px;                    /* Altura mínima consistente */
+    line-height: 1.1;                    /* Altura de línea compacta */
 }
 
 /* Items con iconos - mantener misma alineación */
 .submenu-item:has(.submenu-icon-img),
 .submenu-item:has(.submenu-icon-placeholder) {
-    padding-left: 15px;              /* Mismo padding izquierdo para todos */
+    padding-left: 15px;                  /* Mismo padding izquierdo para todos */
 }
 
 .submenu-item:hover {
     background: rgba(47, 49, 88, 0.08); /* Fondo semitransparente al hacer hover */
-    color: var(--color-primario);    /* Cambia color de texto al hacer hover */
-    padding-left: 18px;              /* Efecto sutil de desplazamiento +3px */
+    color: var(--primary-color);        /* Cambia color de texto al hacer hover */
+    padding-left: 18px;                  /* Efecto sutil de desplazamiento +3px */
 }
 
 .submenu-item:hover:has(.submenu-icon-img),
 .submenu-item:hover:has(.submenu-icon-placeholder) {
-    padding-left: 18px;              /* Efecto hover consistente con iconos */
+    padding-left: 18px;                  /* Efecto hover consistente con iconos */
 }
 
 .submenu-item.active {
-    background: var(--color-primario); /* Fondo color primario cuando está activo */
-    color: var(--color-blanco);      /* Texto blanco cuando está activo */
-    font-weight: var(--peso-seminegrita); /* Texto seminegrita cuando está activo */
+    background: var(--primary-color);   /* Fondo color primario cuando está activo */
+    color: var(--white-color);          /* Texto blanco cuando está activo */
+    font-weight: var(--font-weight-semibold); /* Texto seminegrita cuando está activo */
 }
 
 .submenu-item.active .submenu-icon-img {
-    filter: brightness(100) invert(1); /* Iconos blancos cuando está activo */
+    filter: brightness(100) invert(1);   /* Iconos blancos cuando está activo */
 }
 
 /* ================================ */
 /* 9. ICONOS PARA SUBMENÚS          */
 /* ================================ */
 .submenu-icon-img {
-    width: 18px;                     /* Ancho fijo para iconos de submenú - tamaño homologado */
-    height: 18px;                    /* Alto fijo para iconos de submenú - tamaño homologado */
-    object-fit: contain;             /* Mantiene proporciones de la imagen */
-    margin-right: 8px;               /* Espacio de 8px entre icono y texto - homologado */
-    filter: brightness(0) invert(0); /* Mantiene colores originales */
-    opacity: 0.7;                    /* Transparencia del 70% para efecto visual */
-    flex-shrink: 0;                  /* Evita que el icono se reduzca */
-    display: flex;                   /* Flexbox para mejor alineación */
-    align-items: center;             /* Centra verticalmente */
-    justify-content: center;         /* Centra horizontalmente */
+    width: 18px;                         /* Ancho fijo para iconos de submenú - tamaño homologado */
+    height: 18px;                        /* Alto fijo para iconos de submenú - tamaño homologado */
+    object-fit: contain;                 /* Mantiene proporciones de la imagen */
+    margin-right: 8px;                   /* Espacio de 8px entre icono y texto - homologado */
+    filter: brightness(0) invert(0);     /* Mantiene colores originales */
+    opacity: 0.7;                        /* Transparencia del 70% para efecto visual */
+    flex-shrink: 0;                      /* Evita que el icono se reduzca */
+    display: flex;                       /* Flexbox para mejor alineación */
+    align-items: center;                 /* Centra verticalmente */
+    justify-content: center;             /* Centra horizontalmente */
 }
 
 .submenu-icon-placeholder {
-    width: 18px;                     /* Mismo ancho que los iconos con imagen - homologado */
-    height: 18px;                    /* Misma altura para consistencia visual - homologado */
-    margin-right: 8px;               /* Mismo espaciado derecho - homologado */
-    display: flex;                   /* Flexbox para centrado */
-    align-items: center;             /* Centra verticalmente */
-    justify-content: center;         /* Centra horizontalmente */
-    flex-shrink: 0;                  /* Mantiene tamaño fijo */
-    font-size: 12px;                 /* Tamaño de fuente para emoticones */
-    background: rgba(47, 49, 88, 0.1); /* Fondo sutil para placeholders */
-    border-radius: 3px;              /* Bordes ligeramente redondeados */
+    width: 18px;                         /* Mismo ancho que los iconos con imagen - homologado */
+    height: 18px;                        /* Misma altura para consistencia visual - homologado */
+    margin-right: 8px;                   /* Mismo espaciado derecho - homologado */
+    display: flex;                       /* Flexbox para centrado */
+    align-items: center;                 /* Centra verticalmente */
+    justify-content: center;             /* Centra horizontalmente */
+    flex-shrink: 0;                      /* Mantiene tamaño fijo */
+    font-size: 12px;                     /* Tamaño de fuente para emoticones */
+    background: rgba(47, 49, 88, 0.1);  /* Fondo sutil para placeholders */
+    border-radius: 3px;                  /* Bordes ligeramente redondeados */
 }
 
 /* ================================ */
 /* 10. CONTENIDO PRINCIPAL          */
 /* ================================ */
 .main-content {
-    flex: 1;                         /* Ocupa todo el espacio restante */
-    background: var(--color-fondo);  /* Fondo gris claro */
-    min-height: calc(100vh - 100px); /* Altura mínima calculada */
-    margin-top: 5px;                 /* Marguen superior */
-    margin-left: 5px;                /* Margen izquierdo pequeño */
-    border-radius: 0 !important;     /* Bordes redondeados */ 
-    display: flex;                   /* Flexbox para organización interna */
-    flex-direction: column;          /* Dirección vertical */
+    flex: 1;                             /* Ocupa todo el espacio restante */
+    background: var(--background-color);      /* Fondo gris claro */
+    min-height: calc(100vh - 100px);     /* Altura mínima calculada */
+    border-radius: 0 !important;         /* Sin bordes redondeados */ 
+    display: flex;                       /* Flexbox para organización interna */
+    flex-direction: column;              /* Dirección vertical */
     height: calc(100vh - 100px) !important; /* Altura fija calculada */
+    padding: 0px;                   /* Padding: 5px arriba/abajo, 10px izquierda/derecha */      
+    border: 1.5px solid var(--border-color); /* Borde externo: 2px Global */ 
+    margin: 3px 3px 3px 2px;          /* Marguen externo: 5px arriba/abajo, 5px derecha, 2.5px izquierda */  
+
 }
 
 .content-area.contenido-inicial {
-    flex: 1;                         /* Ocupa espacio disponible */
-    width: 100% !important;          /* Ancho completo forzado */
-    height: 100% !important;         /* Alto completo forzado */
-    min-height: auto;                /* Altura mínima automática */
-    margin: 0% auto;                 /* Centrado horizontal */
-    display: flex;                   /* Flexbox para centrado */
-    align-items: center;             /* Centra verticalmente */
-    justify-content: center;         /* Centra horizontalmente */
-    background: var(--color-blanco); /* Fondo blanco */
-    border-radius: 0 !important;     /* Bordes redondeados */
+    flex: 1;                             /* Ocupa espacio disponible */
+    width: 100% !important;              /* Ancho completo forzado */
+    height: 100% !important;             /* Alto completo forzado */
+    min-height: auto;                    /* Altura mínima automática */
+    display: flex;                       /* Flexbox para centrado */
+    align-items: center;                 /* Centra verticalmente */
+    justify-content: center;             /* Centra horizontalmente */
+    background: var(--white-color);     /* Fondo blanco */
+    border-radius: 0 !important;         /* Sin bordes redondeados */
 }
 
 .welcome-message {
-    text-align: center;              /* Texto centrado */
-    padding: 3rem;                   /* Padding generoso */
+    text-align: center;                  /* Texto centrado */
+    padding: 3rem;                       /* Padding generoso */
 }
 
 .welcome-message h3 {
-    font-size: 2.5rem !important;    /* Título muy grande con importancia */
-    color: var(--color-primario);    /* Color corporativo */
-    margin-bottom: 1.5rem !important; /* Margen inferior con importancia */
+    font-size: 2.5rem !important;        /* Título muy grande con importancia */
+    color: var(--primary-color);        /* Color corporativo */
+    margin-bottom: 1.5rem !important;    /* Margen inferior con importancia */
 }
 
 .welcome-message p {
-    font-size: 1.4rem !important;    /* Texto grande con importancia */
-    color: var(--color-secundario);  /* Color gris secundario */
-    max-width: 600px;                /* Ancho máximo para legibilidad */
-    text-align: center;              /* Texto centrado */
-    margin: 0 auto;                  /* Centrado horizontal */
-    line-height: 1.6;                /* Altura de línea para mejor lectura */
+    font-size: 1.4rem !important;        /* Texto grande con importancia */
+    color: var(--secondary-color);      /* Color gris secundario */
+    max-width: 600px;                    /* Ancho máximo para legibilidad */
+    text-align: center;                  /* Texto centrado */
+    margin: 0 auto;                      /* Centrado horizontal */
+    line-height: 1.6;                    /* Altura de línea para mejor lectura */
 }
 
 /* ================================ */
 /* 11. ESTILOS PARA SIDEBAR COLAPSADO - HOMOLOGADOS Y MEJORADOS */
 /* ================================ */
 .sidebar.collapsed .module-header span:not(.module-icon) {
-    display: none;                   /* Oculta el texto del módulo (excepto iconos) */
+    display: none;                       /* Oculta el texto del módulo (excepto iconos) */
 }
 
 .sidebar.collapsed .module-arrow {
-    display: none;                   /* Oculta la flecha cuando está colapsado */
+    display: none;                       /* Oculta la flecha cuando está colapsado */
 }
 
 .sidebar.collapsed .submenu-item span:not(.submenu-icon-img):not(.submenu-icon-placeholder) {
-    display: none;                   /* Oculta el texto de los ítems del submenú */
+    display: none;                       /* Oculta el texto de los ítems del submenú */
 }
 
 .sidebar.collapsed .module-header {
-    justify-content: center;         /* Centra el contenido (solo icono) */
-    padding: 6px;                    /* Mismo padding que extendido - homologado */
-    min-height: 32px;                /* Altura mínima idéntica a extendido */
+    justify-content: center;             /* Centra el contenido (solo icono) */
+    padding: 6px;                        /* Mismo padding que extendido - homologado */
+    min-height: 32px;                    /* Altura mínima idéntica a extendido */
 }
 
 .sidebar.collapsed .module-icon {
-    margin-right: 0;                 /* Elimina margen derecho del icono */
-    margin-left: 0;                  /* Elimina margen izquierdo del icono */
-    font-size: 16px;                 /* Tamaño de fuente ligeramente mayor */
-    width: 20px;                     /* Mismo tamaño que extendido - homologado */
-    height: 20px;                    /* Mismo tamaño que extendido - homologado */
+    margin-right: 0;                     /* Elimina margen derecho del icono */
+    margin-left: 0;                      /* Elimina margen izquierdo del icono */
+    font-size: 16px;                     /* Tamaño de fuente ligeramente mayor */
+    width: 20px;                         /* Mismo tamaño que extendido - homologado */
+    height: 20px;                        /* Mismo tamaño que extendido - homologado */
 }
 
 .sidebar.collapsed .module-icon-img {
-    width: 20px;                     /* Mismo tamaño que extendido - homologado */
-    height: 20px;                    /* Mismo tamaño que extendido - homologado */
+    width: 20px;                         /* Mismo tamaño que extendido - homologado */
+    height: 20px;                        /* Mismo tamaño que extendido - homologado */
 }
 
 /* SUBMENÚS COLAPSADOS - TAMAÑOS IDÉNTICOS */
 .sidebar.collapsed .submenu-item {
-    padding: 6px;                    /* Mismo padding que extendido - homologado */
-    justify-content: center;         /* Centra contenido cuando está colapsado */
-    min-height: 32px;                /* Altura mínima idéntica a extendido */
+    padding: 6px;                        /* Mismo padding que extendido - homologado */
+    justify-content: center;             /* Centra contenido cuando está colapsado */
+    min-height: 32px;                    /* Altura mínima idéntica a extendido */
 }
 
 .sidebar.collapsed .submenu-icon-img,
 .sidebar.collapsed .submenu-icon-placeholder {
-    margin-right: -5;                /* Sin margen derecho cuando está colapsado */
-    width: 18px;                     /* Mismo tamaño que extendido - homologado */
-    height: 18px;                    /* Mismo tamaño que extendido - homologado */
+    margin-right: -5;                    /* Sin margen derecho cuando está colapsado */
+    width: 18px;                         /* Mismo tamaño que extendido - homologado */
+    height: 18px;                        /* Mismo tamaño que extendido - homologado */
 }
 
 /* ================================= */
 /* 12. BARRA DE HERRAMIENTAS - LOGÍSTICA */
 /* ================================= */
 .barra-herramientas-container {
-    display: none;                   /* Oculto por defecto */
-    background: var(--color-blanco); /* Fondo blanco para la barra */
-    padding: var(--espacio-mediano); /* Espaciado interno de 10px */
-    border-bottom: 3px solid var(--color-borde); /* Línea inferior de separación más gruesa */
-    box-shadow: var(--sombra-suave); /* Sombra sutil para profundidad */
+    display: none;                       /* Oculto por defecto */
+    background: var(--white-color);     /* Fondo blanco para la barra */
+    padding: var(--spacing-medium);     /* Espaciado interno de 10px */
+    border-bottom: 3px solid var(--border-color); /* Línea inferior de separación más gruesa */
+    box-shadow: var(--shadow-soft);     /* Sombra sutil para profundidad */
 }
 
 /* ==================================== */
 /* 13. SISTEMA DE PESTAÑAS INTERNAS    */
 /* ==================================== */
 .sistema-pestañas {
-    background: var(--color-blanco); /* Fondo blanco */
-    border-bottom: 1px solid var(--color-borde); /* Línea inferior sutil */
-    display: none;                   /* Oculto inicialmente */
-    width: 100%;                     /* Ancho completo */
+    background: var(--white-color);     /* Fondo blanco */
+    border-bottom: 1px solid var(--border-color); /* Línea inferior sutil */
+    display: none;                       /* Oculto inicialmente */
+    width: 100%;                         /* Ancho completo */
 }
 
 .barra-pestañas {
-    display: flex;                   /* Flexbox para pestañas */
-    background: var(--color-blanco) !important; /* Fondo blanco forzado */
-    border-bottom: 2px solid var(--color-borde); /* Línea inferior */
-    padding: 8px 3px 0px 5px;        /* Padding asimétrico */
-    gap: 2px;                        /* Espacio entre pestañas */
-    overflow-x: auto;                /* Scroll horizontal si es necesario */
-    flex-shrink: 0;                  /* No se reduce */
+    display: flex;                       /* Flexbox para pestañas */
+    background: var(--white-color) !important; /* Fondo blanco forzado */
+    border-bottom: 2px solid var(--border-color); /* Línea inferior */
+    padding: 8px 0px 0px 5px;            /* Padding asimétrico */
+    gap: px;                           /* Espacio entre pestañas */
+    overflow-x: auto;                   /* Scroll horizontal si es necesario */
+    flex-shrink: 0;                     /* No se reduce */
+    
 }
 
 .pestana {
-    display: flex;                   /* Flexbox para alinear contenido */
-    align-items: center;             /* Centra verticalmente */
-    gap: 3px;                        /* Espacio entre icono y texto */
-    padding: 6px 8px;                /* Padding: 6px arriba/abajo, 8px izquierda/derecha - AJUSTADO */
-    background: var(--color-blanco); /* Fondo blanco */
-    border: 1px solid var(--color-borde); /* Borde completo gris claro */
-    border-bottom: none;             /* Quita borde inferior */
-    border-radius: 3px 3px 0 0;      /* Esquinas redondeadas solo arriba */
-    cursor: pointer;                 /* Cursor de mano al pasar */
-    transition: all 0.2s ease;       /* Transición suave para hover */
-    min-width: 110px;                /* Ancho mínimo para pestañas - AJUSTADO */
-    max-width: 200px;                /* Ancho máximo para pestañas */
-    position: relative;              /* Para posicionamiento interno */
-    font-size: 12px;                 /* Tamaño de fuente específico para pestañas */
-    font-weight: var(--peso-seminegrita); /* Peso de fuente semi-negrita */
-    color: var(--color-secundario);  /* Color de texto secundario */
+    display: flex;                       /* Flexbox para alinear contenido */
+    align-items: center;                 /* Centra verticalmente */
+    gap: 3px;                           /* Espacio entre icono y texto */
+    padding: 6px 8px;                  /* Padding: 6px arriba/abajo, 8px izquierda/derecha - AJUSTADO */
+    background: var(--white-color);     /* Fondo blanco */
+    border: 1px solid var(--border-color); /* Borde completo gris claro */
+    border-bottom: none;                /* Quita borde inferior */
+    border-radius: 3px 3px 0 0;         /* Esquinas redondeadas solo arriba */
+    cursor: pointer;                    /* Cursor de mano al pasar */
+    transition: all 0.2s ease;          /* Transición suave para hover */
+    min-width: 110px;                   /* Ancho mínimo para pestañas - AJUSTADO */
+    max-width: 200px;                   /* Ancho máximo para pestañas */
+    position: relative;                 /* Para posicionamiento interno */
+    font-size: 12px;                    /* Tamaño de fuente específico para pestañas */
+    font-weight: var(--font-weight-semibold); /* Peso de fuente semi-negrita */
+    color: var(--secondary-color);     /* Color de texto secundario */
 }
 
 .pestana:hover {
-    background: #f8f9fa;             /* Fondo gris claro al pasar mouse */
-    color: var(--color-primario);    /* Color primario al hover */
+    background: #f8f9fa;                /* Fondo gris claro al pasar mouse */
+    color: var(--primary-color);       /* Color primario al hover */
 }
 
 .pestana.activa {
-    background: var(--color-primario); /* Fondo color primario cuando está activa */
-    color: var(--color-blanco);      /* Texto blanco cuando está activa */
-    border-color: var(--color-primario); /* Borde mismo color que fondo */
+    background: var(--primary-color);  /* Fondo color primario cuando está activa */
+    color: var(--white-color);         /* Texto blanco cuando está activa */
+    border-color: var(--primary-color); /* Borde mismo color que fondo */
 }
 
 .nombre-pestana {
-    flex: 1;                         /* Ocupa todo el espacio disponible */
-    white-space: nowrap;             /* Evita salto de línea */
-    overflow: hidden;                /* Oculta texto que sobresalga */
-    text-overflow: ellipsis;         /* Muestra "..." si texto es muy largo */
+    flex: 1;                            /* Ocupa todo el espacio disponible */
+    white-space: nowrap;                /* Evita salto de línea */
+    overflow: hidden;                   /* Oculta texto que sobresalga */
+    text-overflow: ellipsis;            /* Muestra "..." si texto es muy largo */
 }
 
 .btn-cerrar-pestana {
@@ -629,15 +628,14 @@ header {
 }
 
 .area-contenido-pestañas {
-    height: calc(100vh - 100px) !important;             /* Ocupa el 100% del contenedor padre */
-    max-height: calc(100vh - 100px) !important;
-    min-height: auto;                    /* Altura automática */
-    overflow: auto !important;               /* scroll interno para iframes/contenido */
-    background: var(--color-blanco);     /* Fondo blanco */
-    border-radius: 0;                    /* Sin bordes redondeados para alineación perfecta con pestañas */
-    flex: 1 1 auto !important;           /* Para expandirse */
-    margin: 0;                           /* Sin margen */
-    padding: 0;                          /* Sin padding */
+    height: calc(100vh - 140px) !important;
+    max-height: calc(100vh - 140px) !important;
+    min-height: auto;
+    overflow: auto !important;
+    background: var(--white-color);
+    border-radius: 0;
+    flex: 1 1 auto !important;
+    display: flex;
 }
 
 .contenido-pestana-container {
@@ -651,7 +649,7 @@ header {
     flex: 1;                             /* Expande para llenar */
     height: 100%;                        /* Altura completa */
     width: 100%;                         /* Ancho completo */
-    background: var(--color-blanco);     /* Fondo blanco */
+    background: var(--white-color);     /* Fondo blanco */
     display: flex;                       /* Flex para iframe */
 }
 
@@ -672,9 +670,9 @@ header {
     flex-direction: column;             /* Dirección vertical */
     justify-content: center;            /* Centra verticalmente */
     align-items: center;                /* Centra horizontalmente */
-    gap: var(--espacio-xl);             /* Espacio grande entre elementos */
+    gap: var(--spacing-xlarge);             /* Espacio grande entre elementos */
     height: 100%;                       /* Altura completa */
-    background: var(--color-fondo);     /* Fondo gris claro */
+    background: var(--background-color);     /* Fondo gris claro */
 }
 
 .modulo-desarrollo .icono-desarrollo {
@@ -683,20 +681,20 @@ header {
 }
 
 .modulo-desarrollo h3 {
-    color: var(--color-primario);       /* Color primario para el título */
+    color: var(--primary-color);       /* Color primario para el título */
     margin: 0;                          /* Sin margen */
 }
 
 .modulo-desarrollo p {
-    color: var(--color-secundario);     /* Color secundario para el párrafo */
+    color: var(--secondary-color);     /* Color secundario para el párrafo */
     max-width: 400px;                   /* Ancho máximo para el párrafo */
     margin: 0;                          /* Sin margen */
 }
 
 .acciones-desarrollo {
     display: flex;                      /* Flexbox para botones */
-    gap: var(--espacio-mediano);        /* Espacio entre botones */
-    margin-top: var(--espacio-grande);  /* Margen superior grande */
+    gap: var(--spacing-medium);        /* Espacio entre botones */
+    margin-top: var(--spacing-large);  /* Margen superior grande */
 }
 
 /* Scroll personalizado para barra de pestañas */
@@ -705,16 +703,16 @@ header {
 }
 
 .barra-pestañas::-webkit-scrollbar-track {
-    background: var(--color-fondo);     /* Fondo del track del scrollbar */
+    background: var(--background-color);     /* Fondo del track del scrollbar */
 }
 
 .barra-pestañas::-webkit-scrollbar-thumb {
-    background: var(--color-borde);     /* Color del thumb del scrollbar */
+    background: var(--border-color);     /* Color del thumb del scrollbar */
     border-radius: 3px;                 /* Bordes redondeados del thumb */
 }
 
 .barra-pestañas::-webkit-scrollbar-thumb:hover {
-    background: var(--color-secundario); /* Color del thumb al hacer hover */
+    background: var(--secondary-color); /* Color del thumb al hacer hover */
 }
 
 /* ================================ */
@@ -783,8 +781,8 @@ header {
 @media (max-width: 768px) {
     header {
         flex-direction: column;         /* Cambia a disposición vertical */
-        gap: var(--espacio-pequeño);     /* Espacio de 15px entre elementos */
-        padding: 12px var(--espacio-xl); /* Padding reducido en móviles */
+        gap: var(--spacing-medium);     /* Espacio de 15px entre elementos */
+        padding: 12px var(--spacing-xlarge); /* Padding reducido en móviles */
     }
     .header-left {
         flex-direction: column;         /* Cambia a disposición vertical */
@@ -815,11 +813,9 @@ header {
     .area-contenido-pestañas {
         height: 100% !important;         /* Ocupa el 100% del contenedor */
         min-height: auto;                /* Altura automática */
-        background: var(--color-blanco); /* Fondo blanco */
-        border-radius: var(--radio-borde); /* Bordes redondeados */
+        background: var(--white-color); /* Fondo blanco */
+        border-radius: var(--border-radius); /* Bordes redondeados */
         flex: 1;                         /* Para expandirse */
-        margin: 0;                       /* Sin margen */
-        padding: 0;                      /* Sin padding */
     }
     .modulo-desarrollo {
         padding: 20px;                  /* Padding reducido para móviles */
@@ -827,14 +823,14 @@ header {
     /* Ajustes de visibilidad en móviles - CORREGIDO */
     .welcome-message {
         text-align: center;             /* Texto centrado */
-        background: var(--color-blanco); /* Fondo blanco */
-        border-radius: var(--radio-borde); /* Bordes redondeados */
-        box-shadow: var(--sombra-media); /* Sombra media */
+        background: var(--white-color); /* Fondo blanco */
+        border-radius: var(--border-radius); /* Bordes redondeados */
+        box-shadow: var(--shadow-medium); /* Sombra media */
         display: flex;                  /* Flexbox para centrado */
         flex-direction: column;         /* Dirección vertical */
         align-items: center;            /* Centra horizontalmente */
         justify-content: center;        /* Centra verticalmente */
-        padding: var(--espacio-xl) !important; /* Padding extra grande con importancia */
+        padding: var(--spacing-xlarge) !important; /* Padding extra grande con importancia */
     }
     .welcome-message h3 {
         font-size: 1.5rem;              /* Tamaño de fuente ajustado para móviles */
@@ -849,13 +845,14 @@ footer {
     bottom: 0;                          /* Pegado a la parte inferior */
     left: 0;                            /* Pegado al lado izquierdo */
     right: 0;                           /* Pegado al lado derecho */
-    background: var(--color-blanco);     /* Fondo blanco */
-    color: var(--color-secundario);      /* Texto gris para información secundaria */
-    padding: var(--espacio-pequeño) var(--espacio-xl); /* 5px arriba/abajo, 20px lados */
+    background: var(--white-color);     /* Fondo blanco */
+    color: var(--secondary-color);      /* Texto gris para información secundaria */
     text-align: center;                  /* Centra el texto horizontalmente */
-    font-size: var(--tamaño-texto-normal); /* Tamaño estándar de fuente */
-    border-top: 1px solid var(--color-borde); /* Línea superior sutil */
+    font-size: var(--text-size-normal); /* Tamaño estándar de fuente */
     z-index: 1000;                      /* Asegura que esté por encima de otros elementos */
+    border: 1px solid var(--border-color); /* Línea superior sutil */
+    padding: 8px;              /* Padding vertical usando variable de espaciado */  
+    margin:  0px 3px;          /* Marguen externo: 5px arriba/abajo, 5px derecha, 2.5px izquierda */ 
 }
 
 /* ================================ */
@@ -880,17 +877,17 @@ footer {
 }
 
 .sidebar::-webkit-scrollbar-track {
-    background: var(--color-fondo);     /* Track del scrollbar con color de fondo */
+    background: var(--background-color);     /* Track del scrollbar con color de fondo */
     border-radius: 3px;                 /* Bordes redondeados del track */
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-    background: var(--color-borde);     /* Thumb del scrollbar con color de borde */
+    background: var(--border-color);     /* Thumb del scrollbar con color de borde */
     border-radius: 3px;                 /* Bordes redondeados del thumb */
 }
 
 .sidebar::-webkit-scrollbar-thumb:hover {
-    background: var(--color-secundario); /* Thumb más oscuro al hover para mejor visibilidad */
+    background: var(--secondary-color); /* Thumb más oscuro al hover para mejor visibilidad */
 }
 
 /* ================================ */
@@ -905,12 +902,12 @@ footer {
     left: 100%;                         /* A la derecha del elemento */
     top: 50%;                           /* Centrado verticalmente */
     transform: translateY(-50%);        /* Ajuste fino de centrado vertical */
-    background: var(--color-primario);  /* Fondo color primario */
-    color: var(--color-blanco);         /* Texto blanco */
+    background: var(--primary-color);  /* Fondo color primario */
+    color: var(--white-color);         /* Texto blanco */
     padding: 6px 10px;                  /* Espaciado interno */
-    border-radius: var(--radio-borde-pequeño); /* Bordes redondeados pequeños */
-    font-size: var(--tamaño-texto-pequeño); /* Tamaño de texto pequeño */
-    font-weight: var(--peso-seminegrita); /* Peso semi-negrita */
+    border-radius: var(--border-radius-small); /* Bordes redondeados pequeños */
+    font-size: var(--text-size-small); /* Tamaño de texto pequeño */
+    font-weight: var(--font-weight-semibold); /* Peso semi-negrita */
     white-space: nowrap;                /* Sin salto de línea */
     opacity: 0;                         /* Inicialmente invisible */
     visibility: hidden;                 /* Inicialmente oculto */
@@ -926,7 +923,7 @@ footer {
     top: 50%;                           /* Centrado verticalmente */
     transform: translateY(-50%);        /* Ajuste fino de centrado */
     border: 5px solid transparent;      /* Borde transparente */
-    border-right-color: var(--color-primario); /* Solo el borde derecho con color */
+    border-right-color: var(--primary-color); /* Solo el borde derecho con color */
 }
 
 .sidebar.collapsed .tooltip-container:hover .tooltip {
@@ -952,7 +949,7 @@ footer {
 }
 
 /* ======================================== */
-/* 22. PANTALLA DE CARGA - NUEVA SECCIÓN */
+/* 21. PANTALLA DE CARGA */
 /* ======================================== */
 .pantalla-carga {
     position: fixed;
@@ -960,7 +957,7 @@ footer {
     left: 0;
     width: 100%;
     height: 100%;
-    background: var(--color-blanco) !important;
+    background: var(--white-color) !important;
     backdrop-filter: none !important;
     display: flex;
     flex-direction: column;
@@ -979,7 +976,7 @@ footer {
     width: 50px;
     height: 50px;
     border: 4px solid #f3f3f3;
-    border-top: 4px solid var(--color-primario);
+    border-top: 4px solid var(--primary-color);
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 20px;
@@ -992,20 +989,6 @@ footer {
 
 .texto-carga {
     font-size: 18px;
-    color: var(--color-primario);
-    font-weight: var(--peso-seminegrita);
-}
-
-/* ======================================== */
-/* MEDIA QUERIES                            */
-/* ======================================== */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 100%;                        /* Ancho completo en móviles */
-    height: auto;                       /* Altura automática en móviles */
-    flex-direction: row;                /* Dirección horizontal en móviles */
-  }
-  .main-content {
-    height: auto;                       /* Altura automática en móviles */
-  }
+    color: var(--primary-color);
+    font-weight: var(--font-weight-semibold);
 }

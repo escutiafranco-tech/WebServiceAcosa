@@ -1,32 +1,5 @@
 [
   {
-    "module": "Catalogos",
-    "menus": [
-      {
-        "name": "Proveedores",
-        "roles": ["Administrador", "Custodia"],
-        "submenus": [
-          {
-            "name": "Registro de Proveedores",
-            "action": "modules/catalogos/proveedores/Registro de proveedores.html",
-            "roles": ["Administrador", "Custodia"]
-          }
-        ]
-      },
-      {
-        "name": "Clientes",
-        "roles": ["Administrador", "Custodia"],
-        "submenus": [
-          {
-            "name": "Registro de Clientes",
-            "action": "modules/catalogos/clientes/Registro de clientes.html",
-            "roles": ["Administrador", "Custodia"]
-          }
-        ]
-      }
-    ]
-  },
-  {
     "module": "Compras",
     "menus": [
       {

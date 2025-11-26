@@ -5,7 +5,7 @@
 /*** Contenedores principales para módulos y formularios, Diseño flexbox para layout completo de pantalla*/
 .module-container,
 .form-container {
-    height: 100%;                     /* Altura 100% del iframe contenedor */
+    height: 100vh;                    /* Altura exacta de viewport */                   
     max-height: 100%;                 /* Altura máxima 100% */
     background: white;              /* Fondo blanco para contraste */
     margin: 0;                        /* Sin márgenes */
@@ -126,6 +126,7 @@
     flex-direction: column;
     overflow: hidden;                 /* Oculta overflow */
     padding: 0;                       /* Sin padding */
+    padding-bottom: 32px;             /* Espacio para barra inferior */
     margin: 0;                        /* Sin margen */
     min-height: 0;                    /* Permite reducción */
 }
@@ -153,9 +154,7 @@
     flex-shrink: 0;
 }
 
-/**
- * Tabla principal de custodias
- */
+/*** Tabla principal de custodias*/
 .custodias-table {
     background: white;                /* Fondo blanco */
     border-radius: var(--border-radius); /* Bordes redondeados */
@@ -168,6 +167,193 @@
     max-height: 100%;                 /* No exceder el contenedor padre */
     padding: 0;                       /* Sin padding interno */
     margin: 0;                        /* Sin margen */
+}
+
+/* ==========================================================================
+   BARRA DE HERRAMIENTAS DE MÓDULOS
+   ========================================================================== */
+
+.toolbar-module {
+    background: white;
+    padding: 2px 6px;
+    margin-bottom: 1px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    box-shadow: var(--shadow-soft);
+}
+
+.toolbar-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 3px 6px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    transition: all 0.2s;
+    min-width: 44px;
+    border-right: 1px solid #e0e0e0;
+}
+
+.toolbar-btn:last-of-type {
+    border-right: none;
+}
+
+.toolbar-btn:hover {
+    background: var(--background-color);
+    border-color: var(--border-color);
+}
+
+.toolbar-btn:active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.toolbar-btn:active .toolbar-icon {
+    transform: scale(0.95);
+}
+
+.toolbar-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+.toolbar-label {
+    font-size: 9px;
+    font-weight: 500;
+    color: var(--text-color);
+    text-align: center;
+}
+
+.toolbar-divider {
+    width: 1px;
+    height: 40px;
+    background: #e0e0e0;
+    margin: 0 4px;
+    flex-shrink: 0;
+}
+
+.toolbar-search {
+    flex: 1;
+    max-width: 300px;
+    margin-left: auto;
+    display: flex;
+    gap: 4px;
+}
+
+.toolbar-search input {
+    flex: 1;
+    padding: 6px 12px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 13px;
+    transition: border-color 0.2s;
+}
+
+.toolbar-search input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.search-btn {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+.search-btn:hover {
+    background: var(--background-color);
+    border-color: var(--primary-color);
+}
+
+/* Panel de Filtros */
+.filtros-panel {
+    background: var(--background-color);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 12px;
+    margin-bottom: 16px;
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.filtros-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.filtros-content label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.filtros-content input[type="date"] {
+    padding: 6px 10px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 12px;
+}
+
+.btn-sm {
+    padding: 6px 14px;
+    font-size: 12px;
+}
+
+/* Responsive Toolbar */
+@media (max-width: 768px) {
+    .toolbar-module {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .toolbar-btn {
+        min-width: 50px;
+    }
+
+    .toolbar-divider {
+        display: none;
+    }
+
+    .toolbar-search {
+        order: 10;
+        width: 100%;
+        max-width: 100%;
+        margin-left: 0;
+    }
+
+    .filtros-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filtros-content input[type="date"] {
+        width: 100%;
+    }
 }
 
 /* Cabecera fija de la tabla */
@@ -183,6 +369,7 @@
     overflow-y: auto;                 /* Scroll vertical */
     overflow-x: auto;                 /* Scroll horizontal */
     min-height: 0;                    /* Permite reducción */
+    min-width: max-content;
     display: flex;                    /* Flexbox para contenido */
     flex-direction: column;           /* Dirección vertical */
     padding: 0;                       /* Sin padding */
@@ -218,7 +405,7 @@
  */
 .table-row > div,
 .header-row > div {
-    padding: 12px 10px;               /* Padding interno */
+    padding: 5px 10px;               /* Padding interno */
     min-width: 60px;                  /* Ancho mínimo */
     max-width: 400px;                 /* Ancho máximo */
     overflow: hidden;                 /* Oculta overflow */
@@ -234,18 +421,16 @@
    CABECERA DE TABLA CON REDIMENSIONAMIENTO Y ARRASTRE
    ========================================================================== */
 
-/**
- * Fila de cabecera de tabla con funcionalidad de redimensionamiento
- */
+/*** Fila de cabecera de tabla con funcionalidad de redimensionamiento*/
 .header-row {
-    background: #f8f9fa !important;   /* Fondo gris claro */
-    color: #212529 !important;        /* Texto oscuro */
-    font-weight: 600;                 /* Texto en negrita */
-    font-size: 13px;                  /* Tamaño de fuente reducido */
+    background: #f8f9fa !important; /* Gris institucional claro */
+    color: var(--text-color) !important;        /* Texto normal */
+    font-weight: 300;                 /* Texto normal, no bold */
+    font-size: var(--text-size-normal); /* Tamaño de fuente igual que submenús */
     position: sticky;                 /* Posición fija al hacer scroll */
-    top: 0;                           /* Pegado al top */
+    top: 0px;                           /* Pegado al top */
     z-index: 10;                      /* Por encima del contenido */
-    border-bottom: 2px solid #dee2e6; /* Borde inferior destacado */
+    margin: 2px solid #dee2e6;
     display: grid;
     grid-template-columns: 
         minmax(100px, 1fr)
@@ -258,21 +443,29 @@
     gap: 0;
 }
 
+
 .header-row > div {
     cursor: col-resize;               /* Cursor indicando redimensionamiento */
     user-select: none;                /* No permite selección de texto */
     position: relative;
-    border-right: 2px solid #ced4da;  /* Borde derecho más destacado */
-    border-bottom: 2px solid #dee2e6; /* Borde inferior */
+    border-width: 1px 1px 1px 1px;   /* Borde superior e inferior más grueso */
+    border-style: solid;
+    border-color: #e0dfdf;
+    background: #f5f5f5;              /* Fondo gris claro */
+    padding: 2px 4px;                 /* Padding reducido - más bajo */
+}
+
+
+.header-row > div:hover {
+    background: #ebebeb;              /* Hover un poco más oscuro */
 }
 
 /**
- * Área de redimensionamiento invisible en cabeceras
- */
+ * Área de redimensionamiento invisible en cabeceras*/
 .header-row > div::after {
     content: '';
     position: absolute;
-    right: -3px;                      /* Posicionado a la derecha */
+    right: -6px;                      /* Posicionado a la derecha */
     top: 0;
     bottom: 0;
     width: 6px;                       /* Área clickeable */
@@ -285,9 +478,7 @@
     background: rgba(0, 123, 255, 0.3); /* Color azul al hover */
 }
 
-/**
- * Estados de redimensionamiento y arrastre
- */
+/*** Estados de redimensionamiento y arrastre*/
 .header-row > div.resizing {
     background: rgba(0, 123, 255, 0.1); /* Fondo azul claro durante redimensionamiento */
     border-right: 2px solid #007bff;  /* Borde azul */
@@ -390,18 +581,18 @@
 .empty-state {
     grid-column: 1 / -1;              /* Ocupa todas las columnas */
     text-align: center;               /* Texto centrado */
-    padding: 40px 20px;               /* Padding moderado */
+    padding: 40px 20px;               /* Padding reducido */
     color: var(--secondary-color);    /* Color secundario */
     display: flex;
     flex-direction: column;
     justify-content: center;          /* Centra verticalmente */
     align-items: center;              /* Centra horizontalmente */
-    min-height: 150px;                /* Altura mínima reducida */
+    min-height: 100px;                /* Altura mínima reducida */ 
 }
 
 .empty-state div {
     font-size: 18px;                  /* Título más grande */
-    margin-bottom: 10px;              /* Espacio inferior */
+    margin-bottom: 5px;              /* Espacio inferior */
 }
 
 .empty-state p {
@@ -421,26 +612,21 @@
     justify-content: space-between;   /* Espacio entre secciones */
     align-items: center;              /* Centra verticalmente */
     background: #f8f9fa;              /* Fondo gris claro */
-    padding: 8px 20px;                /* Padding interno */
+    padding: 4px 10px;                /* Padding reducido - más baja */
     border-top: 1px solid #dee2e6;    /* Línea separadora superior */
     margin-top: auto;                 /* Empuja al fondo del contenedor */
     flex-wrap: wrap;                  /* Permite wrap en móviles */
-    gap: 15px;                        /* Espacio entre elementos */
+    gap: 10px;                        /* Espacio reducido entre elementos */
     position: absolute;               /* Absolute para posicionar en el fondo */
     bottom: 0;                        /* SIN espacio - pegada al fondo */
-    left: 0;
-    right: 0;
     z-index: 100;                     /* Por encima del contenido */
     flex-shrink: 0;                   /* No se reduce */
     width: 100%;                      /* Ancho completo */
 }
-
-/**
- * Contenedor de estadísticas inferiores
- */
+/*** Contenedor de estadísticas inferiores*/
 .estadisticas-inferiores {
     display: flex;
-    gap: 20px;                        /* Espacio entre estadísticas */
+    gap: 10px;                        /* Espacio reducido entre estadísticas */
     align-items: center;
     flex-wrap: wrap;                  /* Wrap en pantallas pequeñas */
     flex: 1;                          /* Ocupa espacio disponible */
@@ -456,18 +642,18 @@
 }
 
 .stat-label-inferior {
-    font-size: 12px;                  /* Texto pequeño */
+    font-size: 11px;                  /* Texto más pequeño */
     color: #6c757d;                   /* Color gris */
-    font-weight: 600;                 /* Texto seminegrita */
+    font-weight: 400;                 /* Texto seminegrita */
     white-space: nowrap;              /* Sin wrap */
 }
 
 .stat-numero-inferior {
-    font-size: 13px;                  /* Texto ligeramente mayor */
-    font-weight: 700;                 /* Texto en negrita */
+    font-size: 11px;                  /* Texto más pequeño */
+    font-weight: 600;                 /* Texto en negrita */
     color: var(--primary-color);      /* Color primario */
     background: white;                /* Fondo blanco */
-    padding: 2px 6px;                 /* Padding compacto */
+    padding: 1px 4px;                 /* Padding más compacto */
     border-radius: 4px;               /* Bordes redondeados */
     min-width: 20px;                  /* Ancho mínimo */
     text-align: center;               /* Texto centrado */
@@ -475,15 +661,13 @@
     box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* Sombra muy sutil */
 }
 
-/**
- * Contador de registros
- */
+/*** Contador de registros*/
 .contador-registros {
     display: flex;
     align-items: center;
-    gap: 8px;                         /* Espacio entre elementos */
+    gap: 6px;                         /* Espacio reducido entre elementos */
     color: #6c757d;                   /* Color gris */
-    font-size: 13px;                  /* Texto pequeño */
+    font-size: 11px;                  /* Texto más pequeño */
     font-weight: 500;                 /* Peso medio */
     justify-content: center;          /* Centra horizontalmente */
     flex: 1;                          /* Ocupa espacio disponible */
@@ -514,9 +698,9 @@
 .paginacion-inferior {
     display: flex;
     align-items: center;
-    gap: 10px;                        /* Espacio entre controles */
+    gap: 8px;                         /* Espacio reducido entre controles */
     color: #6c757d;                   /* Color gris */
-    font-size: 13px;                  /* Texto pequeño */
+    font-size: 11px;                  /* Texto más pequeño */
     justify-content: flex-end;        /* Alineado a la derecha */
     flex: 1;                          /* Ocupa espacio disponible */
 }
@@ -652,6 +836,361 @@ textarea.table-input {
     margin-top: 16px;
     font-size: 16px;
     font-weight: 500;
+}
+
+/* ==========================================================================
+   MODAL DE FORMULARIO ESTILO SAE
+   ========================================================================== */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    backdrop-filter: blur(2px);
+    animation: fadeIn 0.2s ease;
+}
+
+.modal-container {
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 1200px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease;
+}
+
+.modal-compact {
+    max-width: 720px;
+    max-height: 85vh;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Header del Modal */
+.modal-header {
+    background: var(--primary-color);
+    color: white;
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.modal-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-icon {
+    font-size: 18px;
+}
+
+.modal-title h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.modal-header-buttons {
+    display: flex;
+    gap: 4px;
+}
+
+.btn-header-icon {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 2px;
+    transition: background 0.2s;
+    font-weight: bold;
+}
+
+.btn-header-icon:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Tabs del Modal */
+.modal-tabs {
+    background: #e8e8e8;
+    display: flex;
+    border-bottom: 1px solid #c0c0c0;
+}
+
+.tab-button {
+    background: #d4d4d4;
+    border: none;
+    border-right: 1px solid #a0a0a0;
+    border-bottom: 1px solid #a0a0a0;
+    padding: 6px 16px;                /* Padding reducido - pestañas más bajas */
+    font-size: 10px;                  /* Fuente legible */
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #333;
+}
+
+.tab-button:hover {
+    background: #e0e0e0;
+}
+
+.tab-button.active {
+    background: white;
+    border-bottom: 1px solid white;
+    color: var(--primary-color);
+}
+
+/* Contenido del Modal Compacto */
+.modal-content-compact {
+    padding: 12px;
+    overflow-y: auto;
+    flex: 1;
+    background: #f5f5f5;
+    min-height: 500px;
+    max-height: 500px;
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Secciones Colapsables */
+.collapsible-section {
+    background: white;
+    border: 1px solid #c0c0c0;
+    margin-bottom: 8px;
+}
+
+.section-header-collapse {
+    background: linear-gradient(to bottom, #f0f0f0 0%, #e0e0e0 100%);
+    border-bottom: 1px solid #c0c0c0;
+    padding: 6px 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+}
+
+.section-header-collapse:hover {
+    background: linear-gradient(to bottom, #e8e8e8 0%, #d8d8d8 100%);
+}
+
+.collapse-icon {
+    font-size: 10px;
+    transition: transform 0.2s;
+}
+
+.section-header-collapse.collapsed .collapse-icon {
+    transform: rotate(-90deg);
+}
+
+.section-title-text {
+    font-size: 10px;
+    font-weight: 700;
+    color: #333;
+    letter-spacing: 0.5px;
+}
+
+.section-body {
+    padding: 12px;
+    overflow: hidden;
+    max-height: 1000px;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.section-header-collapse.collapsed + .section-body {
+    max-height: 0;
+    padding: 0 12px;
+    overflow: hidden;
+}
+
+/* Tabla de Formulario */
+.form-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.form-table tr {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.form-table tr:last-child {
+    border-bottom: none;
+}
+
+.label-cell {
+    width: 25%;
+    padding: 6px 8px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #333;
+    background: #f8f8f8;
+    border-right: 1px solid #e0e0e0;
+    vertical-align: middle;
+}
+
+.input-cell {
+    padding: 4px 8px;
+}
+
+.input-cell input,
+.input-cell select {
+    width: 100%;
+    padding: 4px 6px;
+    border: 1px solid #c0c0c0;
+    border-radius: 2px;
+    font-size: 10px;
+    font-family: inherit;
+}
+
+.input-cell input:focus,
+.input-cell select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+.input-cell input[readonly] {
+    background: #f0f0f0;
+    color: #666;
+    cursor: not-allowed;
+}
+
+/* Grid de Ubicaciones */
+.ubicaciones-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.ubicacion-column {
+    background: white;
+    border: 1px solid #c0c0c0;
+}
+
+.ubicacion-title {
+    background: linear-gradient(to bottom, #f0f0f0 0%, #e0e0e0 100%);
+    border-bottom: 1px solid #c0c0c0;
+    padding: 6px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #333;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+/* Textarea en Observaciones */
+.section-body textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 6px 8px;
+    border: 1px solid #c0c0c0;
+    border-radius: 2px;
+    font-size: 12px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.section-body textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+.char-counter {
+    text-align: right;
+    font-size: 10px;
+    color: #666;
+    margin-top: 4px;
+}
+
+.required {
+    color: #dc3545;
+    font-weight: 700;
+}
+
+/* Empty Tab */
+.empty-tab {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.empty-tab p {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.empty-tab small {
+    font-size: 12px;
+    color: #999;
+}
+
+/* Footer del Modal */
+.modal-footer {
+    background: #f0f0f0;
+    border-top: 1px solid #c0c0c0;
+    padding: 10px 12px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.modal-footer .btn {
+    min-width: 120px;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Responsive para Modal */
+@media (max-width: 768px) {
+    .modal-compact {
+        width: 95%;
+        max-height: 95vh;
+    }
+
+    .ubicaciones-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-footer {
+        flex-direction: column;
+    }
+
+    .modal-footer .btn {
+        width: 100%;
+    }
 }
 
 /* ==========================================================================
@@ -802,241 +1341,4 @@ textarea.table-input {
         padding: 30px 10px; 
         min-height: 120px;             /* Altura mínima reducida */
     }
-}
-
-/* ==================================================================
-   MOVED FROM: modules/logistica/expedientes-carga/custodias/custodias.css
-   NOTE: variables and global resets were intentionally removed —
-   variables are provided by `public/style.css`. This block contains
-   module-specific layout and table rules moved here for global reuse.
-   ================================================================== */
-
-/* ================================
-   CONTENEDORES PRINCIPALES - CORREGIDO
-   ================================ */
-
-/* Contenedores principales del módulo y formulario */
-.module-container,
-.form-container {
-    height: 100vh; /* Altura exacta de viewport */
-    background: white; /* Fondo blanco */
-    margin: 0; /* Sin margen */
-    box-shadow: none; /* Sin sombra */
-    display: flex; /* Flexbox para el layout */
-    flex-direction: column; /* Dirección columna */
-    overflow: hidden; /* Sin overflow */
-    position: relative; /* Contexto de posicionamiento */
-    border-left: 0; /* Sin borde */
-}
-
-/* ================================
-   HEADERS - COMPLETAMENTE OCULTOS
-   ================================ */
-
-/* Ocultar completamente los headers duplicados */
-.module-header,
-.form-header {
-    display: none !important;
-}
-
-.header-content h1,
-.header-content p {
-    display: none; /* Ocultar títulos duplicados */
-}
-
-/* ================================
-   SECCIÓN DUPLICADA ELIMINADA
-   Las definiciones están en líneas 38-200
-   ================================ */
-
-.custodias-table {
-    background: white; /* Fondo blanco */
-    border-radius: var(--border-radius); /* Bordes redondeados */
-    overflow: hidden; /* Sin scroll aquí, solo en table-body */
-    box-shadow: var(--shadow); /* Sombra sutil */
-    display: flex; /* Flexbox */
-    flex-direction: column; /* Dirección columna */
-    flex: 1; /* Ocupa todo el espacio */
-    min-height: 0; /* Permite reducción */
-    padding: 0; /* Sin padding */
-    margin: 0; /* Sin margen */
-}
-
-.table-header-fixed {
-    flex-shrink: 0;
-    min-width: max-content; /* 🔥 Forzar ancho mínimo */
-}
-
-.table-body-scroll {
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: auto; /* 🔥 CAMBIO: Scroll horizontal también */
-    min-width: max-content;
-}
-
-.table-row {
-    display: grid;
-    grid-template-columns: minmax(100px, 1fr) minmax(200px, 2fr) minmax(140px, 1fr) minmax(110px, 1fr) minmax(180px, 1.5fr) minmax(130px, 1fr) minmax(140px, 1fr);
-    gap: 0;
-    padding: 0; /* 🔥 CAMBIO: Sin padding en la fila */
-    align-items: stretch;
-    min-width: max-content;
-}
-
-.table-row > div,
-.header-row > div {
-    padding: 12px 10px;
-    min-width: 60px;
-    max-width: 400px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    border-right: 1px solid #f0f0f0; /* 🔥 Divisor sutil entre celdas */
-    display: flex;
-    align-items: center;
-    position: relative;
-}
-
-.header-row {
-    background: #f8f9fa !important; /* Gris institucional claro */
-    color: #212529 !important; /* Texto negro */
-    font-weight: 600; /* Negrita */
-    font-size: 13px; /* Tamaño de fuente */
-    position: sticky; /* Cabecera fija */
-    top: 0; /* Pegada arriba */
-    z-index: 10; /* Por encima del contenido */
-    border-bottom: 2px solid #dee2e6;
-    display: grid;
-    grid-template-columns: minmax(100px, 1fr) minmax(200px, 2fr) minmax(140px, 1fr) minmax(110px, 1fr) minmax(180px, 1.5fr) minmax(130px, 1fr) minmax(140px, 1fr);
-    gap: 0;
-}
-
-/* Remaining rows and responsive rules moved from custodias.css */
-
-.header-row > div {
-    cursor: col-resize;
-    user-select: none;
-    position: relative;
-    border-right: 2px solid #ced4da;
-    border-bottom: 2px solid #dee2e6;
-}
-
-.header-row > div::after {
-    content: '';
-    position: absolute;
-    right: -3px;
-    top: 0;
-    bottom: 0;
-    width: 6px;
-    background: transparent;
-    cursor: col-resize;
-    z-index: 20;
-}
-
-.header-row > div:hover::after {
-    background: rgba(0, 123, 255, 0.3);
-}
-
-.header-row > div.resizing {
-    background: rgba(0, 123, 255, 0.1);
-    border-right: 2px solid #007bff;
-}
-
-.header-row > div.dragging {
-    background: rgba(40, 167, 69, 0.1);
-    border: 1.5px dashed #28a745;
-    opacity: 0.7;
-}
-
-.header-row > div.drop-zone {
-    background: rgba(255, 193, 7, 0.1);
-    border: 1.5px dashed #ffc107;
-}
-
-.table-body .table-row {
-    border-bottom: 1px solid var(--border-color);
-    transition: var(--transition);
-}
-
-.table-body .table-row:hover {
-    background: #f8f9fa;
-}
-
-.status-badge {
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.status-badge.pendiente {
-    background: #fff3cd;
-    color: #856404;
-}
-
-.status-badge.completado {
-    background: #d4edda;
-    color: #155724;
-}
-
-.col-acciones { display: flex; gap: 6px; }
-.btn-action { padding: 4px 8px; font-size: 11px; border-radius: 4px; border: none; cursor: pointer; transition: var(--transition); }
-.btn-action.view { background: var(--info-color); color: white; }
-.btn-action.edit { background: var(--warning-color); color: black; }
-.btn-action.delete { background: var(--danger-color); color: white; }
-
-.empty-state { grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--secondary-color); display: flex; flex-direction: column; justify-content: center; align-items: center; flex: 1; min-height: 200px; }
-.empty-state div { font-size: 18px; margin-bottom: 10px; }
-.empty-state p { margin-bottom: 0; font-size: 14px; }
-
-.barra-inferior-unificada { display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 8px 20px; border-top: 1px solid #dee2e6; margin-top: auto; flex-wrap: wrap; gap: 15px; position: absolute; bottom: 0px; left: 0; right: 0; z-index: 100; flex-shrink: 0; width: 100%; }
-.estadisticas-inferiores { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; flex: 1; }
-.stat-item-inferior { display: flex; align-items: center; gap: 5px; }
-.stat-label-inferior { font-size: 12px; color: #6c757d; font-weight: 600; white-space: nowrap; }
-.stat-numero-inferior { font-size: 13px; font-weight: 700; color: var(--primary-color); background: white; padding: 2px 6px; border-radius: 4px; min-width: 20px; text-align: center; border: 1px solid #dee2e6; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-.contador-registros { display: flex; align-items: center; gap: 8px; color: #6c757d; font-size: 13px; font-weight: 500; justify-content: center; flex: 1; }
-.btn-icon { background: white; border: 1px solid #dee2e6; padding: 4px 8px; border-radius: var(--border-radius); cursor: pointer; transition: var(--transition); color: #6c757d; }
-.btn-icon:hover { background: #e9ecef; transform: rotate(90deg); border-color: #adb5bd; }
-.paginacion-inferior { display: flex; align-items: center; gap: 10px; color: #6c757d; font-size: 13px; justify-content: flex-end; flex: 1; }
-
-/* Responsive adjustments moved from custodias.css */
-@media (max-width: 1024px) {
-    .table-row, .header-row { grid-template-columns: minmax(90px,1fr) minmax(150px,2fr) minmax(120px,1fr) minmax(100px,1fr) minmax(160px,1.5fr) minmax(120px,1fr) minmax(130px,1fr); }
-}
-
-@media (max-width: 768px) {
-    .header-row > div { cursor: default; }
-    .header-row > div::after { display: none; }
-    .barra-superior-modulo { flex-direction: column; gap: 12px; padding: 12px 15px; }
-    .barra-izquierda, .barra-derecha { width: 100%; justify-content: center; }
-    .search-box { min-width: 250px; }
-    .filtro-fechas { min-width: 200px; }
-    .main-content { padding: 0 5px; padding-bottom: 100px; } /* Alineado con pestañas */
-    .barra-inferior-unificada { position: fixed; bottom: 40px; padding: 8px 15px; gap: 12px; }
-    .estadisticas-inferiores { gap: 15px; width: 100%; justify-content: space-between; order: 1; flex: none; }
-    .stat-item-inferior { flex: 1; min-width: 110px; justify-content: center; }
-    .contador-registros { width: 100%; justify-content: space-between; order: 2; flex: none; }
-    .paginacion-inferior { width: 100%; justify-content: center; order: 3; flex: none; }
-    .table-row { grid-template-columns: 1fr; gap: 8px; text-align: center; padding: 10px 12px; }
-    .col-acciones { justify-content: center; }
-    .empty-state { padding: 40px 15px; min-height: 150px; }
-}
-
-@media (max-width: 480px) {
-    .barra-superior-modulo { padding: 8px 12px; }
-    .search-box { min-width: 200px; }
-    .filtro-fechas { flex-direction: column; gap: 5px; padding: 6px; }
-    .filtro-fechas input { width: 100%; }
-    .btn { padding: 6px 10px; font-size: 12px; }
-    .barra-inferior-unificada { bottom: 35px; padding: 6px 12px; }
-    .estadisticas-inferiores { flex-direction: column; gap: 6px; align-items: flex-start; }
-    .stat-item-inferior { width: 100%; justify-content: space-between; }
-    .stat-label-inferior { font-size: 11px; }
-    .stat-numero-inferior { font-size: 12px; padding: 1px 4px; }
-    .contador-registros { font-size: 12px; }
-    .paginacion-inferior { font-size: 12px; }
-    .empty-state { padding: 30px 10px; min-height: 120px; }
-    .empty-state div { font-size: 16px; }
-    .empty-state p { font-size: 13px; }
 }

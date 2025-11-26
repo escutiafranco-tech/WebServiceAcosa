@@ -172,6 +172,52 @@ header {
     font-weight: var(--font-weight-normal); /* Peso normal para contraste con primary */
 }
 
+/* Variante outline (solo borde) */
+.btn.btn-outline {
+    background: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    font-weight: var(--font-weight-normal);
+    padding: 6px 12px;
+    font-size: 12px;
+    min-width: auto;
+}
+
+.btn.btn-outline:hover {
+    background: var(--background-color);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn.btn-outline:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: transparent;
+}
+
+.btn.btn-outline:disabled:hover {
+    transform: none;
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+/* Variante icon (botón circular con icono) */
+.btn.btn-icon {
+    background: white;
+    border: 1px solid var(--border-color);
+    padding: 6px;
+    min-width: auto;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+}
+
+.btn.btn-icon:hover {
+    background: var(--background-color);
+    border-color: var(--primary-color);
+    transform: rotate(180deg);
+}
+
 /* Hover states */
 .btn:hover {
     transform: translateY(-2px);
@@ -228,7 +274,7 @@ header {
 }
 
 .sidebar {
-    width: 220px;                        /* Ancho del sidebar cuando está expandido */
+    width: 200px;                        /* Ancho del sidebar cuando está expandido */
     background: var(--white-color);     /* Fondo blanco para el sidebar */
     transition: all 0.3s ease;           /* Transición suave para animaciones */
     text-align: left;                    /* Alineación de texto a la izquierda */
@@ -257,7 +303,7 @@ header {
 /* 7. MÓDULOS PRINCIPALES           */
 /* ================================ */
 .module-group {
-    margin-bottom: 5px;                  /* Espacio pequeño entre grupos de módulos */
+    margin-bottom: 3px;                  /* Espacio pequeño entre grupos de módulos */
     text-align: left;                    /* Alineación izquierda */
 }
 
@@ -265,7 +311,7 @@ header {
     display: flex;                       /* Flexbox para alinear icono, texto y flecha */
     align-items: center;                 /* Centra verticalmente los elementos */
     justify-content: flex-start;         /* Distribuye espacio comenzando desde la izquierda */
-    padding: 6px 12px;                   /* Padding: 6px vertical, 12px horizontal */
+    padding: 5px 10px;                   /* Padding: 5px vertical, 10px horizontal */
     background: var(--primary-color);   /* Fondo color primario */
     color: var(--white-color);          /* Texto blanco */
     border: none;                        /* Sin borde */

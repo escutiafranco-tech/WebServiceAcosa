@@ -15,39 +15,47 @@
     <!-- CONTENEDOR PRINCIPAL DEL MÓDULO -->
     <div class="module-container">
         
-<!-- ====================================== -->
-<!-- BARRA SUPERIOR DIVIDIDA EN 2 SECCIONES -->
-<!-- ====================================== -->
-
-     <div class="barra-superior-modulo">
-     
-     <!-- SECCIÓN IZQUIERDA: BOTONES CON FONDO BLANCO -->
-     <div class="barra-izquierda">
-     <!-- Botón para crear nueva custodia -->
-          <button id="btnNuevaCustodia" class="btn btn-primary">
-           Nueva Custodia
-               </button>
-                <!-- Botón para exportar a Excel -->
-                <button id="btnExportar" class="btn btn-primary">
-                Exportar Excel
+        <!-- ====================================== -->
+        <!-- BARRA DE ACCESOS RÁPIDOS -->
+        <!-- ====================================== -->
+        <div class="toolbar-module">
+            <button id="btnNuevaCustodia" class="toolbar-btn">
+                <img src="/Imagenes/Acc_Agregar.png" alt="Nueva" class="toolbar-icon">
+                <span class="toolbar-label">Nueva</span>
+            </button>
+            <button id="btnModificarCustodia" class="toolbar-btn">
+                <img src="/Imagenes/Acc_Modificar.png" alt="Modificar" class="toolbar-icon">
+                <span class="toolbar-label">Modificar</span>
+            </button>
+            <button id="btnEliminarCustodia" class="toolbar-btn">
+                <img src="/Imagenes/Acc_Cancelar.png" alt="Eliminar" class="toolbar-icon">
+                <span class="toolbar-label">Eliminar</span>
+            </button>
+            <button id="btnFiltroFechas" class="toolbar-btn">
+                <img src="/Imagenes/Acc_Filtrar.png" alt="Filtros" class="toolbar-icon">
+                <span class="toolbar-label">Filtros</span>
+            </button>
+            
+            <div class="toolbar-divider"></div>
+            
+            <!-- Buscador compacto -->
+            <div class="toolbar-search">
+                <input type="text" id="buscarCustodias" placeholder="Buscar...">
+                <button id="btnBuscar" class="search-btn">
+                    <img src="/Imagenes/Acc_Filtrar.png" alt="Buscar" style="width: 16px; height: 16px;">
                 </button>
             </div>
-            
-     <!-- SECCIÓN DERECHA: BUSCADOR Y FILTRO DE FECHAS -->
-     <div class="barra-derecha">
-     <!-- Contenedor de la barra de búsqueda -->
-          <div class="search-box">
-          <!-- Campo de entrada para buscar custodias -->
-               <input type="text" id="buscarCustodias" placeholder="Buscar por ID, proveedor, estatus...">
-               <!-- Botón para ejecutar la búsqueda -->
-               <button class="btn btn-search">🔍</button>
-               </div>
-               <!-- Filtro de fechas (inicial y final) -->
-               <div class="filtro-fechas">
-                    <input type="date" id="fechaInicial" placeholder="Fecha inicial">
-                    <span class="separador-fechas">a</span>
-                    <input type="date" id="fechaFinal" placeholder="Fecha final">
-                </div>
+        </div>
+
+        <!-- Panel de filtros de fechas (oculto por defecto) -->
+        <div class="filtros-panel" id="filtrosPanel" style="display: none;">
+            <div class="filtros-content">
+                <label>Fecha Inicial:</label>
+                <input type="date" id="fechaInicial">
+                <label>Fecha Final:</label>
+                <input type="date" id="fechaFinal">
+                <button class="btn btn-primary btn-sm" id="btnAplicarFiltros">Aplicar</button>
+                <button class="btn btn-secondary btn-sm" id="btnLimpiarFiltros">Limpiar</button>
             </div>
         </div>
 
@@ -77,7 +85,7 @@
                     <!-- Estado inicial cuando no hay datos -->
                     <div class="empty-state">
                         <div>📭 No hay custodias registradas</div>  <!-- Mensaje de estado vacío -->
-                        <p>Comienza creando tu primera custodia usando el botón "➕ Nueva Custodia"</p> <!-- Instrucción -->
+                        <p>Comienza creando tu primera custodia usando el botón "Nueva Custodia"</p> <!-- Instrucción -->
                     </div>
                 </div>
             </div>
@@ -127,6 +135,222 @@
         <div class="loading-overlay" id="loading">
             <div class="loading-spinner"></div>                     <!-- Animación de carga circular -->
             <p>Cargando custodias...</p>                            <!-- Mensaje durante la carga -->
+        </div>
+
+        <!-- ================================ -->
+        <!-- MODAL DE FORMULARIO DE CUSTODIA -->
+        <!-- ================================ -->
+        <div class="modal-overlay" id="modalCustodia" style="display: none;">
+            <div class="modal-container modal-compact">
+                <!-- Header del Modal -->
+                <div class="modal-header">
+                    <div class="modal-title">
+                        <h2 id="modalTitle">SOLICITUD DE CUSTODIA</h2>
+                    </div>
+                    <div class="modal-header-buttons">
+                        <button class="btn-header-icon" id="btnCloseModal" title="Cerrar">✕</button>
+                    </div>
+                </div>
+
+                <!-- Tabs del Modal -->
+                <div class="modal-tabs">
+                    <button class="tab-button active" data-tab="datosGenerales">
+                        DATOS GENERALES
+                    </button>
+                    <button class="tab-button" data-tab="documentacion">
+                        DOCUMENTACIÓN
+                    </button>
+                </div>
+
+                <!-- Contenido del Modal -->
+                <div class="modal-content-compact">
+                    <form id="formCustodia">
+                        <!-- TAB: DATOS GENERALES -->
+                        <div class="tab-content active" id="tabDatosGenerales">
+                            <!-- Sección: SOLICITUD -->
+                            <div class="collapsible-section">
+                                <div class="section-header-collapse">
+                                    <span class="collapse-icon">▼</span>
+                                    <span class="section-title-text">SOLICITUD</span>
+                                </div>
+                                <div class="section-body">
+                                    <table class="form-table">
+                                        <tr>
+                                            <td class="label-cell">ID CUSTODIA</td>
+                                            <td class="input-cell">
+                                                <input type="text" id="modalIdCustodia" readonly>
+                                            </td>
+                                            <td class="label-cell">FECHA DE SOLICITUD</td>
+                                            <td class="input-cell">
+                                                <input type="text" id="modalFechaSolicitud" readonly>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="label-cell">PROVEEDOR <span class="required">*</span></td>
+                                            <td class="input-cell" colspan="3">
+                                                <select id="modalProveedor" required>
+                                                    <option value="">SELECCIONE UN PROVEEDOR</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="label-cell">FECHA DEL SERVICIO <span class="required">*</span></td>
+                                            <td class="input-cell">
+                                                <input type="date" id="modalFechaServicio" required>
+                                            </td>
+                                            <td class="label-cell">HORA DE SOLICITUD <span class="required">*</span></td>
+                                            <td class="input-cell">
+                                                <input type="time" id="modalHoraServicio" required>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="label-cell">TIPO DE MOVIMIENTO <span class="required">*</span></td>
+                                            <td class="input-cell" colspan="3">
+                                                <select id="modalTipoMovimiento" required>
+                                                    <option value="">SELECCIONE TIPO DE MOVIMIENTO</option>
+                                                    <option value="entrada">Entrada</option>
+                                                    <option value="salida">Salida</option>
+                                                    <option value="traslado">Traslado</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Sección: UBICACIONES -->
+                            <div class="collapsible-section">
+                                <div class="section-header-collapse">
+                                    <span class="collapse-icon">▼</span>
+                                    <span class="section-title-text">UBICACIONES</span>
+                                </div>
+                                <div class="section-body">
+                                    <div class="ubicaciones-grid">
+                                        <!-- Ubicación Inicial -->
+                                        <div class="ubicacion-column">
+                                            <div class="ubicacion-title">UBICACIÓN INICIAL</div>
+                                            <table class="form-table">
+                                                <tr>
+                                                    <td class="label-cell">País <span class="required">*</span></td>
+                                                    <td class="input-cell">
+                                                        <input type="text" id="modalInicialPais" value="México" required>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label-cell">Código Postal <span class="required">*</span></td>
+                                                    <td class="input-cell">
+                                                        <input type="text" id="modalInicialCP" maxlength="5" required>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label-cell">Estado <span class="required">*</span></td>
+                                                    <td class="input-cell">
+                                                        <input type="text" id="modalInicialEstado" required>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label-cell">Municipio <span class="required">*</span></td>
+                                                    <td class="input-cell">
+                                                        <input type="text" id="modalInicialMunicipio" required>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label-cell">Colonia <span class="required">*</span></td>
+                                                    <td class="input-cell">
+                                                        <input type="text" id="modalInicialColonia" required>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label-cell">Calle y Número <span class="required">*</span></td>
+                                                    <td class="input-cell">
+                                                        <input type="text" id="modalInicialCalle" required>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+
+                                        <!-- Ubicación Final -->
+                                        <div class="ubicacion-column">
+                                            <div class="ubicacion-title">UBICACIÓN FINAL</div>
+                                            <table class="form-table">
+                                                <tr>
+                                                    <td class="label-cell">País <span class="required">*</span></td>
+                                                    <td class="input-cell">
+                                                        <input type="text" id="modalDestinoPais" value="México" required>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label-cell">Código Postal <span class="required">*</span></td>
+                                                    <td class="input-cell">
+                                                        <input type="text" id="modalDestinoCP" maxlength="5" required>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label-cell">Estado <span class="required">*</span></td>
+                                                    <td class="input-cell">
+                                                        <input type="text" id="modalDestinoEstado" required>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label-cell">Municipio <span class="required">*</span></td>
+                                                    <td class="input-cell">
+                                                        <input type="text" id="modalDestinoMunicipio" required>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label-cell">Colonia <span class="required">*</span></td>
+                                                    <td class="input-cell">
+                                                        <input type="text" id="modalDestinoColonia" required>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label-cell">Calle y Número <span class="required">*</span></td>
+                                                    <td class="input-cell">
+                                                        <input type="text" id="modalDestinoCalle" required>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sección: OBSERVACIONES -->
+                            <div class="collapsible-section">
+                                <div class="section-header-collapse">
+                                    <span class="collapse-icon">▼</span>
+                                    <span class="section-title-text">OBSERVACIONES</span>
+                                </div>
+                                <div class="section-body">
+                                    <textarea id="modalObservaciones" maxlength="1000" 
+                                              placeholder="Describa los detalles del servicio de custodia..."></textarea>
+                                    <div class="char-counter">
+                                        <span id="modalCharCount">0</span>/1000 caracteres
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB: DOCUMENTACIÓN -->
+                        <div class="tab-content" id="tabDocumentacion">
+                            <div class="empty-tab">
+                                <p>📄 Sección de documentación en desarrollo</p>
+                                <small>Aquí podrás adjuntar documentos relacionados con la custodia</small>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Footer del Modal con botones -->
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="btnGuardarModal">
+                        GUARDAR
+                    </button>
+                    <button class="btn btn-secondary" id="btnImprimirCustodia">
+                        IMPRIMIR
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 

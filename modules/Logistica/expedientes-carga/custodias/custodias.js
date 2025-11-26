@@ -273,11 +273,11 @@ class CustodiasManager {
         const btnAnterior = document.getElementById('btnAnterior');
         const btnSiguiente = document.getElementById('btnSiguiente');
 
-        // ✅ Navegación al formulario
+        // ✅ Abrir modal de nueva custodia
         if (btnNuevaCustodia) {
             btnNuevaCustodia.addEventListener('click', () => {
-                console.log('🔄 Navegando a formulario de nueva custodia');
-                window.location.href = 'custodias-form-new.html';
+                console.log('📝 Abriendo modal de nueva custodia');
+                this.openModal();
             });
         }
 
@@ -622,6 +622,494 @@ class CustodiasManager {
 
     exportToExcel() {
         this.showNotification('Función de exportación en desarrollo', 'info');
+    }
+
+    // ================================
+    // 🔥 FUNCIONES DEL MODAL
+    // ================================
+
+    openModal(custodiaData = null) {
+        const modal = document.getElementById('modalCustodia');
+        const modalTitle = document.getElementById('modalTitle');
+        
+        // Configurar modo: crear o editar
+        if (custodiaData) {
+            modalTitle.textContent = 'Editar Custodia';
+            this.fillModalForm(custodiaData);
+        } else {
+            modalTitle.textContent = 'SOLICITUD DE CUSTODIA';
+            this.resetModalForm();
+            this.generateNewId();
+        }
+
+        // Cargar proveedores
+        this.loadProveedoresModal();
+
+        // Configurar eventos del modal
+        this.setupModalEvents();
+
+        // Mostrar modal
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Bloquear scroll del body
+    }
+
+    closeModal() {
+        const modal = document.getElementById('modalCustodia');
+        modal.style.display = 'none';
+        document.body.style.overflow = ''; // Restaurar scroll
+    }
+
+    resetModalForm() {
+        document.getElementById('formCustodia').reset();
+        
+        // Establecer fecha actual con formato dd/mm/aaaa hh:mm
+        const now = new Date();
+        const day = now.getDate().toString().padStart(2, '0');
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const year = now.getFullYear();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        
+        document.getElementById('modalFechaSolicitud').value = `${day}/${month}/${year} ${hours}:${minutes}`;
+        
+        // Fecha mínima para servicio
+        const today = now.toISOString().split('T')[0];
+        document.getElementById('modalFechaServicio').min = today;
+        
+        // Valores por defecto
+        document.getElementById('modalInicialPais').value = 'México';
+        document.getElementById('modalDestinoPais').value = 'México';
+        
+        // Reset contador
+        document.getElementById('modalCharCount').textContent = '0';
+        
+        // Expandir todas las secciones
+        document.querySelectorAll('.section-header-collapse').forEach(header => {
+            header.classList.remove('collapsed');
+        });
+    }
+
+    generateNewId() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const nextId = this.custodias.length + 1;
+        document.getElementById('modalIdCustodia').value = `CUST-${year}-${nextId.toString().padStart(4, '0')}`;
+    }
+
+    fillModalForm(custodia) {
+        document.getElementById('modalIdCustodia').value = custodia.id;
+        document.getElementById('modalFechaSolicitud').value = custodia.fechaSolicitud;
+        document.getElementById('modalProveedor').value = custodia.proveedor;
+        document.getElementById('modalFechaServicio').value = custodia.fechaServicio;
+        document.getElementById('modalHoraServicio').value = custodia.horaServicio;
+        document.getElementById('modalTipoMovimiento').value = custodia.tipoMovimiento;
+        
+        // Ubicación inicial
+        document.getElementById('modalInicialCP').value = custodia.ubicacionInicial.cp;
+        document.getElementById('modalInicialPais').value = custodia.ubicacionInicial.pais;
+        document.getElementById('modalInicialEstado').value = custodia.ubicacionInicial.estado;
+        document.getElementById('modalInicialMunicipio').value = custodia.ubicacionInicial.municipio;
+        document.getElementById('modalInicialColonia').value = custodia.ubicacionInicial.colonia;
+        document.getElementById('modalInicialCalle').value = custodia.ubicacionInicial.calle;
+        
+        // Ubicación destino
+        document.getElementById('modalDestinoCP').value = custodia.ubicacionDestino.cp;
+        document.getElementById('modalDestinoPais').value = custodia.ubicacionDestino.pais;
+        document.getElementById('modalDestinoEstado').value = custodia.ubicacionDestino.estado;
+        document.getElementById('modalDestinoMunicipio').value = custodia.ubicacionDestino.municipio;
+        document.getElementById('modalDestinoColonia').value = custodia.ubicacionDestino.colonia;
+        document.getElementById('modalDestinoCalle').value = custodia.ubicacionDestino.calle;
+        
+        // Observaciones
+        document.getElementById('modalObservaciones').value = custodia.observaciones || '';
+        document.getElementById('modalCharCount').textContent = (custodia.observaciones || '').length;
+    }
+
+    async loadProveedoresModal() {
+        try {
+            const response = await fetch('/data/catalogos/proveedores.json');
+            const data = await response.json();
+            const select = document.getElementById('modalProveedor');
+            
+            // Limpiar opciones excepto la primera
+            while (select.options.length > 1) {
+                select.remove(1);
+            }
+            
+            // Agregar proveedores
+            data.proveedores.forEach(proveedor => {
+                const option = document.createElement('option');
+                option.value = proveedor.id;
+                option.textContent = `${proveedor.nombre} - ${proveedor.rfc}`;
+                select.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error cargando proveedores:', error);
+        }
+    }
+
+    setupModalEvents() {
+        // Cerrar modal con X
+        document.getElementById('btnCloseModal').onclick = () => this.closeModal();
+        
+        // Guardar custodia
+        document.getElementById('btnGuardarModal').onclick = () => this.saveFromModal();
+        
+        // Imprimir
+        document.getElementById('btnImprimirCustodia').onclick = () => this.printCustodia();
+        
+        // Contador de caracteres
+        document.getElementById('modalObservaciones').oninput = (e) => {
+            document.getElementById('modalCharCount').textContent = e.target.value.length;
+        };
+        
+        // Tabs
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.onclick = () => this.switchTab(btn.dataset.tab);
+        });
+        
+        // Secciones colapsables
+        document.querySelectorAll('.section-header-collapse').forEach(header => {
+            header.onclick = () => this.toggleSection(header);
+        });
+        
+        // Cerrar con ESC
+        document.onkeydown = (e) => {
+            if (e.key === 'Escape' && document.getElementById('modalCustodia').style.display === 'flex') {
+                this.closeModal();
+            }
+        };
+    }
+
+    switchTab(tabName) {
+        // Ocultar todos los tabs
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Mostrar tab seleccionado
+        document.getElementById(`tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).classList.add('active');
+        document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+    }
+
+    toggleSection(header) {
+        header.classList.toggle('collapsed');
+    }
+
+    saveFromModal() {
+        // Validar campos requeridos
+        const form = document.getElementById('formCustodia');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        // Recopilar datos
+        const custodiaData = {
+            id: document.getElementById('modalIdCustodia').value,
+            fechaSolicitud: document.getElementById('modalFechaSolicitud').value,
+            proveedor: document.getElementById('modalProveedor').value,
+            fechaServicio: document.getElementById('modalFechaServicio').value,
+            horaServicio: document.getElementById('modalHoraServicio').value,
+            tipoMovimiento: document.getElementById('modalTipoMovimiento').value,
+            ubicacionInicial: {
+                cp: document.getElementById('modalInicialCP').value,
+                pais: document.getElementById('modalInicialPais').value,
+                estado: document.getElementById('modalInicialEstado').value,
+                municipio: document.getElementById('modalInicialMunicipio').value,
+                colonia: document.getElementById('modalInicialColonia').value,
+                calle: document.getElementById('modalInicialCalle').value
+            },
+            ubicacionDestino: {
+                cp: document.getElementById('modalDestinoCP').value,
+                pais: document.getElementById('modalDestinoPais').value,
+                estado: document.getElementById('modalDestinoEstado').value,
+                municipio: document.getElementById('modalDestinoMunicipio').value,
+                colonia: document.getElementById('modalDestinoColonia').value,
+                calle: document.getElementById('modalDestinoCalle').value
+            },
+            observaciones: document.getElementById('modalObservaciones').value,
+            estatus: 'pendiente'
+        };
+
+        // Buscar si existe (editar) o crear nueva
+        const existingIndex = this.custodias.findIndex(c => c.id === custodiaData.id);
+        
+        if (existingIndex >= 0) {
+            // Actualizar existente
+            this.custodias[existingIndex] = custodiaData;
+            this.showNotification('✅ Custodia actualizada correctamente', 'success');
+        } else {
+            // Agregar nueva
+            this.custodias.push(custodiaData);
+            this.showNotification('✅ Custodia creada correctamente', 'success');
+        }
+
+        // Guardar en localStorage
+        this.saveCustodias();
+
+        // Actualizar vista
+        this.renderCustodias();
+        this.updateStats();
+
+        // Cerrar modal
+        this.closeModal();
+    }
+
+    printCustodia() {
+        // Obtener datos del formulario
+        const custodiaData = {
+            id: document.getElementById('modalIdCustodia').value,
+            fechaSolicitud: document.getElementById('modalFechaSolicitud').value,
+            proveedor: document.getElementById('modalProveedor').options[document.getElementById('modalProveedor').selectedIndex]?.text || '',
+            fechaServicio: document.getElementById('modalFechaServicio').value,
+            horaServicio: document.getElementById('modalHoraServicio').value,
+            tipoMovimiento: document.getElementById('modalTipoMovimiento').value,
+            ubicacionInicial: {
+                cp: document.getElementById('modalInicialCP').value,
+                pais: document.getElementById('modalInicialPais').value,
+                estado: document.getElementById('modalInicialEstado').value,
+                municipio: document.getElementById('modalInicialMunicipio').value,
+                colonia: document.getElementById('modalInicialColonia').value,
+                calle: document.getElementById('modalInicialCalle').value
+            },
+            ubicacionDestino: {
+                cp: document.getElementById('modalDestinoCP').value,
+                pais: document.getElementById('modalDestinoPais').value,
+                estado: document.getElementById('modalDestinoEstado').value,
+                municipio: document.getElementById('modalDestinoMunicipio').value,
+                colonia: document.getElementById('modalDestinoColonia').value,
+                calle: document.getElementById('modalDestinoCalle').value
+            },
+            observaciones: document.getElementById('modalObservaciones').value
+        };
+
+        // Crear ventana de impresión
+        const printWindow = window.open('', '_blank', 'width=800,height=600');
+        
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <title>Custodia ${custodiaData.id}</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        padding: 20px;
+                        margin: 0;
+                    }
+                    .print-header {
+                        text-align: center;
+                        border-bottom: 2px solid #2F3158;
+                        padding-bottom: 10px;
+                        margin-bottom: 20px;
+                    }
+                    .print-header h1 {
+                        margin: 0;
+                        color: #2F3158;
+                        font-size: 24px;
+                    }
+                    .print-header p {
+                        margin: 5px 0 0 0;
+                        color: #666;
+                    }
+                    .section {
+                        margin-bottom: 20px;
+                    }
+                    .section-title {
+                        background: #2F3158;
+                        color: white;
+                        padding: 8px 12px;
+                        font-weight: bold;
+                        font-size: 14px;
+                        margin-bottom: 10px;
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-bottom: 10px;
+                    }
+                    td {
+                        padding: 8px;
+                        border: 1px solid #ddd;
+                    }
+                    td.label {
+                        width: 30%;
+                        background: #f5f5f5;
+                        font-weight: bold;
+                    }
+                    .ubicaciones {
+                        display: flex;
+                        gap: 20px;
+                    }
+                    .ubicacion-box {
+                        flex: 1;
+                    }
+                    .print-actions {
+                        position: fixed;
+                        top: 10px;
+                        right: 10px;
+                        background: white;
+                        padding: 10px;
+                        border: 2px solid #2F3158;
+                        border-radius: 4px;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                    }
+                    .print-actions button {
+                        padding: 8px 16px;
+                        margin: 4px;
+                        cursor: pointer;
+                        border: 1px solid #2F3158;
+                        background: #2F3158;
+                        color: white;
+                        border-radius: 4px;
+                        font-size: 14px;
+                    }
+                    .print-actions button:hover {
+                        background: #1a1c3a;
+                    }
+                    @media print {
+                        .print-actions {
+                            display: none;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="print-actions">
+                    <button onclick="window.print()">🖨️ Imprimir</button>
+                    <button onclick="generatePDF()">📄 Generar PDF</button>
+                    <button onclick="sendEmail()">📧 Enviar por Correo</button>
+                    <button onclick="window.close()">✕ Cerrar</button>
+                </div>
+
+                <div class="print-header">
+                    <h1>SOLICITUD DE CUSTODIA</h1>
+                    <p>ACOSA S.A. DE C.V. - Sistema de Gestión Logística</p>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">INFORMACIÓN GENERAL</div>
+                    <table>
+                        <tr>
+                            <td class="label">ID Custodia:</td>
+                            <td>${custodiaData.id}</td>
+                            <td class="label">Fecha de Solicitud:</td>
+                            <td>${custodiaData.fechaSolicitud}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Proveedor:</td>
+                            <td colspan="3">${custodiaData.proveedor}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Fecha de Servicio:</td>
+                            <td>${custodiaData.fechaServicio}</td>
+                            <td class="label">Hora de Servicio:</td>
+                            <td>${custodiaData.horaServicio}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Tipo de Movimiento:</td>
+                            <td colspan="3">${custodiaData.tipoMovimiento}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">UBICACIONES</div>
+                    <div class="ubicaciones">
+                        <div class="ubicacion-box">
+                            <h4>🏁 Ubicación Inicial</h4>
+                            <table>
+                                <tr>
+                                    <td class="label">País:</td>
+                                    <td>${custodiaData.ubicacionInicial.pais}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Código Postal:</td>
+                                    <td>${custodiaData.ubicacionInicial.cp}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Estado:</td>
+                                    <td>${custodiaData.ubicacionInicial.estado}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Municipio:</td>
+                                    <td>${custodiaData.ubicacionInicial.municipio}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Colonia:</td>
+                                    <td>${custodiaData.ubicacionInicial.colonia}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Calle y Número:</td>
+                                    <td>${custodiaData.ubicacionInicial.calle}</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="ubicacion-box">
+                            <h4>🎯 Ubicación Destino</h4>
+                            <table>
+                                <tr>
+                                    <td class="label">País:</td>
+                                    <td>${custodiaData.ubicacionDestino.pais}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Código Postal:</td>
+                                    <td>${custodiaData.ubicacionDestino.cp}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Estado:</td>
+                                    <td>${custodiaData.ubicacionDestino.estado}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Municipio:</td>
+                                    <td>${custodiaData.ubicacionDestino.municipio}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Colonia:</td>
+                                    <td>${custodiaData.ubicacionDestino.colonia}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Calle y Número:</td>
+                                    <td>${custodiaData.ubicacionDestino.calle}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">OBSERVACIONES</div>
+                    <table>
+                        <tr>
+                            <td>${custodiaData.observaciones || 'Sin observaciones'}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <script>
+                    function generatePDF() {
+                        alert('📄 Funcionalidad de generar PDF en desarrollo.\\nSe integrará con una librería de generación de PDF.');
+                    }
+
+                    function sendEmail() {
+                        alert('📧 Funcionalidad de envío por correo en desarrollo.\\nSe integrará con el backend para enviar emails.');
+                    }
+                </script>
+            </body>
+            </html>
+        `);
+        
+        printWindow.document.close();
+    }
+
+    sendEmail() {
+        this.showNotification('📧 Función de envío de correo en desarrollo', 'info');
     }
 }
 

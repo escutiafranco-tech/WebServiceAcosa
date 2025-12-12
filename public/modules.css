@@ -1,4 +1,51 @@
-﻿/* ==========================================================================
+﻿/* ================================ */
+/* Secciones colapsables (global)   */
+/* ================================ */
+.collapsible-section {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--white-color);
+    box-shadow: var(--shadow-soft);
+    margin: 6px 0;
+}
+
+.collapsible-section .section-header-collapse {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    cursor: pointer;
+    user-select: none;
+    background: var(--background-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.collapsible-section .section-header-collapse .collapse-icon {
+    display: inline-block;
+    transition: transform 0.2s ease;
+    font-size: 12px;
+    color: var(--primary-color);
+}
+
+.collapsible-section .section-header-collapse.collapsed .collapse-icon {
+    transform: rotate(-90deg);
+}
+
+.collapsible-section .section-title-text {
+    font-size: var(--text-size-normal);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-color);
+}
+
+.collapsible-section .section-body {
+    padding: 10px;
+}
+
+/* Estado colapsado: ocultar cuerpo (fallback JS ya alterna display) */
+.collapsible-section .section-header-collapse.collapsed + .section-body {
+    display: none;
+}
+/* ==========================================================================
    CONTENEDORES PRINCIPALES Y ESTRUCTURA DEL MÓDULO
    ========================================================================== */
 
@@ -85,7 +132,7 @@
     padding: 8px 12px;                /* Padding interno */
     flex: 1;                          /* Ocupa todo el espacio disponible */
     outline: none;                    /* Sin outline por defecto */
-    font-size: 14px;                  /* Tamaño de fuente */
+    font-size: var(--text-size-normal); * Tamaño de fuente */
 }
 
 /** Filtro de fechas con rango*/
@@ -101,11 +148,11 @@
 }
 
 .filtro-fechas input {
-    border: none;                     /* Sin borde propio */
-    padding: 8px 0;                   /* Padding vertical */
-    outline: none;                    /* Sin outline */
-    font-size: 13px;                  /* Fuente más pequeña */
-    width: 110px;                     /* Ancho fijo */
+    border: none;                       /* Sin borde propio */
+    padding: 8px 0;                     /* Padding vertical */
+    outline: none;                      /* Sin outline */
+    font-size: var(--text-size-normal); /* Fuente más pequeña */
+    width: 110px;                       /* Ancho fijo */
 }
 
 .separador-fechas {
@@ -117,9 +164,7 @@
    CONTENEDOR PRINCIPAL Y SISTEMA DE TABLAS
    ========================================================================== */
 
-/**
- * Contenedor principal del contenido
- */
+/*** Contenedor principal del contenido*/
 .main-content {
     flex: 1;                          /* Ocupa todo el espacio disponible */
     display: flex;
@@ -138,7 +183,9 @@
     flex: 1;                          /* Ocupa espacio disponible */
     display: flex;
     flex-direction: column;
-    overflow: hidden;                 /* Controla overflow */
+    /* Permitimos scroll horizontal cuando la tabla es más ancha que el contenedor */
+    overflow: hidden;                 /* Controla overflow vertical del módulo */
+    overflow-x: auto;                 /* Scroll horizontal para tablas anchas */
     padding: 0;                       /* Sin padding */
     margin: 0;                        /* Sin margen */
     min-height: 0;                    /* Permite reducción */
@@ -158,7 +205,7 @@
 .custodias-table {
     background: white;                /* Fondo blanco */
     border-radius: var(--border-radius); /* Bordes redondeados */
-    overflow: hidden;                 /* Sin scroll aquí, solo en table-body-scroll */
+    overflow: visible;               /* Permitir que el contenido ancho provoque scroll en el contenedor padre */
     box-shadow: var(--shadow);        /* Sombra usando variable */
     display: flex;
     flex-direction: column;
@@ -167,6 +214,33 @@
     max-height: 100%;                 /* No exceder el contenedor padre */
     padding: 0;                       /* Sin padding interno */
     margin: 0;                        /* Sin margen */
+}
+
+/* Reglas globales para cualquier tabla del tipo '...-table' */
+/* Usamos selector de atributo para aplicar el mismo estilo a clases que terminen en '-table',
+   por ejemplo: 'custodias-table', 'proveedores-table', 'orders-table', etc. */
+[class$="-table"] {
+    /* Usa la variable específica si existe, si no usa el tamaño normal de texto del sistema */
+    font-size: var(--table-font-size, var(--text-size-normal));    /* Texto homogéneo para tablas */
+    /* Forzar tamaño legible por defecto en caso de reglas conflictivas */
+    font-size: var(--table-font-size, var(--text-size-normal)) !important;
+    line-height: var(--table-line-height, 1.3);
+}
+
+[class$="-table"] .table-row > div {
+    padding: var(--table-cell-padding, 4px 0px);   /* Usar padding centralizado */
+}
+
+[class$="-table"] .header-row > div {
+    font-weight: 600;   /* Encabezados ligeramente destacados */
+    font-size: var(--table-header-font-size, var(--text-size-large));
+    /* Forzar tamaño de encabezado consistente con módulos */
+    font-size: var(--table-header-font-size, var(--text-size-normal)) !important;
+}
+
+/* Media query: reducir tamaño base de tablas en pantallas pequeñas usando variable dedicada */
+@media (max-width: 768px) {
+    :root { --table-font-size: var(--text-size-normal); }
 }
 
 /* ==========================================================================
@@ -385,19 +459,18 @@
  * 7 columnas con tamaños responsivos mínimos y máximos
  */
 .table-row {
+    /* Usar layout tipo tabla: hace que header y filas se alineen automáticamente.
+       Las celdas se comportan como table-cell y los anchos se controlan por clases.
+       Esto permite centralizar el control en modules.css. */
     display: grid;
-    grid-template-columns: 
-        minmax(100px, 1fr)    /* Columna 1: ID/Referencia */
-        minmax(200px, 2fr)    /* Columna 2: Descripción/Nombre */
-        minmax(140px, 1fr)    /* Columna 3: Fecha */
-        minmax(110px, 1fr)    /* Columna 4: Estado */
-        minmax(180px, 1.5fr)  /* Columna 5: Responsable */
-        minmax(130px, 1fr)    /* Columna 6: Monto */
-        minmax(140px, 1fr);   /* Columna 7: Acciones */
-    gap: 0;                           /* Sin espacio entre celdas */
-    padding: 0;                       /* Sin padding */
-    align-items: stretch;             /* Estira elementos verticalmente */
-    min-width: max-content;           /* Ancho mínimo según contenido */
+    width: 100%;
+}
+
+/* El contenedor de la tabla actúa como tabla para alineación */
+[class$="-table"] {
+    display: table;
+    table-layout: fixed; /* usa anchos definidos por clases */
+    width: 100%;
 }
 
 /**
@@ -405,16 +478,15 @@
  */
 .table-row > div,
 .header-row > div {
-    padding: 5px 10px;               /* Padding interno */
-    min-width: 60px;                  /* Ancho mínimo */
-    max-width: 400px;                 /* Ancho máximo */
+    display: block;                   /* Celda como bloque para usar grid */
+    padding: 6px 10px;               /* Padding interno */
+    vertical-align: middle;
     overflow: hidden;                 /* Oculta overflow */
     text-overflow: ellipsis;          /* Texto largo con puntos suspensivos */
     white-space: nowrap;              /* Sin wrap de texto */
     border-right: 1px solid #f0f0f0;  /* Borde derecho sutil */
-    display: flex;
-    align-items: center;              /* Centra contenido verticalmente */
     position: relative;
+    font-size: var(--table-font-size, var(--text-size-normal)) !important;
 }
 
 /* ==========================================================================
@@ -426,33 +498,26 @@
     background: #f8f9fa !important; /* Gris institucional claro */
     color: var(--text-color) !important;        /* Texto normal */
     font-weight: 300;                 /* Texto normal, no bold */
-    font-size: var(--text-size-normal); /* Tamaño de fuente igual que submenús */
+    font-size: var(--table-header-font-size, var(--text-size-large)); /* Tamaño de encabezado centralizado */
     position: sticky;                 /* Posición fija al hacer scroll */
     top: 0px;                           /* Pegado al top */
     z-index: 10;                      /* Por encima del contenido */
     margin: 2px solid #dee2e6;
-    display: grid;
-    grid-template-columns: 
-        minmax(100px, 1fr)
-        minmax(200px, 2fr)
-        minmax(140px, 1fr)
-        minmax(110px, 1fr)
-        minmax(180px, 1.5fr)
-        minmax(130px, 1fr)
-        minmax(140px, 1fr);
-    gap: 0;
+    display: grid;                  /* Header en grid para alinear con filas */
+    grid-template-columns: var(--table-cols, auto); /* plantilla compartida */
+    gap: 0; /* sin separación entre columnas */
 }
 
 
 .header-row > div {
-    cursor: col-resize;               /* Cursor indicando redimensionamiento */
+    cursor: grab;                     /* Indica que se puede arrastrar (reordenar) */
     user-select: none;                /* No permite selección de texto */
     position: relative;
     border-width: 1px 1px 1px 1px;   /* Borde superior e inferior más grueso */
     border-style: solid;
     border-color: #e0dfdf;
     background: #f5f5f5;              /* Fondo gris claro */
-    padding: 2px 4px;                 /* Padding reducido - más bajo */
+    padding: 6px 8px;                 /* Padding más consistente con células */
 }
 
 
@@ -460,15 +525,26 @@
     background: #ebebeb;              /* Hover un poco más oscuro */
 }
 
+/* Indicadores de orden en encabezados */
+.header-row > div.sorted-asc::after,
+.header-row > div.sorted-desc::after {
+    content: '';
+    position: absolute;
+    right: 8px;
+    font-size: 10px;
+}
+.header-row > div.sorted-asc::after { content: '▲'; }
+.header-row > div.sorted-desc::after { content: '▼'; }
+
 /**
  * Área de redimensionamiento invisible en cabeceras*/
 .header-row > div::after {
     content: '';
     position: absolute;
-    right: -6px;                      /* Posicionado a la derecha */
+    right: -8px;                      /* Posicionado a la derecha */
     top: 0;
     bottom: 0;
-    width: 6px;                       /* Área clickeable */
+    width: 12px;                      /* Área clickeable más amplia para redimensionar */
     background: transparent;          /* Invisible por defecto */
     cursor: col-resize;               /* Cursor de redimensionamiento */
     z-index: 20;                      /* Por encima del contenido */
@@ -485,9 +561,9 @@
 }
 
 .header-row > div.dragging {
-    background: rgba(40, 167, 69, 0.1); /* Fondo verde claro durante arrastre */
-    border: 1.5px dashed #28a745;       /* Borde verde punteado */
-    opacity: 0.7;                     /* Transparencia */
+    background: rgba(40, 167, 69, 0.06); /* Fondo verde claro durante arrastre */
+    border: 1px dashed #28a745;       /* Borde verde punteado */
+    opacity: 0.95;                    /* Menos transparencia para mejor contraste */
 }
 
 .header-row > div.drop-zone {
@@ -544,31 +620,67 @@
     gap: 6px;                         /* Espacio entre botones */
 }
 
+/* Anchos por columna centralizados: modificar aquí para afectar todos los módulos */
+.col-acciones { width: 60px; }
+.col-acciones { position: sticky; left: 0; z-index: 5; background: var(--table-row-bg); }
+.col-id { width: 100px; }
+.col-codigo { width: 140px; }
+.col-nombre { width: 360px; }
+.col-contacto { width: 200px; }
+.col-telefono { width: 160px; }
+.col-email { width: 260px; }
+.col-activo { width: 100px; }
+.col-fecha { width: 140px; }
+.col-tipo { width: 140px; }
+.col-ubicacion { width: 240px; }
+.col-estatus { width: 120px; }
+.col-estatus { position: sticky; left: 60px; z-index: 4; background: var(--table-row-bg); }
+
 /**
  * Botones de acción genéricos
  */
 .btn-action {
-    padding: 4px 8px;                 /* Padding compacto */
-    font-size: 11px;                  /* Texto pequeño */
-    border-radius: 4px;               /* Bordes ligeramente redondeados */
-    border: none;                     /* Sin borde */
+    padding: var(--action-btn-padding); /* Padding compacto */
+    font-size: var(--action-btn-font-size); /* Texto homogéneo */
+    border-radius: var(--action-btn-radius); /* Bordes ligeramente redondeados */
+    border: var(--action-btn-border); /* Borde desde variable */
     cursor: pointer;                  /* Cursor pointer */
     transition: var(--transition);    /* Transición suave */
 }
 
+/* Íconos dentro de botones de acción */
+.btn-action img.icon-action {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.btn-action { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+
 .btn-action.view {
-    background: var(--info-color);    /* Fondo azul */
-    color: white;                     /* Texto blanco */
+    background: var(--action-btn-bg);    /* Fondo homogéneo */
+    color: var(--action-btn-color);      /* Texto homogéneo */
 }
 
 .btn-action.edit {
-    background: var(--warning-color); /* Fondo amarillo */
-    color: black;                     /* Texto negro */
+    background: var(--action-btn-bg);
+    color: var(--action-btn-color);
 }
 
 .btn-action.delete {
-    background: var(--danger-color);  /* Fondo rojo */
-    color: white;                     /* Texto blanco */
+    background: var(--action-btn-bg);
+    color: var(--action-btn-color);
+}
+
+/* Envoltorio opcional para agrupar botones de acción dentro de la celda */
+.table-action { display:flex; gap:6px; align-items:center; }
+
+/* Columnas que deben permitir wrap para mostrar contenido completo */
+.col-proveedor, .col-ubicacion {
+    white-space: normal;             /* Permitir varias líneas */
+    max-width: none;                 /* Quitar limitación de ancho */
+    overflow-wrap: anywhere;         /* Romper palabras largas si es necesario */
 }
 
 /* ==========================================================================
@@ -1202,13 +1314,12 @@ textarea.table-input {
  */
 @media (max-width: 1024px) {
     .table-row,
-    .header-row {
-        /* Columnas más compactas para tablet */
-        grid-template-columns: 
-            minmax(90px, 1fr) 
-            minmax(150px, 2fr) 
+        display: grid;
+        width: 100%;
+        grid-template-columns: var(--table-cols, auto); /* plantilla compartida */
             minmax(120px, 1fr) 
             minmax(100px, 1fr) 
+        gap: 0; /* sin separación entre columnas */
             minmax(160px, 1.5fr) 
             minmax(120px, 1fr) 
             minmax(130px, 1fr);

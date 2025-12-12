@@ -1,0 +1,14 @@
+{
+  "name": "webserviceacosa",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "invoices:excel": "node scripts/generate-invoice-excel.js"
+  },
+  "dependencies": {
+    "exceljs": "^4.3.0",
+    "express": "^5.2.1",
+    "fast-xml-parser": "^4.5.0",
+    "jsonwebtoken": "^9.0.3"
+  }
+}

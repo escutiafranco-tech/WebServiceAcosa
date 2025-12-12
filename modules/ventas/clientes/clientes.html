@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Clientes - ACOSA</title>
+  <link rel="stylesheet" href="/Style.css">
+  <link rel="stylesheet" href="/modules.css">
+</head>
+<body>
+  <div class="module-container">
+        <!-- ====================================== -->
+        <!-- BARRA DE ACCESOS RÁPIDOS -->
+        <!-- ====================================== -->
+      
+        <div class="toolbar-module">
+          <button id="btnNuevo" class="toolbar-btn">
+                <img src="/Imagenes/Acc_Agregar.png" alt="Nuevo" class="toolbar-icon">
+                <span class="toolbar-label">Nuevo</span>
+            </button>
+            <button id="btnFiltroFechas" class="toolbar-btn">
+                <img src="/Imagenes/Acc_Filtrar.png" alt="Filtros" class="toolbar-icon">
+                <span class="toolbar-label">Filtros</span>
+            </button>
+            
+            <div class="toolbar-divider"></div>
+            <div class="toolbar-search">
+              <input type="text" id="buscar" placeholder="Buscar...">
+              <button id="btnBuscar" class="search-btn">
+                    <img src="/Imagenes/Acc_Filtrar.png" alt="Buscar" style="width:16px;height:16px;">
+                </button>
+            </div>
+        </div>    
+
+    <div class="list-container">
+      <div class="list-body" id="listaClientes"></div>
+    </div>
+
+    <div class="barra-inferior-unificada">
+      <div class="estadisticas-inferiores">
+        <div class="stat-item-inferior">
+          <span class="stat-label-inferior">Activos:</span>
+          <span class="stat-numero-inferior" id="clientesActivos">0</span>
+        </div>
+        <div class="stat-item-inferior">
+          <span class="stat-label-inferior">Inactivos:</span>
+          <span class="stat-numero-inferior" id="clientesInactivos">0</span>
+        </div>
+      </div>
+      <div class="contador-registros">
+        <span id="mostrandoClientes">Mostrando 0 de 0</span>
+        <button id="btnRecargarClientes" class="btn btn-icon">🔄</button>
+      </div>
+      <div class="paginacion-inferior">
+        <button id="btnAnteriorClientes" class="btn btn-outline" disabled>← Anterior</button>
+        <span id="infoPaginaClientes">Página 1 de 1</span>
+        <button id="btnSiguienteClientes" class="btn btn-outline" disabled>Siguiente →</button>
+      </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingClientes" style="display:none;">
+      <div class="loading-spinner"></div>
+      <p>Cargando clientes...</p>
+    </div>
+  </div>
+
+  <script src="/modules/ventas/clientes/clientes.js"></script>
+</body>
+</html>

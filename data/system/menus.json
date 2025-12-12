@@ -7,8 +7,8 @@
         "roles": ["Administrador"],
         "submenus": [
           {
-            "name": "Registro Proveedores",
-            "action": "registro-proveedores.html",
+            "name": "Catalogo Proveedores",
+            "action": "modules/compras/Proveedores/proveedores.html",
             "roles": ["Administrador", "Compras"]
           },
           {
@@ -59,8 +59,8 @@
         "roles": ["Administrador"],
         "submenus": [
           {
-            "name": "Registro Clientes",
-            "action": "registro-clientes.html",
+            "name": "Catalogo Clientes",
+            "action": "modules/ventas/clientes/clientes.html",
             "roles": ["Administrador", "Ventas"]
           },
           {

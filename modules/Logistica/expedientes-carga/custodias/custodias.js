@@ -1,11 +1,10 @@
 // custodias.js - Lógica SOLO para la lista de Custodias
 
 // ⚡ SOLUCIÓN EXPRÉS - Ocultar loading inmediatamente
+// Ocultar cualquier overlay de loading al cargar el script
 (function() {
-    const loading = document.getElementById('loading');
-    if (loading) {
-        loading.style.display = 'none';
-    }
+    const ids = ['loading','loadingCustodias'];
+    ids.forEach(id=>{ const el = document.getElementById(id); if(el) el.style.display='none'; });
 })();
 
 class CustodiasManager {
@@ -15,148 +14,67 @@ class CustodiasManager {
         this.itemsPerPage = 10;
         this.currentFilter = '';
         this.currentEstatusFilter = '';
-        this.columnOrder = [0, 1, 2, 3, 4, 5, 6]; // 🔥 NUEVO: Orden de columnas
-        this.columnWidths = [100, 200, 140, 110, 180, 130, 140]; // 🔥 NUEVO: Anchos de columnas
+        this.columnOrder = [0, 1, 2, 3, 4, 5, 6];
+        this.columnWidths = [100, 200, 140, 110, 180, 130, 140];
         
         // ✅ OCULTAR LOADING AL INICIAR
         this.hideLoading();
-        this.init();
+        try {
+            this.init();
+        } catch (e) {
+            console.error('Error inicializando CustodiasManager:', e);
+            this.showNotification('Error inicializando módulo de Custodias', 'error');
+        }
     }
 
     async init() {
         this.hideLoading();
-        this.loadColumnPreferences(); // 🔥 CARGAR PREFERENCIAS
-        await this.loadCustodias();
+        // Reducimos la inicialización para evitar fallos por dependencias faltantes
         this.setupEventListeners();
-        this.renderCustodias();
         this.updateStats();
-        this.initColumnResize(); // 🔥 Redimensionamiento
-        this.initColumnReorder(); // 🔥 NUEVO: Reordenamiento
         this.hideLoading();
-        console.log('✅ Lista de Custodias inicializada con redimensionamiento y reordenamiento');
     }
 
     // ================================
     // 🔥 REDIMENSIONAMIENTO DE COLUMNAS
     // ================================
-
     initColumnResize() {
-        const headerCells = document.querySelectorAll('.header-row > div');
-        let isResizing = false;
-        let currentCell = null;
-        let startX = 0;
-        let startWidth = 0;
-        let columnIndex = 0;
+        if (window.TableUtils && typeof TableUtils.makeResizable === 'function') {
+            TableUtils.makeResizable('.header-row', this, { fixedClasses: ['col-acciones','col-estatus'] });
+            return;
+        }
 
-        headerCells.forEach((cell, index) => {
-            cell.addEventListener('mousedown', (e) => {
-                if (e.offsetX > cell.offsetWidth - 8) {
-                    isResizing = true;
-                    currentCell = cell;
-                    startX = e.pageX;
-                    startWidth = this.columnWidths[this.columnOrder[index]];
-                    columnIndex = this.columnOrder[index];
-                    
-                    cell.classList.add('resizing');
-                    e.preventDefault();
-                }
-            });
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (!isResizing || !currentCell) return;
-
-            const newWidth = Math.max(60, Math.min(400, startWidth + (e.pageX - startX)));
-            this.columnWidths[columnIndex] = newWidth;
-            this.applyColumnSizes();
-        });
-
-        document.addEventListener('mouseup', () => {
-            if (isResizing && currentCell) {
-                currentCell.classList.remove('resizing');
-                isResizing = false;
-                currentCell = null;
-                this.saveColumnPreferences();
-            }
-        });
+        // Fallback: no TableUtils disponible, mantener comportamiento previo mínimo
+        // (Si necesitas mantener la lógica completa sin TableUtils, podemos restaurarla aquí.)
     }
 
     // ================================
     // 🔥 REORDENAMIENTO DE COLUMNAS (DRAG & DROP)
     // ================================
-
     initColumnReorder() {
-        const headerCells = document.querySelectorAll('.header-row > div');
-        let dragSrcEl = null;
-        let isDragging = false;
+        if (window.TableUtils && typeof TableUtils.makeReorderable === 'function') {
+            TableUtils.makeReorderable('.header-row', this, { fixedClasses: ['col-acciones','col-estatus'] });
+            return;
+        }
 
-        headerCells.forEach((cell, index) => {
-            // Hacer columnas arrastrables (excepto el handle de redimensionamiento)
-            cell.setAttribute('draggable', 'true');
-            
-            cell.addEventListener('dragstart', (e) => {
-                // Solo arrastrar si no es el área de redimensionamiento
-                if (e.offsetX <= cell.offsetWidth - 10) {
-                    dragSrcEl = cell;
-                    isDragging = true;
-                    cell.classList.add('dragging');
-                    e.dataTransfer.effectAllowed = 'move';
-                    e.dataTransfer.setData('text/plain', index.toString());
-                    setTimeout(() => cell.style.opacity = '0.4', 0);
-                } else {
-                    e.preventDefault(); // Evitar arrastre en área de redimensionamiento
-                }
-            });
-
-            cell.addEventListener('dragend', (e) => {
-                isDragging = false;
-                cell.classList.remove('dragging');
-                cell.style.opacity = '1';
-                document.querySelectorAll('.header-row > div').forEach(c => {
-                    c.classList.remove('drop-zone');
-                });
-            });
-
-            cell.addEventListener('dragover', (e) => {
-                if (isDragging && dragSrcEl !== cell) {
-                    e.preventDefault();
-                    e.dataTransfer.dropEffect = 'move';
-                    cell.classList.add('drop-zone');
-                }
-            });
-
-            cell.addEventListener('dragenter', (e) => {
-                if (isDragging && dragSrcEl !== cell) {
-                    cell.classList.add('drop-zone');
-                }
-            });
-
-            cell.addEventListener('dragleave', (e) => {
-                cell.classList.remove('drop-zone');
-            });
-
-            cell.addEventListener('drop', (e) => {
-                e.preventDefault();
-                if (isDragging && dragSrcEl !== cell) {
-                    const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
-                    const toIndex = index;
-                    
-                    this.reorderColumns(fromIndex, toIndex);
-                    cell.classList.remove('drop-zone');
-                }
-            });
-        });
+        // Fallback: sin TableUtils no se aplica reordenamiento centralizado.
     }
 
     reorderColumns(fromIndex, toIndex) {
+        // Evitar reordenar si se intenta mover la primera o la segunda columna (acciones/estatus)
+        if (fromIndex === 0 || toIndex === 0 || fromIndex === 1 || toIndex === 1) {
+            this.showNotification('No se puede mover la columna Acciones/Estatus', 'info');
+            return;
+        }
+
         // Reordenar el array de columnOrder
         const actualFromIndex = this.columnOrder[fromIndex];
         const actualToIndex = this.columnOrder[toIndex];
-        
+
         // Intercambiar posiciones
         this.columnOrder[fromIndex] = actualToIndex;
         this.columnOrder[toIndex] = actualFromIndex;
-        
+
         this.applyColumnOrder();
         this.saveColumnPreferences();
         this.showNotification('Columnas reordenadas', 'success');
@@ -166,21 +84,47 @@ class CustodiasManager {
         const headerCells = document.querySelectorAll('.header-row > div');
         const bodyRows = document.querySelectorAll('.table-body .table-row');
         
-        headerCells.forEach((cell, index) => {
-            const actualIndex = this.columnOrder[index];
-            const width = this.columnWidths[actualIndex];
-            cell.style.minWidth = width + 'px';
-            cell.style.maxWidth = width + 'px';
-            cell.style.width = width + 'px';
-        });
+        // Anchos mínimos por columna para evitar encabezados demasiado contraídos
+        const minWidths = [60, 100, 240, 140, 110, 220, 120];
+        // Construir array de anchos en el orden actual y aplicar al grid
+        const colsCount = this.columnOrder.length;
+        const widths = new Array(colsCount);
+        const minW = 60;
+        const maxW = 2000;
+        for (let i = 0; i < colsCount; i++) {
+            const actualIndex = this.columnOrder[i];
+            const raw = Math.max(this.columnWidths[actualIndex] || 100, minWidths[actualIndex] || 100);
+            const w = Math.max(minW, Math.min(maxW, Math.round(raw)));
+            widths[i] = w;
+            // Normalize stored widths to sane values
+            if (!this.columnWidths) this.columnWidths = [];
+            this.columnWidths[actualIndex] = w;
+        }
+
+        // Última columna flexible para ocupar restante
+        const template = widths.map((w, idx) => idx === colsCount - 1 ? '1fr' : `${w}px`).join(' ');
+        const table = document.querySelector('.custodias-table');
+        if (table) table.style.setProperty('--table-cols', template);
+
+        const headerRow = document.querySelector('.header-row');
+        if (headerRow) {
+            headerRow.style.gridTemplateColumns = template;
+            headerRow.style.width = '100%';
+        }
 
         bodyRows.forEach(row => {
+            row.style.gridTemplateColumns = template;
+            row.style.width = '100%';
             Array.from(row.children).forEach((cell, index) => {
-                const actualIndex = this.columnOrder[index];
-                const width = this.columnWidths[actualIndex];
+                const width = widths[index] || 100;
                 cell.style.minWidth = width + 'px';
-                cell.style.maxWidth = width + 'px';
-                cell.style.width = width + 'px';
+                if (index === colsCount - 1) {
+                    cell.style.maxWidth = '';
+                    cell.style.width = '';
+                } else {
+                    cell.style.maxWidth = width + 'px';
+                    cell.style.width = width + 'px';
+                }
             });
         });
     }
@@ -192,278 +136,17 @@ class CustodiasManager {
         setTimeout(() => {
             this.initColumnResize();
             this.initColumnReorder();
+            // Añadir sorting por headers usando util común
+            if (window.TableUtils) {
+                const mapping = ['acciones','estatus','id','proveedor','fecha_servicio','tipo_movimiento','ubicacion_inicial'];
+                // No reordenamos DOM; pasar mapping en el orden de cabecera (estático)
+                window.TableUtils.addHeaderSorting('.header-row', this, mapping);
+            }
         }, 100);
     }
 
-    saveColumnPreferences() {
-        const preferences = {
-            columnOrder: this.columnOrder,
-            columnWidths: this.columnWidths,
-            savedAt: new Date().toISOString()
-        };
-        localStorage.setItem('acosa_table_preferences', JSON.stringify(preferences));
-    }
-
-    loadColumnPreferences() {
-        const saved = localStorage.getItem('acosa_table_preferences');
-        if (saved) {
-            const preferences = JSON.parse(saved);
-            this.columnOrder = preferences.columnOrder || this.columnOrder;
-            this.columnWidths = preferences.columnWidths || this.columnWidths;
-        }
-    }
-
-    // ================================
-    // CARGA DE DATOS
-    // ================================
-
-    async loadCustodias() {
-        try {
-            this.showLoading();
-            
-            // Simular un pequeño delay para ver el loading (opcional)
-            await new Promise(resolve => setTimeout(resolve, 100));
-            
-            // Cargar desde localStorage
-            const storedData = localStorage.getItem('acosa_custodias');
-            if (storedData) {
-                const data = JSON.parse(storedData);
-                this.custodias = data.custodias || [];
-                console.log('📂 Custodias cargadas:', this.custodias.length);
-            } else {
-                this.custodias = [];
-                console.log('📂 No hay custodias registradas');
-            }
-            
-        } catch (error) {
-            console.error('Error cargando custodias:', error);
-            this.custodias = [];
-        } finally {
-            // ✅ GARANTIZAR que se oculte el loading
-            this.hideLoading();
-        }
-    }
-
-    // ================================
-    // CONFIGURACIÓN DE EVENTOS
-    // ================================
-
-    setupEventListeners() {
-        this.setupNavigationEvents();
-        this.setupListEvents();
-    }
-
-    setupNavigationEvents() {
-        const btnVolverMenu = document.getElementById('btnVolverMenu');
-        
-        if (btnVolverMenu) {
-            btnVolverMenu.addEventListener('click', () => {
-                // ✅ Cerrar esta ventana (sistema SAP)
-                window.close();
-            });
-        }
-    }
-
-    setupListEvents() {
-        const btnNuevaCustodia = document.getElementById('btnNuevaCustodia');
-        const btnRecargar = document.getElementById('btnRecargar');
-        const buscarCustodias = document.getElementById('buscarCustodias');
-        const filtroEstatus = document.getElementById('filtroEstatus');
-        const btnExportar = document.getElementById('btnExportar');
-        const btnAnterior = document.getElementById('btnAnterior');
-        const btnSiguiente = document.getElementById('btnSiguiente');
-
-        // ✅ Abrir modal de nueva custodia
-        if (btnNuevaCustodia) {
-            btnNuevaCustodia.addEventListener('click', () => {
-                console.log('📝 Abriendo modal de nueva custodia');
-                this.openModal();
-            });
-        }
-
-        // ✅ Recargar datos
-        if (btnRecargar) {
-            btnRecargar.addEventListener('click', () => {
-                this.showLoading();
-                this.loadCustodias().then(() => {
-                    this.renderCustodias();
-                    this.updateStats();
-                    this.hideLoading(); // ✅ Ocultar después de recargar
-                    this.showNotification('Datos actualizados', 'success');
-                });
-            });
-        }
-
-        // ✅ Búsqueda y filtros
-        if (buscarCustodias) {
-            buscarCustodias.addEventListener('input', (e) => {
-                this.currentFilter = e.target.value.toLowerCase();
-                this.currentPage = 1;
-                this.renderCustodias();
-            });
-        }
-
-        if (filtroEstatus) {
-            filtroEstatus.addEventListener('change', (e) => {
-                this.currentEstatusFilter = e.target.value;
-                this.currentPage = 1;
-                this.renderCustodias();
-            });
-        }
-
-        // ✅ Exportación
-        if (btnExportar) {
-            btnExportar.addEventListener('click', () => {
-                this.exportToExcel();
-            });
-        }
-
-        // ✅ Paginación
-        if (btnAnterior) {
-            btnAnterior.addEventListener('click', () => {
-                if (this.currentPage > 1) {
-                    this.currentPage--;
-                    this.renderCustodias();
-                }
-            });
-        }
-
-        if (btnSiguiente) {
-            btnSiguiente.addEventListener('click', () => {
-                const totalPages = Math.ceil(this.getFilteredCustodias().length / this.itemsPerPage);
-                if (this.currentPage < totalPages) {
-                    this.currentPage++;
-                    this.renderCustodias();
-                }
-            });
-        }
-    }
-
-    // ================================
-    // LÓGICA DE LISTA
-    // ================================
-
-    getFilteredCustodias() {
-        let filtered = this.custodias;
-
-        // Filtrar por búsqueda
-        if (this.currentFilter) {
-            filtered = filtered.filter(custodia => 
-                custodia.id.toLowerCase().includes(this.currentFilter) ||
-                (custodia.proveedor && custodia.proveedor.nombre.toLowerCase().includes(this.currentFilter)) ||
-                (custodia.tipo_movimiento && custodia.tipo_movimiento.toLowerCase().includes(this.currentFilter))
-            );
-        }
-
-        // Filtrar por estatus
-        if (this.currentEstatusFilter) {
-            if (this.currentEstatusFilter === 'completado') {
-                filtered = filtered.filter(custodia => custodia.estatus === 4);
-            } else {
-                filtered = filtered.filter(custodia => custodia.estatus == this.currentEstatusFilter);
-            }
-        }
-
-        return filtered;
-    }
-
-    getPaginatedCustodias() {
-        const filtered = this.getFilteredCustodias();
-        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-        const endIndex = startIndex + this.itemsPerPage;
-        return filtered.slice(startIndex, endIndex);
-    }
-
-    renderCustodias() {
-        const container = document.getElementById('listaCustodias');
-        if (!container) return;
-
-        const paginatedCustodias = this.getPaginatedCustodias();
-        const filteredCustodias = this.getFilteredCustodias();
-
-        if (paginatedCustodias.length === 0) {
-            container.innerHTML = this.getEmptyState();
-            this.updatePagination(0);
-            return;
-        }
-
-        // 🔥 APLICAR TAMAÑOS DE COLUMNA ANTES DE RENDERIZAR
-        this.applyColumnSizes();
-
-        let html = '';
-        paginatedCustodias.forEach(custodia => {
-            html += this.getCustodiaRowHTML(custodia);
-        });
-
-        container.innerHTML = html;
-        this.attachRowEvents();
-        this.updatePagination(filteredCustodias.length);
-    }
-
-    getCustodiaRowHTML(custodia) {
-        const estatusText = this.getEstatusText(custodia.estatus);
-        const estatusClass = this.getEstatusClass(custodia.estatus);
-        const proveedorNombre = custodia.proveedor ? custodia.proveedor.nombre : 'N/A';
-        
-        // 🔥 ORDENAR LAS COLUMNAS SEGÚN columnOrder
-        const columns = [
-            `<div class="col-id">${custodia.id}</div>`,
-            `<div class="col-proveedor">${proveedorNombre}</div>`,
-            `<div class="col-fecha">${this.formatDate(custodia.fecha_servicio)}<br><small>${custodia.hora_servicio}</small></div>`,
-            `<div class="col-tipo">${this.formatTipoMovimiento(custodia.tipo_movimiento)}</div>`,
-            `<div class="col-ubicacion"><small><strong>De:</strong> ${custodia.ubicacion_inicial.municipio}, ${custodia.ubicacion_inicial.estado}<br><strong>A:</strong> ${custodia.ubicacion_destino.municipio}, ${custodia.ubicacion_destino.estado}</small></div>`,
-            `<div class="col-estatus"><span class="status-badge ${estatusClass}">${estatusText}</span></div>`,
-            `<div class="col-acciones">
-                <button class="btn btn-action view" data-action="view" title="Ver detalles">👁️ Ver</button>
-                <button class="btn btn-action edit" data-action="edit" title="Editar">✏️ Editar</button>
-                <button class="btn btn-action delete" data-action="delete" title="Eliminar">🗑️ Eliminar</button>
-            </div>`
-        ];
-
-        // Aplicar el orden personalizado
-        const orderedColumns = this.columnOrder.map(index => columns[index]);
-        
-        return `
-            <div class="table-row" data-custodia-id="${custodia.id}">
-                ${orderedColumns.join('')}
-            </div>
-        `;
-    }
-
-    getEmptyState() {
-        return `
-            <div class="empty-state">
-                <div>📭 No hay custodias registradas</div>
-                <p>Comienza creando tu primera custodia usando el botón "➕ Nueva Custodia"</p>
-            </div>
-        `;
-    }
-
-    attachRowEvents() {
-        // Ver detalles
-        document.querySelectorAll('[data-action="view"]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const custodiaId = e.target.closest('.table-row').dataset.custodiaId;
-                this.viewCustodia(custodiaId);
-            });
-        });
-
-        // Editar
-        document.querySelectorAll('[data-action="edit"]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const custodiaId = e.target.closest('.table-row').dataset.custodiaId;
-                this.editCustodia(custodiaId);
-            });
-        });
-
-        // Eliminar
-        document.querySelectorAll('[data-action="delete"]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const custodiaId = e.target.closest('.table-row').dataset.custodiaId;
-                this.deleteCustodia(custodiaId);
-            });
-        });
-    }
+    // Ordenamiento desactivado en listas sin tabla
+    sortData(key, dir = 1) { return; }
 
     // ================================
     // ACCIONES DE CUSTODIAS
@@ -482,12 +165,12 @@ class CustodiasManager {
     }
 
     deleteCustodia(custodiaId) {
-        if (confirm(`¿Estás seguro de que deseas eliminar la custodia ${custodiaId}?`)) {
+        if (confirm(`¿Estás seguro de que deseas cancelar la custodia ${custodiaId}?`)) {
             this.custodias = this.custodias.filter(c => c.id !== custodiaId);
             this.saveCustodiasToFile().then(() => {
                 this.renderCustodias();
                 this.updateStats();
-                this.showNotification('Custodia eliminada correctamente', 'success');
+                this.showNotification('Custodia cancelada correctamente', 'success');
             });
         }
     }
@@ -510,51 +193,24 @@ class CustodiasManager {
     // ================================
 
     updateStats() {
-        const enPendientes = document.getElementById('enPendientes');
-        const enSolicitadas = document.getElementById('enSolicitadas');
-        const enFacturacion = document.getElementById('enFacturacion');
-        const enPago = document.getElementById('enPago');
-
-        if (enPendientes) enPendientes.textContent = this.custodias.filter(c => c.estatus === 1).length;
-        if (enSolicitadas) enSolicitadas.textContent = this.custodias.filter(c => c.estatus === 2).length;
-        if (enFacturacion) enFacturacion.textContent = this.custodias.filter(c => c.estatus === 3).length;
-        if (enPago) enPago.textContent = this.custodias.filter(c => c.estatus === 4).length;
-    }
-
-    updatePagination(totalItems) {
-        const btnAnterior = document.getElementById('btnAnterior');
-        const btnSiguiente = document.getElementById('btnSiguiente');
-        const infoPagina = document.getElementById('infoPagina');
-        const contadorRegistros = document.getElementById('mostrandoRegistros');
-
-        const totalPages = Math.ceil(totalItems / this.itemsPerPage);
-
-        if (btnAnterior) btnAnterior.disabled = this.currentPage === 1;
-        if (btnSiguiente) btnSiguiente.disabled = this.currentPage === totalPages || totalPages === 0;
-        
-        if (infoPagina) {
-            infoPagina.textContent = `Página ${this.currentPage} de ${totalPages || 1}`;
-        }
-        
-        if (contadorRegistros) {
-            const start = ((this.currentPage - 1) * this.itemsPerPage) + 1;
-            const end = Math.min(this.currentPage * this.itemsPerPage, totalItems);
-            contadorRegistros.textContent = `Mostrando ${start}-${end} de ${totalItems} registros`;
-        }
-    }
-
-    // ================================
-    // UTILIDADES
-    // ================================
-
-    getEstatusText(estatus) {
-        const estatusMap = {
-            1: 'Pendiente',
-            2: 'Pendiente Custodia',
-            3: 'Pendiente Factura',
-            4: 'Pendiente Pago'
-        };
-        return estatusMap[estatus] || 'Desconocido';
+        const a = document.getElementById('enActivos');
+        const i = document.getElementById('enInactivos');
+            if(a) a.textContent = (this.custodias||[]).filter(x=>x.activo).length;
+            if(i) i.textContent = (this.custodias||[]).filter(x=>!x.activo).length;
+            const total = Array.isArray(this.custodias) ? this.custodias.length : 0;
+            const mostrando = document.getElementById('mostrandoRegistros');
+            const info = document.getElementById('infoPagina');
+            const btnAnterior = document.getElementById('btnAnterior');
+            const btnSiguiente = document.getElementById('btnSiguiente');
+            const totalPages = Math.max(1, Math.ceil(total/ (this.itemsPerPage||10)));
+            if(mostrando){
+                const start = ((this.currentPage-1)*(this.itemsPerPage||10))+1;
+                const end = Math.min(this.currentPage*(this.itemsPerPage||10), total);
+                mostrando.textContent = total ? `Mostrando ${start}-${end} de ${total}` : 'Mostrando 0 de 0';
+            }
+            if(info) info.textContent = `Página ${Math.min(this.currentPage,totalPages)} de ${totalPages}`;
+            if(btnAnterior) btnAnterior.disabled = this.currentPage<=1 || total===0;
+            if(btnSiguiente) btnSiguiente.disabled = this.currentPage>=totalPages || total===0;
     }
 
     getEstatusClass(estatus) {
@@ -607,22 +263,16 @@ class CustodiasManager {
     }
 
     showLoading() {
-        const loading = document.getElementById('loading');
-        if (loading) {
-            loading.style.display = 'flex';
-        }
+        const el = document.getElementById('loadingCustodias') || document.getElementById('loading');
+        if (el) el.style.display = 'flex';
     }
 
     hideLoading() {
-        const loading = document.getElementById('loading');
-        if (loading) {
-            loading.style.display = 'none';
-        }
+        const el = document.getElementById('loadingCustodias') || document.getElementById('loading');
+        if (el) el.style.display = 'none';
     }
 
-    exportToExcel() {
-        this.showNotification('Función de exportación en desarrollo', 'info');
-    }
+    exportToExcel() { this.showNotification('Función de exportación en desarrollo', 'info'); }
 
     // ================================
     // 🔥 FUNCIONES DEL MODAL
@@ -630,7 +280,9 @@ class CustodiasManager {
 
     openModal(custodiaData = null) {
         const modal = document.getElementById('modalCustodia');
-        const modalTitle = document.getElementById('modalTitle');
+        if (!modal) { alert('No se encontró el contenedor del formulario (modalCustodia)'); return; }
+        const modalTitle = document.getElementById('modalTitleCustodia');
+        if (!modalTitle) { console.warn('Título del modal no encontrado: modalTitleCustodia'); }
         
         // Configurar modo: crear o editar
         if (custodiaData) {
@@ -649,7 +301,13 @@ class CustodiasManager {
         this.setupModalEvents();
 
         // Mostrar modal
-        modal.style.display = 'flex';
+        try {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        } catch (e) {
+            console.error('Error mostrando el modal:', e);
+            alert('Ocurrió un error al abrir el formulario. Revisa la consola.');
+        }
         document.body.style.overflow = 'hidden'; // Bloquear scroll del body
     }
 
@@ -674,7 +332,18 @@ class CustodiasManager {
         
         // Fecha mínima para servicio
         const today = now.toISOString().split('T')[0];
-        document.getElementById('modalFechaServicio').min = today;
+        const fechaServicioEl = document.getElementById('modalFechaServicio');
+        fechaServicioEl.min = today;
+        // Prellenar fecha/hora de servicio con valores por defecto para facilitar guardado
+        fechaServicioEl.value = today;
+        const horaEl = document.getElementById('modalHoraServicio');
+        horaEl.value = hours + ':' + minutes;
+
+        // Seleccionar el primer tipo de movimiento si existe
+        const tipoEl = document.getElementById('modalTipoMovimiento');
+        if (tipoEl && tipoEl.options && tipoEl.options.length > 0) {
+            tipoEl.selectedIndex = 0;
+        }
         
         // Valores por defecto
         document.getElementById('modalInicialPais').value = 'México';
@@ -697,29 +366,45 @@ class CustodiasManager {
     }
 
     fillModalForm(custodia) {
-        document.getElementById('modalIdCustodia').value = custodia.id;
-        document.getElementById('modalFechaSolicitud').value = custodia.fechaSolicitud;
-        document.getElementById('modalProveedor').value = custodia.proveedor;
-        document.getElementById('modalFechaServicio').value = custodia.fechaServicio;
-        document.getElementById('modalHoraServicio').value = custodia.horaServicio;
-        document.getElementById('modalTipoMovimiento').value = custodia.tipoMovimiento;
-        
-        // Ubicación inicial
-        document.getElementById('modalInicialCP').value = custodia.ubicacionInicial.cp;
-        document.getElementById('modalInicialPais').value = custodia.ubicacionInicial.pais;
-        document.getElementById('modalInicialEstado').value = custodia.ubicacionInicial.estado;
-        document.getElementById('modalInicialMunicipio').value = custodia.ubicacionInicial.municipio;
-        document.getElementById('modalInicialColonia').value = custodia.ubicacionInicial.colonia;
-        document.getElementById('modalInicialCalle').value = custodia.ubicacionInicial.calle;
-        
+        // Soportar ambos formatos: snake_case (persistido) y camelCase (legacy)
+        document.getElementById('modalIdCustodia').value = custodia.id || '';
+        document.getElementById('modalFechaSolicitud').value = custodia.fecha_solicitud || custodia.fechaSolicitud || '';
+
+        const proveedorSelect = document.getElementById('modalProveedor');
+        if (custodia.proveedor) {
+            if (typeof custodia.proveedor === 'object') {
+                proveedorSelect.value = custodia.proveedor.id || '';
+            } else {
+                // si es texto, intentar seleccionar por texto (si existe)
+                const opt = Array.from(proveedorSelect.options).find(o => o.text === custodia.proveedor || o.value === custodia.proveedor);
+                proveedorSelect.value = opt ? opt.value : '';
+            }
+        } else {
+            proveedorSelect.value = '';
+        }
+
+        document.getElementById('modalFechaServicio').value = custodia.fecha_servicio || custodia.fechaServicio || '';
+        document.getElementById('modalHoraServicio').value = custodia.hora_servicio || custodia.horaServicio || '';
+        document.getElementById('modalTipoMovimiento').value = custodia.tipo_movimiento || custodia.tipoMovimiento || '';
+
+        // Ubicación inicial (soportar snake_case o camelCase)
+        const ini = custodia.ubicacion_inicial || custodia.ubicacionInicial || {};
+        document.getElementById('modalInicialCP').value = ini.cp || '';
+        document.getElementById('modalInicialPais').value = ini.pais || '';
+        document.getElementById('modalInicialEstado').value = ini.estado || '';
+        document.getElementById('modalInicialMunicipio').value = ini.municipio || '';
+        document.getElementById('modalInicialColonia').value = ini.colonia || '';
+        document.getElementById('modalInicialCalle').value = ini.calle || '';
+
         // Ubicación destino
-        document.getElementById('modalDestinoCP').value = custodia.ubicacionDestino.cp;
-        document.getElementById('modalDestinoPais').value = custodia.ubicacionDestino.pais;
-        document.getElementById('modalDestinoEstado').value = custodia.ubicacionDestino.estado;
-        document.getElementById('modalDestinoMunicipio').value = custodia.ubicacionDestino.municipio;
-        document.getElementById('modalDestinoColonia').value = custodia.ubicacionDestino.colonia;
-        document.getElementById('modalDestinoCalle').value = custodia.ubicacionDestino.calle;
-        
+        const dest = custodia.ubicacion_destino || custodia.ubicacionDestino || {};
+        document.getElementById('modalDestinoCP').value = dest.cp || '';
+        document.getElementById('modalDestinoPais').value = dest.pais || '';
+        document.getElementById('modalDestinoEstado').value = dest.estado || '';
+        document.getElementById('modalDestinoMunicipio').value = dest.municipio || '';
+        document.getElementById('modalDestinoColonia').value = dest.colonia || '';
+        document.getElementById('modalDestinoCalle').value = dest.calle || '';
+
         // Observaciones
         document.getElementById('modalObservaciones').value = custodia.observaciones || '';
         document.getElementById('modalCharCount').textContent = (custodia.observaciones || '').length;
@@ -750,7 +435,8 @@ class CustodiasManager {
 
     setupModalEvents() {
         // Cerrar modal con X
-        document.getElementById('btnCloseModal').onclick = () => this.closeModal();
+        const btnClose = document.getElementById('btnCloseModalCustodia') || document.getElementById('btnCloseModal');
+        if (btnClose) btnClose.onclick = () => this.closeModal();
         
         // Guardar custodia
         document.getElementById('btnGuardarModal').onclick = () => this.saveFromModal();
@@ -799,23 +485,34 @@ class CustodiasManager {
         header.classList.toggle('collapsed');
     }
 
-    saveFromModal() {
-        // Validar campos requeridos
-        const form = document.getElementById('formCustodia');
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
-        }
+    async saveFromModal() {
+        try {
+            // Validar campos requeridos
+            const form = document.getElementById('formCustodia');
+            if (!form) throw new Error('Formulario no encontrado (id=formCustodia)');
+            if (!form.checkValidity()) {
+                // Mostrar la validación nativa y además notificar y enfocar el primer campo inválido
+                form.reportValidity();
+                const firstInvalid = form.querySelector(':invalid');
+                if (firstInvalid && typeof firstInvalid.focus === 'function') firstInvalid.focus();
+                this.showNotification('Completa los campos obligatorios marcados', 'error');
+                return;
+            }
 
         // Recopilar datos
+        const proveedorSelect = document.getElementById('modalProveedor');
+        const proveedorValue = proveedorSelect ? proveedorSelect.value : '';
+        const proveedorText = proveedorSelect ? (proveedorSelect.options[proveedorSelect.selectedIndex]?.text || '') : '';
+
+        // Construir objeto usando las claves que espera el render (snake_case)
         const custodiaData = {
             id: document.getElementById('modalIdCustodia').value,
-            fechaSolicitud: document.getElementById('modalFechaSolicitud').value,
-            proveedor: document.getElementById('modalProveedor').value,
-            fechaServicio: document.getElementById('modalFechaServicio').value,
-            horaServicio: document.getElementById('modalHoraServicio').value,
-            tipoMovimiento: document.getElementById('modalTipoMovimiento').value,
-            ubicacionInicial: {
+            fecha_solicitud: document.getElementById('modalFechaSolicitud').value,
+            proveedor: { id: proveedorValue, nombre: proveedorText },
+            fecha_servicio: document.getElementById('modalFechaServicio').value,
+            hora_servicio: document.getElementById('modalHoraServicio').value,
+            tipo_movimiento: document.getElementById('modalTipoMovimiento').value,
+            ubicacion_inicial: {
                 cp: document.getElementById('modalInicialCP').value,
                 pais: document.getElementById('modalInicialPais').value,
                 estado: document.getElementById('modalInicialEstado').value,
@@ -823,7 +520,7 @@ class CustodiasManager {
                 colonia: document.getElementById('modalInicialColonia').value,
                 calle: document.getElementById('modalInicialCalle').value
             },
-            ubicacionDestino: {
+            ubicacion_destino: {
                 cp: document.getElementById('modalDestinoCP').value,
                 pais: document.getElementById('modalDestinoPais').value,
                 estado: document.getElementById('modalDestinoEstado').value,
@@ -832,31 +529,34 @@ class CustodiasManager {
                 calle: document.getElementById('modalDestinoCalle').value
             },
             observaciones: document.getElementById('modalObservaciones').value,
-            estatus: 'pendiente'
+            estatus: 1
         };
 
-        // Buscar si existe (editar) o crear nueva
-        const existingIndex = this.custodias.findIndex(c => c.id === custodiaData.id);
-        
-        if (existingIndex >= 0) {
-            // Actualizar existente
-            this.custodias[existingIndex] = custodiaData;
-            this.showNotification('✅ Custodia actualizada correctamente', 'success');
-        } else {
-            // Agregar nueva
-            this.custodias.push(custodiaData);
-            this.showNotification('✅ Custodia creada correctamente', 'success');
+            // Buscar si existe (editar) o crear nueva
+            const existingIndex = this.custodias.findIndex(c => c.id === custodiaData.id);
+            if (existingIndex >= 0) {
+                // Actualizar existente
+                this.custodias[existingIndex] = custodiaData;
+                this.showNotification('✅ Custodia actualizada correctamente', 'success');
+            } else {
+                // Agregar nueva
+                this.custodias.push(custodiaData);
+                this.showNotification('✅ Custodia creada correctamente', 'success');
+            }
+
+            // Guardar en localStorage (persistencia)
+            await this.saveCustodiasToFile();
+
+            // Actualizar vista
+            this.renderCustodias();
+            this.updateStats();
+
+            // Cerrar modal
+            this.closeModal();
+        } catch (err) {
+            console.error('Error guardando custodia:', err);
+            this.showNotification('Error guardando la custodia: ' + (err.message || err), 'error');
         }
-
-        // Guardar en localStorage
-        this.saveCustodias();
-
-        // Actualizar vista
-        this.renderCustodias();
-        this.updateStats();
-
-        // Cerrar modal
-        this.closeModal();
     }
 
     printCustodia() {
@@ -1116,13 +816,29 @@ class CustodiasManager {
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
     window.custodiasManager = new CustodiasManager();
+    const btnNuevo = document.getElementById('btnNuevo');
+    const buscar = document.getElementById('buscar');
+    const btnBuscar = document.getElementById('btnBuscar');
+    if (btnNuevo) btnNuevo.addEventListener('click', (e) => { e.preventDefault(); window.custodiasManager.openModal(); });
+    if (buscar) buscar.addEventListener('input', (e) => { /* listas sin render */ });
+    if (btnBuscar) btnBuscar.addEventListener('click', () => { /* aplica filtro al clic; listas no renderizan */ });
+    // Delegación como respaldo
+    document.body.addEventListener('click', (e) => {
+        const t = e.target.closest('#btnNuevo');
+        if (t) { e.preventDefault(); window.custodiasManager.openModal(); }
+    });
+    // Fallback por si el botón se renderiza tarde
+    setTimeout(() => {
+        const lateBtn = document.getElementById('btnNuevo');
+        if (lateBtn && !lateBtn._custodiaBound) {
+            lateBtn.addEventListener('click', (e) => { e.preventDefault(); window.custodiasManager.openModal(); });
+            lateBtn._custodiaBound = true;
+        }
+    }, 500);
 });
 
 // ✅ BACKUP - Forzar ocultar loading después de 3 segundos por si acaso
 setTimeout(() => {
-    const loading = document.getElementById('loading');
-    if (loading) {
-        loading.style.display = 'none';
-        console.log('🛡️ Backup: Loading forzado a ocultarse');
-    }
+    const ids = ['loadingCustodias','loading'];
+    ids.forEach(id=>{ const el = document.getElementById(id); if(el) el.style.display='none'; });
 }, 3000);

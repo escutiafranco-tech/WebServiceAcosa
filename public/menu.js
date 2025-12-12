@@ -574,6 +574,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const barraPestañas = document.createElement('div');
         barraPestañas.className = 'barra-pestañas';
         contenedor.appendChild(barraPestañas);
+        // Inicializar comportamiento arrastrable y persistencia
+        try { setupSortableOn(barraPestañas); } catch (e) { console.warn('No se pudo inicializar draggable en barra de pestañas', e); }
         return barraPestañas;
     }
 
@@ -582,6 +584,60 @@ document.addEventListener('DOMContentLoaded', function() {
         areaContenido.className = 'area-contenido-pestañas';
         contenedor.appendChild(areaContenido);
         return areaContenido;
+    }
+
+    // ================================
+    // Funcionalidad: Pestañas arrastrables (SortableJS)
+    // ================================
+    // Carga SortableJS dinámicamente si no está disponible
+    function loadSortable() {
+        return new Promise((resolve, reject) => {
+            if (window.Sortable) return resolve(window.Sortable);
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js';
+            script.async = true;
+            script.onload = () => {
+                if (window.Sortable) resolve(window.Sortable);
+                else reject(new Error('Sortable cargado pero no disponible'));
+            };
+            script.onerror = () => reject(new Error('No se pudo cargar SortableJS'));
+            document.head.appendChild(script);
+        });
+    }
+
+    // Inicializa Sortable en la barra de pestañas y configura persistencia
+    function setupSortableOn(barraPestañas) {
+        if (!barraPestañas) return;
+
+        const enable = () => {
+            try {
+                // Evitar inicializar dos veces
+                if (barraPestañas._sortableInst) return;
+
+                const inst = new Sortable(barraPestañas, {
+                    draggable: '.pestana',
+                    animation: 150,
+                    handle: '.nombre-pestana',
+                    onEnd: function () {
+                        // Reordenar array `pestañasAbiertas` según el DOM
+                        const ids = Array.from(barraPestañas.querySelectorAll('.pestana')).map(el => el.dataset.pestanaId);
+                        pestañasAbiertas = ids.map(id => pestañasAbiertas.find(p => p.id === id)).filter(Boolean);
+                        // Guardar estado completo (sessionStorage) para persistir orden
+                        try { guardarEstadoCompleto(); } catch (e) { console.warn('No se pudo guardar estado tras reordenar', e); }
+                    }
+                });
+
+                barraPestañas._sortableInst = inst;
+            } catch (err) {
+                console.error('Error inicializando Sortable:', err);
+            }
+        };
+
+        if (window.Sortable) {
+            enable();
+        } else {
+            loadSortable().then(enable).catch(err => console.warn('SortableJS no cargado:', err));
+        }
     }
 
     // ================================

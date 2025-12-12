@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- CONFIGURACIÓN BÁSICA DEL DOCUMENTO -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proveedores - ACOSA</title>
+  
+    <!-- ENLACES A HOJAS DE ESTILO -->
+    <!-- Cargar variables y estilos globales desde public -->
+    <link rel="stylesheet" href="/Style.css">  <!-- Variables globales y estilos base (normalizado según custodias) -->
+    <link rel="stylesheet" href="/modules.css"> <!-- Estilos de módulos -->
+</head>
+<body>
+    <!-- CONTENEDOR PRINCIPAL DEL MÓDULO -->
+    <div class="module-container">
+        
+        <!-- ====================================== -->
+        <!-- BARRA DE ACCESOS RÁPIDOS -->
+        <!-- ====================================== -->
+      
+        <div class="toolbar-module">
+            <button id="btnNuevo" class="toolbar-btn">
+                <img src="/Imagenes/Acc_Agregar.png" alt="Nuevo" class="toolbar-icon">
+                <span class="toolbar-label">Nuevo</span>
+            </button>
+            <button id="btnFiltroFechas" class="toolbar-btn">
+                <img src="/Imagenes/Acc_Filtrar.png" alt="Filtros" class="toolbar-icon">
+                <span class="toolbar-label">Filtros</span>
+            </button>
+            
+            <div class="toolbar-divider"></div>
+            <div class="toolbar-search">
+                <input type="text" id="buscar" placeholder="Buscar...">
+                <button id="btnBuscar" class="search-btn">
+                    <img src="/Imagenes/Acc_Filtrar.png" alt="Buscar" style="width:16px;height:16px;">
+                </button>
+            </div>
+        </div>    
+
+        <!-- Contenedor de lista mínimo (sin tablas) -->
+                <div class="list-container">
+                    <div class="list-body" id="listaProveedores"></div>
+                </div>
+
+                <div class="barra-inferior-unificada">
+                    <div class="estadisticas-inferiores">
+                        <div class="stat-item-inferior">
+                            <span class="stat-label-inferior">Activos:</span>
+                            <span class="stat-numero-inferior" id="enActivos">0</span>
+                        </div>
+                        <div class="stat-item-inferior">
+                            <span class="stat-label-inferior">Inactivos:</span>
+                            <span class="stat-numero-inferior" id="enInactivos">0</span>
+                        </div>
+                    </div>
+                    <div class="contador-registros">
+                        <span id="mostrandoRegistros">Mostrando 0 de 0</span>
+                        <button id="btnRecargar" class="btn btn-icon">🔄</button>
+                    </div>
+                    <div class="paginacion-inferior">
+                        <button id="btnAnterior" class="btn btn-outline" disabled>← Anterior</button>
+                        <span id="infoPagina">Página 1 de 1</span>
+                        <button id="btnSiguiente" class="btn btn-outline" disabled>Siguiente →</button>
+                    </div>
+                </div>
+
+        <!-- Overlay de carga (oculto por defecto) -->
+        <div class="loading-overlay" id="loading" style="display:none;">
+            <div class="loading-spinner"></div>
+            <p>Cargando proveedores...</p>
+        </div>
+
+        <!-- MODAL: formulario de proveedor (misma estructura que custodias) -->
+        <div class="modal-overlay" id="modalProveedor" style="display:none;">
+            <div class="modal-container modal-compact">
+                <div class="modal-header">
+                    <div class="modal-title"><h2 id="modalTitleProveedor">Proveedor</h2></div>
+                    <div class="modal-header-buttons"><button class="btn-header-icon" id="btnCloseModalProveedor" title="Cerrar">✕</button></div>
+                </div>
+
+                <div class="modal-tabs">
+                    <button class="tab-button active" data-tab="DATOS GENERALES">DATOS GENERALES</button>
+                    <button class="tab-button" data-tab="EXPEDIENTE">EXPEDIENTE</button>
+                    <button class="tab-button" data-tab="VENTAS">VENTAS</button>
+                    <button class="tab-button" data-tab="SALDOS">SALDOS</button>
+                    <button class="tab-button" data-tab="AGENDA">AGENDA</button>
+                </div>
+
+                <div class="modal-content-compact">
+                    <form id="formProveedor">
+                        <div class="tab-content active" id="tabDatos">
+                            <table class="form-table">
+                                <tr>
+                                    <td class="label-cell">ID</td>
+                                    <td class="input-cell"><input type="text" id="modalIdProveedor" readonly></td>
+                                    <td class="label-cell">Código</td>
+                                    <td class="input-cell"><input type="text" id="modalCodigo"></td>
+                                </tr>
+                                <tr>
+                                    <td class="label-cell">Nombre <span class="required">*</span></td>
+                                    <td class="input-cell" colspan="3"><input type="text" id="modalNombre" required></td>
+                                </tr>
+                                <tr>
+                                    <td class="label-cell">RFC</td>
+                                    <td class="input-cell"><input id="modalRfc" type="text"></td>
+                                    <td class="label-cell">Contacto</td>
+                                    <td class="input-cell"><input id="modalContacto" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <td class="label-cell">Teléfono</td>
+                                    <td class="input-cell"><input id="modalTelefono" type="text"></td>
+                                    <td class="label-cell">Email</td>
+                                    <td class="input-cell"><input id="modalEmail" type="email"></td>
+                                </tr>
+                                <tr>
+                                    <td class="label-cell">Dirección</td>
+                                    <td class="input-cell" colspan="3"><input id="modalDireccion" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <td class="label-cell">Activo</td>
+                                    <td class="input-cell"><input id="modalActivo" type="checkbox" checked></td>
+                                    <td class="label-cell">Fecha Registro</td>
+                                    <td class="input-cell"><input id="modalFechaRegistro" type="text" readonly></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="tab-content" id="tabExpediente">
+                            <div class="collapsible-section">
+                                <div class="section-header-collapse"><span class="collapse-icon">▼</span><span class="section-title-text">Información de Expediente</span></div>
+                                <div class="section-body">
+                                    <table class="form-table">
+                                        <tr>
+                                            <td class="label-cell">Tipo</td>
+                                            <td class="input-cell"><input id="modalExpTipo" type="text"></td>
+                                            <td class="label-cell">Estado</td>
+                                            <td class="input-cell"><input id="modalExpEstado" type="text"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="label-cell">Notas</td>
+                                            <td class="input-cell" colspan="3"><input id="modalExpNotas" type="text"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-content" id="tabVentas">
+                            <div class="collapsible-section">
+                                <div class="section-header-collapse"><span class="collapse-icon">▼</span><span class="section-title-text">Historial de Ventas</span></div>
+                                <div class="section-body">
+                                    <div class="empty-tab"><p>📊 En desarrollo</p><small>Resumen de ventas y métricas del proveedor</small></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-content" id="tabSaldos">
+                            <div class="collapsible-section">
+                                <div class="section-header-collapse"><span class="collapse-icon">▼</span><span class="section-title-text">Saldos y Cuentas</span></div>
+                                <div class="section-body">
+                                    <div class="empty-tab"><p>💰 En desarrollo</p><small>Estados de cuenta, saldos vencidos y condiciones</small></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-content" id="tabAgenda">
+                            <div class="collapsible-section">
+                                <div class="section-header-collapse"><span class="collapse-icon">▼</span><span class="section-title-text">Agenda y Contactos</span></div>
+                                <div class="section-body">
+                                    <table class="form-table">
+                                        <tr>
+                                            <td class="label-cell">Contacto 2</td>
+                                            <td class="input-cell"><input id="modalAgendaContacto2" type="text"></td>
+                                            <td class="label-cell">Teléfono 2</td>
+                                            <td class="input-cell"><input id="modalAgendaTelefono2" type="text"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="label-cell">Observaciones</td>
+                                            <td class="input-cell" colspan="3"><input id="modalAgendaNotas" type="text"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-content" id="tabDocumentos"><div class="empty-tab"><p>📄 Sección de documentos</p></div></div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="btnGuardarModalProveedor">GUARDAR</button>
+                    <button class="btn btn-secondary" id="btnImprimirProveedor">IMPRIMIR</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Tabla desactivada globalmente: no se cargan utilidades de tabla -->
+    <!-- Corregido path del script: carpeta en minúsculas -->
+    <script src="/modules/compras/proveedores/proveedores.js"></script>
+</body>
+</html>

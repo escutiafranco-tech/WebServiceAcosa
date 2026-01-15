@@ -12,14 +12,20 @@
     <link rel="stylesheet" href="/modules.css"> <!-- Estilos de módulos -->
 </head>
 <body>
-    <!-- CONTENEDOR PRINCIPAL DEL MÓDULO -->
+        <!-- CONTENEDOR PRINCIPAL DEL MÓDULO
+            Qué es: caja grande que envuelve toda la vista de Proveedores.
+            Para qué sirve: ordenar la barra, lista, barra inferior y el modal.
+            Cómo se usa: dentro van las secciones visuales del módulo. -->
     <div class="module-container">
         
         <!-- ====================================== -->
         <!-- BARRA DE ACCESOS RÁPIDOS -->
         <!-- ====================================== -->
       
-        <div class="toolbar-module">
+           <!-- BARRA DE ACCIONES (toolbar)
+               Qué es: botones rápidos (Nuevo, Filtros) y buscador.
+               Cómo se usa: el JS conecta estos IDs para abrir modales y buscar. -->
+           <div class="toolbar-module">
             <button id="btnNuevo" class="toolbar-btn">
                 <img src="/Imagenes/Acc_Agregar.png" alt="Nuevo" class="toolbar-icon">
                 <span class="toolbar-label">Nuevo</span>
@@ -39,11 +45,30 @@
         </div>    
 
         <!-- Contenedor de lista mínimo (sin tablas) -->
-                <div class="list-container">
-                    <div class="list-body" id="listaProveedores"></div>
+                 <!-- LISTA DE PROVEEDORES (como tabla)
+                     Qué es: una tabla para mostrar los proveedores.
+                     Cómo se usa: el JS agrega filas dentro del tbody. -->
+                 <div class="list-container">
+                    <table class="list-body" id="listaProveedores">
+                        <thead>
+                            <tr>
+                                <th>Acciones</th>
+                                <th data-sort="codigo">Código</th>
+                                <th data-sort="nombre">Nombre</th>
+                                <th data-sort="rfc">RFC</th>
+                                <th data-sort="direccion">Dirección fiscal</th>
+                                <th data-sort="activo">Estatus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
                 </div>
 
-                <div class="barra-inferior-unificada">
+                 <!-- BARRA INFERIOR (estadísticas + paginación)
+                     Qué es: indicadores (Activos/Inactivos) y controles de páginas.
+                     Cómo se usa: el JS actualiza los números y habilita botones. -->
+                 <div class="barra-inferior-unificada">
                     <div class="estadisticas-inferiores">
                         <div class="stat-item-inferior">
                             <span class="stat-label-inferior">Activos:</span>
@@ -66,68 +91,133 @@
                 </div>
 
         <!-- Overlay de carga (oculto por defecto) -->
-        <div class="loading-overlay" id="loading" style="display:none;">
+           <!-- OVERLAY DE CARGA DEL MÓDULO
+               Qué es: pantalla ligera que dice "Cargando proveedores...".
+               Cómo se usa: mostrar/ocultar desde JS cuando hay operaciones. -->
+           <div class="loading-overlay" id="loading" style="display:none;">
             <div class="loading-spinner"></div>
             <p>Cargando proveedores...</p>
         </div>
 
         <!-- MODAL: formulario de proveedor (misma estructura que custodias) -->
-        <div class="modal-overlay" id="modalProveedor" style="display:none;">
+           <!-- MODAL DE PROVEEDOR
+               Qué es: formulario con pestañas para capturar información.
+               Cómo se usa: el botón Nuevo abre este modal; el JS llena/guarda. -->
+           <div class="modal-overlay" id="modalProveedor" style="display:none;">
             <div class="modal-container modal-compact">
                 <div class="modal-header">
-                    <div class="modal-title"><h2 id="modalTitleProveedor">Proveedor</h2></div>
+                    <div class="modal-title"><h2 id="modalTitleProveedor">ALTA DE PROVEEDORES</h2></div>
                     <div class="modal-header-buttons"><button class="btn-header-icon" id="btnCloseModalProveedor" title="Cerrar">✕</button></div>
                 </div>
 
                 <div class="modal-tabs">
-                    <button class="tab-button active" data-tab="DATOS GENERALES">DATOS GENERALES</button>
-                    <button class="tab-button" data-tab="EXPEDIENTE">EXPEDIENTE</button>
-                    <button class="tab-button" data-tab="VENTAS">VENTAS</button>
-                    <button class="tab-button" data-tab="SALDOS">SALDOS</button>
-                    <button class="tab-button" data-tab="AGENDA">AGENDA</button>
+                    <button class="tab-button active" data-tab="datosGenerales">Datos generales</button>
+                    <button class="tab-button" data-tab="expediente">Expediente</button>
+                    <button class="tab-button" data-tab="informacionComercial">Información comercial</button>
+                    <button class="tab-button" data-tab="informacionFinanciera">Información financiera</button>
                 </div>
 
                 <div class="modal-content-compact">
                     <form id="formProveedor">
-                        <div class="tab-content active" id="tabDatos">
-                            <table class="form-table">
+                            <!-- PESTAÑA: DATOS GENERALES
+                                Contiene Información General y Sucursales. -->
+                            <div class="tab-content active" id="tabDatosGenerales">
+                               <!-- Sección: Datos Fiscales -->
+                               <div class="collapsible-section">
+                                <div class="section-header-collapse">
+                                    <span class="collapse-icon">▼</span>
+                                    <span class="section-title-text">Datos Fiscales</span>
+                                </div>
+                                <div class="section-body">
+                               <table class="form-table">
                                 <tr>
                                     <td class="label-cell">ID</td>
                                     <td class="input-cell"><input type="text" id="modalIdProveedor" readonly></td>
+                                    <td class="label-cell">Fecha de registro</td>
+                                    <td class="input-cell"><input id="modalFechaRegistro" type="text" readonly></td>
+                                </tr>
+                                <tr>
                                     <td class="label-cell">Código</td>
                                     <td class="input-cell"><input type="text" id="modalCodigo"></td>
+                                    <td class="label-cell">Estatus</td>
+                                    <td class="input-cell">
+                                        <select id="modalEstatus">
+                                            <option value="true">Activo</option>
+                                            <option value="false">Inactivo</option>
+                                        </select>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td class="label-cell">Nombre <span class="required">*</span></td>
                                     <td class="input-cell" colspan="3"><input type="text" id="modalNombre" required></td>
                                 </tr>
                                 <tr>
-                                    <td class="label-cell">RFC</td>
-                                    <td class="input-cell"><input id="modalRfc" type="text"></td>
-                                    <td class="label-cell">Contacto</td>
-                                    <td class="input-cell"><input id="modalContacto" type="text"></td>
+                                    <td class="label-cell">RFC <span class="required">*</span></td>
+                                    <td class="input-cell" colspan="3"><input id="modalRfc" type="text" required></td>
                                 </tr>
                                 <tr>
-                                    <td class="label-cell">Teléfono</td>
-                                    <td class="input-cell"><input id="modalTelefono" type="text"></td>
-                                    <td class="label-cell">Email</td>
-                                    <td class="input-cell"><input id="modalEmail" type="email"></td>
-                                </tr>
-                                <tr>
-                                    <td class="label-cell">Dirección</td>
-                                    <td class="input-cell" colspan="3"><input id="modalDireccion" type="text"></td>
-                                </tr>
-                                <tr>
-                                    <td class="label-cell">Activo</td>
-                                    <td class="input-cell"><input id="modalActivo" type="checkbox" checked></td>
-                                    <td class="label-cell">Fecha Registro</td>
-                                    <td class="input-cell"><input id="modalFechaRegistro" type="text" readonly></td>
+                                    <td class="label-cell">Dirección fiscal <span class="required">*</span></td>
+                                    <td class="input-cell" colspan="3"><input id="modalDireccion" type="text" required></td>
                                 </tr>
                             </table>
-                        </div>
-                        <div class="tab-content" id="tabExpediente">
+                                </div>
+                            </div>
+                                                        <!-- Sección: Servicios Prestados -->
                             <div class="collapsible-section">
-                                <div class="section-header-collapse"><span class="collapse-icon">▼</span><span class="section-title-text">Información de Expediente</span></div>
+                                <div class="section-header-collapse">
+                                    <span class="collapse-icon">▼</span>
+                                    <span class="section-title-text">Servicios Prestados</span>
+                                </div>
+                                <div class="section-body">
+                                    <div class="en-desarrollo"><span>En desarrollo</span></div>
+                                    <div class="empty-tab"><small>Lista de servicios que presta el proveedor</small></div>
+                                </div>
+                            </div>
+                                                                 <!-- Sección: Sucursales -->
+                                         <!-- SUCURSALES-->
+                               <div class="collapsible-section">
+                                <div class="section-header-collapse">
+                                    <span class="collapse-icon">▼</span>
+                                    <span class="section-title-text">Sucursales</span>
+                                </div>
+                                <div class="section-body">
+                                    <!-- Barra de acciones de sucursales -->
+                                    <div class="toolbar-inline">
+                                        <button class="btn btn-primary btn-sm" id="btnAgregarSucursal" title="Agregar sucursal">+
+                                        </button>
+                                    </div>
+                                    <!-- Espacio en blanco simbólico y lista -->
+                                    <div class="sucursales-lista" id="listaSucursales">
+                                        <!-- Aquí se renderizarán las sucursales agregadas -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Sección: Agenda de Proveedor y Contactos -->
+                            <div class="collapsible-section">
+                                <div class="section-header-collapse">
+                                    <span class="collapse-icon">▼</span>
+                                    <span class="section-title-text">Agenda de Proveedor y Contactos</span>
+                                </div>
+                                <div class="section-body">
+                                    <!-- Barra de acciones de contactos -->
+                                    <div class="toolbar-inline">
+                                        <button class="btn btn-primary btn-sm" id="btnAgregarContacto" title="Agregar contacto" onclick="window.ProveedoresManager.openModalContacto();">+ 
+                                        </button>
+                                    </div>
+                                    <!-- Lista de contactos -->
+                                    <div class="contactos-lista" id="listaContactos">
+                                        <!-- Aquí se renderizarán los contactos agregados -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                            <!-- PESTAÑA: EXPEDIENTE
+                                Información del expediente del proveedor. -->
+                            <div class="tab-content" id="tabExpediente">
+                            <div class="collapsible-section">
+                                <div class="section-header-collapse"><span class="collapse-icon">▼</span><span class="section-title-text">Información de expediente</span></div>
                                 <div class="section-body">
                                     <table class="form-table">
                                         <tr>
@@ -144,38 +234,23 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-content" id="tabVentas">
+                        <!-- PESTAÑA: INFORMACIÓN COMERCIAL -->
+                        <div class="tab-content" id="tabInformacionComercial">
                             <div class="collapsible-section">
-                                <div class="section-header-collapse"><span class="collapse-icon">▼</span><span class="section-title-text">Historial de Ventas</span></div>
+                                <div class="section-header-collapse"><span class="collapse-icon">▼</span><span class="section-title-text">Información Comercial</span></div>
                                 <div class="section-body">
-                                    <div class="empty-tab"><p>📊 En desarrollo</p><small>Resumen de ventas y métricas del proveedor</small></div>
+                                    <div class="en-desarrollo"><span>En desarrollo</span></div>
+                                    <div class="empty-tab"><small>Resumen de Información Comercial</small></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-content" id="tabSaldos">
+                        <!-- PESTAÑA: INFORMACIÓN FINANCIERA -->
+                        <div class="tab-content" id="tabInformacionFinanciera">
                             <div class="collapsible-section">
-                                <div class="section-header-collapse"><span class="collapse-icon">▼</span><span class="section-title-text">Saldos y Cuentas</span></div>
+                                <div class="section-header-collapse"><span class="collapse-icon">▼</span><span class="section-title-text">Información Financiera</span></div>
                                 <div class="section-body">
-                                    <div class="empty-tab"><p>💰 En desarrollo</p><small>Estados de cuenta, saldos vencidos y condiciones</small></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-content" id="tabAgenda">
-                            <div class="collapsible-section">
-                                <div class="section-header-collapse"><span class="collapse-icon">▼</span><span class="section-title-text">Agenda y Contactos</span></div>
-                                <div class="section-body">
-                                    <table class="form-table">
-                                        <tr>
-                                            <td class="label-cell">Contacto 2</td>
-                                            <td class="input-cell"><input id="modalAgendaContacto2" type="text"></td>
-                                            <td class="label-cell">Teléfono 2</td>
-                                            <td class="input-cell"><input id="modalAgendaTelefono2" type="text"></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="label-cell">Observaciones</td>
-                                            <td class="input-cell" colspan="3"><input id="modalAgendaNotas" type="text"></td>
-                                        </tr>
-                                    </table>
+                                    <div class="en-desarrollo"><span>En desarrollo</span></div>
+                                    <div class="empty-tab"><small>Resumen de Información Financiera</small></div>
                                 </div>
                             </div>
                         </div>
@@ -185,11 +260,141 @@
 
                 <div class="modal-footer">
                     <button class="btn btn-primary" id="btnGuardarModalProveedor">GUARDAR</button>
-                    <button class="btn btn-secondary" id="btnImprimirProveedor">IMPRIMIR</button>
                 </div>
             </div>
         </div>
 
+    </div>
+
+    <!-- MODAL: Agregar/Editar Sucursal -->
+        <!-- MODAL DE SUCURSAL
+            Qué es: pequeño formulario para añadir/editar una sucursal.
+            Campos: Tipo, Nombre y dirección desglosada. -->
+        <div class="modal-overlay" id="modalSucursal" style="display:none;">
+        <div class="modal-container modal-compact">
+            <div class="modal-header">
+                <div class="modal-title"><h2 id="modalTitleSucursal">Agregar Sucursal</h2></div>
+                <div class="modal-header-buttons"><button class="btn-header-icon" id="btnCloseModalSucursal" title="Cerrar">✕</button></div>
+            </div>
+
+            <div class="modal-content-compact">
+                <form id="formSucursal">
+                    <table class="form-table">
+                        <tr>
+                            <td class="label-cell">Tipo</td>
+                            <td class="input-cell">
+                                <select id="modalSucursalTipo" required>
+                                    <option value="">Seleccione tipo</option>
+                                    <option value="corporativo">Corporativo</option>
+                                    <option value="oficinas">Oficinas</option>
+                                    <option value="almacen">Almacén</option>
+                                    <option value="punto-venta">Punto de Venta</option>
+                                </select>
+                            </td>
+                            <td class="label-cell">Nombre Sucursal</td>
+                            <td class="input-cell"><input id="modalSucursalNombre" type="text" required></td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">País</td>
+                            <td class="input-cell"><input id="modalSucursalPais" type="text" value="México"></td>
+                            <td class="label-cell">Estado</td>
+                            <td class="input-cell"><input id="modalSucursalEstado" type="text"></td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">Municipio</td>
+                            <td class="input-cell"><input id="modalSucursalMunicipio" type="text"></td>
+                            <td class="label-cell">Localidad</td>
+                            <td class="input-cell"><input id="modalSucursalLocalidad" type="text"></td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">Calle</td>
+                            <td class="input-cell"><input id="modalSucursalCalle" type="text"></td>
+                            <td class="label-cell">Colonia</td>
+                            <td class="input-cell"><input id="modalSucursalColonia" type="text"></td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">Código postal</td>
+                            <td class="input-cell"><input id="modalSucursalCP" type="text" maxlength="5"></td>
+                            <td class="label-cell">No. exterior</td>
+                            <td class="input-cell"><input id="modalSucursalNoExterior" type="text"></td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">No. interior</td>
+                            <td class="input-cell"><input id="modalSucursalNoInterior" type="text"></td>
+                            <td class="label-cell">Código Colonia (Opcional)</td>
+                            <td class="input-cell"><input id="modalSucursalCodigoColonia" type="text"></td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">Código Localidad (Opcional)</td>
+                            <td class="input-cell"><input id="modalSucursalCodigoLocalidad" type="text"></td>
+                            <td class="label-cell"></td>
+                            <td class="input-cell"></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btnCancelarSucursal">Cancelar</button>
+                <button class="btn btn-primary" id="btnGuardarSucursal">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Agregar/Editar Contacto -->
+        <!-- MODAL DE CONTACTO
+            Campos: Área, Nombre, Teléfono, Ext., Correo, Dato1, Dato2. -->
+        <div class="modal-overlay" id="modalContacto" style="display:none;">
+        <div class="modal-container modal-compact">
+            <div class="modal-header">
+                <div class="modal-title"><h2 id="modalTitleContacto">Agregar Contacto</h2></div>
+                <div class="modal-header-buttons"><button class="btn-header-icon" id="btnCloseModalContacto" title="Cerrar">✕</button></div>
+            </div>
+
+            <div class="modal-content-compact">
+                <form id="formContacto">
+                    <table class="form-table">
+                        <tr>
+                            <td class="label-cell">Área</td>
+                            <td class="input-cell">
+                                <select id="modalContactoArea" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Ventas">Ventas</option>
+                                    <option value="Compras">Compras</option>
+                                    <option value="Administración">Administración</option>
+                                    <option value="Logística">Logística</option>
+                                    <option value="Finanzas">Finanzas</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </td>
+                            <td class="label-cell">Nombre</td>
+                            <td class="input-cell"><input id="modalContactoNombre" type="text" required></td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">Teléfono</td>
+                            <td class="input-cell"><input id="modalContactoTelefono" type="text"></td>
+                            <td class="label-cell">Ext.</td>
+                            <td class="input-cell"><input id="modalContactoExt" type="text"></td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">Correo</td>
+                            <td class="input-cell" colspan="3"><input id="modalContactoCorreo" type="email"></td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">Dato 1</td>
+                            <td class="input-cell"><input id="modalContactoDato1" type="text"></td>
+                            <td class="label-cell">Dato 2</td>
+                            <td class="input-cell"><input id="modalContactoDato2" type="text"></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btnCancelarContacto">Cancelar</button>
+                <button class="btn btn-primary" id="btnGuardarContacto">Aceptar</button>
+            </div>
+        </div>
     </div>
 
     <!-- Tabla desactivada globalmente: no se cargan utilidades de tabla -->

@@ -42,9 +42,9 @@
         <!-- Panel de filtros de fechas (oculto por defecto) -->
         <div class="filtros-panel" id="filtrosPanel" style="display: none;">
             <div class="filtros-content">
-                <label>Fecha Inicial:</label>
+                <label>Fecha inicial:</label>
                 <input type="date" id="fechaInicial">
-                <label>Fecha Final:</label>
+                <label>Fecha final:</label>
                 <input type="date" id="fechaFinal">
                 <button class="btn btn-primary btn-sm" id="btnAplicarFiltros">Aplicar</button>
                 <button class="btn btn-secondary btn-sm" id="btnLimpiarFiltros">Limpiar</button>
@@ -92,10 +92,10 @@
                 <!-- Tabs del Modal -->
                 <div class="modal-tabs">
                     <button class="tab-button active" data-tab="datosGenerales">
-                        DATOS GENERALES
+                        Datos generales
                     </button>
                     <button class="tab-button" data-tab="documentacion">
-                        DOCUMENTACIÓN
+                        Documentación
                     </button>
                 </div>
 
@@ -108,43 +108,43 @@
                             <div class="collapsible-section">
                                 <div class="section-header-collapse">
                                     <span class="collapse-icon">▼</span>
-                                    <span class="section-title-text">SOLICITUD</span>
+                                    <span class="section-title-text">Solicitud</span>
                                 </div>
                                 <div class="section-body">
                                     <table class="form-table">
                                         <tr>
-                                            <td class="label-cell">ID CUSTODIA</td>
+                                            <td class="label-cell">ID de custodia</td>
                                             <td class="input-cell">
                                                 <input type="text" id="modalIdCustodia" readonly>
                                             </td>
-                                            <td class="label-cell">FECHA DE SOLICITUD</td>
+                                            <td class="label-cell">Fecha de solicitud</td>
                                             <td class="input-cell">
                                                 <input type="text" id="modalFechaSolicitud" readonly>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class="label-cell">PROVEEDOR <span class="required">*</span></td>
+                                            <td class="label-cell">Proveedor <span class="required">*</span></td>
                                             <td class="input-cell" colspan="3">
                                                 <select id="modalProveedor" required>
-                                                    <option value="">SELECCIONE UN PROVEEDOR</option>
+                                                    <option value="">Seleccione un proveedor</option>
                                                 </select>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class="label-cell">FECHA DEL SERVICIO <span class="required">*</span></td>
+                                            <td class="label-cell">Fecha del servicio <span class="required">*</span></td>
                                             <td class="input-cell">
                                                 <input type="date" id="modalFechaServicio" required>
                                             </td>
-                                            <td class="label-cell">HORA DE SOLICITUD <span class="required">*</span></td>
+                                            <td class="label-cell">Hora de solicitud <span class="required">*</span></td>
                                             <td class="input-cell">
                                                 <input type="time" id="modalHoraServicio" required>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class="label-cell">TIPO DE MOVIMIENTO <span class="required">*</span></td>
+                                            <td class="label-cell">Tipo de movimiento <span class="required">*</span></td>
                                             <td class="input-cell" colspan="3">
                                                 <select id="modalTipoMovimiento" required>
-                                                    <option value="">SELECCIONE TIPO DE MOVIMIENTO</option>
+                                                    <option value="">Seleccione tipo de movimiento</option>
                                                     <option value="entrada">Entrada</option>
                                                     <option value="salida">Salida</option>
                                                     <option value="traslado">Traslado</option>
@@ -159,13 +159,13 @@
                             <div class="collapsible-section">
                                 <div class="section-header-collapse">
                                     <span class="collapse-icon">▼</span>
-                                    <span class="section-title-text">UBICACIONES</span>
+                                    <span class="section-title-text">Ubicaciones</span>
                                 </div>
                                 <div class="section-body">
                                     <div class="ubicaciones-grid">
                                         <!-- Ubicación Inicial -->
                                         <div class="ubicacion-column">
-                                            <div class="ubicacion-title">UBICACIÓN INICIAL</div>
+                                            <div class="ubicacion-title">Ubicación inicial</div>
                                             <table class="form-table">
                                                 <tr>
                                                     <td class="label-cell">País <span class="required">*</span></td>
@@ -174,7 +174,7 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="label-cell">Código Postal <span class="required">*</span></td>
+                                                    <td class="label-cell">Código postal <span class="required">*</span></td>
                                                     <td class="input-cell">
                                                         <input type="text" id="modalInicialCP" maxlength="5" required>
                                                     </td>
@@ -198,7 +198,7 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="label-cell">Calle y Número <span class="required">*</span></td>
+                                                    <td class="label-cell">Calle y número <span class="required">*</span></td>
                                                     <td class="input-cell">
                                                         <input type="text" id="modalInicialCalle" required>
                                                     </td>
@@ -208,7 +208,7 @@
 
                                         <!-- Ubicación Final -->
                                         <div class="ubicacion-column">
-                                            <div class="ubicacion-title">UBICACIÓN FINAL</div>
+                                            <div class="ubicacion-title">Ubicación final</div>
                                             <table class="form-table">
                                                 <tr>
                                                     <td class="label-cell">País <span class="required">*</span></td>
@@ -217,7 +217,7 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="label-cell">Código Postal <span class="required">*</span></td>
+                                                    <td class="label-cell">Código postal <span class="required">*</span></td>
                                                     <td class="input-cell">
                                                         <input type="text" id="modalDestinoCP" maxlength="5" required>
                                                     </td>
@@ -256,7 +256,7 @@
                             <div class="collapsible-section">
                                 <div class="section-header-collapse">
                                     <span class="collapse-icon">▼</span>
-                                    <span class="section-title-text">OBSERVACIONES</span>
+                                    <span class="section-title-text">Observaciones</span>
                                 </div>
                                 <div class="section-body">
                                     <textarea id="modalObservaciones" maxlength="1000" 

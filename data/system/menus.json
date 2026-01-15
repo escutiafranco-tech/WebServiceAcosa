@@ -12,11 +12,6 @@
             "roles": ["Administrador", "Compras"]
           },
           {
-            "name": "Evaluación Proveedores",
-            "action": "evaluacion-proveedores.html",
-            "roles": ["Administrador", "Calidad"]
-          },
-          {
             "name": "Reportes Compras",
             "action": "reportes-compras.html",
             "roles": ["Administrador", "Gerente"]
@@ -38,11 +33,6 @@
             "roles": ["Administrador", "Produccion"]
           },
           {
-            "name": "Trazabilidad",
-            "action": "trazabilidad.html",
-            "roles": ["Administrador", "Calidad"]
-          },
-          {
             "name": "Reportes Producción",
             "action": "reportes-produccion.html",
             "roles": ["Administrador", "Gerente"]
@@ -61,11 +51,6 @@
           {
             "name": "Catalogo Clientes",
             "action": "modules/ventas/clientes/clientes.html",
-            "roles": ["Administrador", "Ventas"]
-          },
-          {
-            "name": "Gestión de Contratos",
-            "action": "gestion-contratos.html",
             "roles": ["Administrador", "Ventas"]
           },
           {
@@ -129,11 +114,6 @@
             "name": "Control Descargas",
             "action": "control-descargas.html",
             "roles": ["Administrador", "Custodia", "Operador"]
-          },
-          {
-            "name": "Verificación Calidad",
-            "action": "verificacion-calidad.html",
-            "roles": ["Administrador", "Calidad"]
           },
           {
             "name": "Reportes Descargas",

@@ -1,4 +1,4 @@
-system/const menusData = require('../data/system/menus.json');
+const menusData = require('../data/system/menus.json');
 
 const getMenusByRole = (req, res) => {
   try {

@@ -8,7 +8,8 @@ exports.protect = (req, res, next) => {
 
   const token = authHeader.split(' ')[1];
   try {
-    const decoded = jwt.verify(token, 'secretKey'); // tu secretKey
+    const JWT_SECRET = process.env.JWT_SECRET || 'secretKey';
+    const decoded = jwt.verify(token, JWT_SECRET); // tu secretKey
     req.user = decoded;
     next();
   } catch (err) {

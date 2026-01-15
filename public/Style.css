@@ -19,16 +19,49 @@
     
     /* TIPOGRAFÍA - TAMAÑOS */
     --font-family: 'Geneva', Tahoma, Verdana; /* Stack de fuentes corporativas */
-    --text-size-xlarge: 16px;           /* Para títulos principales del sistema */
-    --text-size-large: 14px;            /* Para subtítulos y textos importantes */
-    --text-size-normal: 12px;           /* Texto base para módulos y contenido */
-    --text-size-small: 10px;            /* Textos secundarios, labels y detalles */
+    --text-size-xlarge: 16px;                 /* Para títulos principales del sistema */
+    --text-size-large: 14px;                  /* Para subtítulos y textos importantes */
+    --text-size-normal: 12px;                 /* Texto base para módulos y contenido */
+    --text-size-small: 10px;                  /* Textos secundarios, labels y detalles */
+
+    /* TIPOGRAFÍA POR ROLES (homologación centralizada) */
+    --ty-title-size: var(--text-size-xlarge);
+    --ty-title-weight: var(--font-weight-bold);
+    --ty-title-spacing: 0.25px;
+
+    --ty-subtitle-size: var(--text-size-large);
+    --ty-subtitle-weight: var(--font-weight-semibold);
+    --ty-subtitle-spacing: 0.3px;
+
+    --ty-tab-size: 12px; /* pestañas principales */
+    --ty-tab-weight: var(--font-weight-semibold);
+    --ty-tab-color: var(--secondary-color);
+
+    --ty-subtab-size: 10px; /* subpestañas en modales */
+    --ty-subtab-weight: var(--font-weight-semibold);
+
+    --ty-th-size: var(--table-header-font-size);
+    --ty-th-weight: 600;
+    --ty-th-spacing: 0.4px;
+
+    --ty-form-label-size: 12px;   /* etiquetas en formularios */
+    --ty-form-control-size: 12px; /* inputs en formularios */
+    --ty-td-size: var(--table-font-size); /* texto en celdas de tabla */
+
+    /* TIPOGRAFÍA - ALTURAS DE LÍNEA POR ROL */
+    --ty-title-line: 1.15;
+    --ty-subtitle-line: 1.15;
+    --ty-tab-line: 1.15;
+    --ty-subtab-line: 1.15;
+    --ty-th-line: var(--table-line-height);
+    --ty-form-line: 1.15
+    --ty-td-line: var(--table-line-height);
     
     /* TIPOGRAFÍA - PESOS */
     --font-weight-bold: 800;            /* Peso extra negrita para títulos principales */
     --font-weight-semibold: 600;        /* Peso semi-negrita para elementos destacados */
     --font-weight-normal: 500;          /* Peso normal para texto regular */
-    
+ 
     /* ESPACIADOS */
     --spacing-small: 5px;               /* Espacios mínimos entre elementos cercanos */
     --spacing-medium: 10px;             /* Espacios estándar para separación general */
@@ -45,6 +78,8 @@
     --transition-base: 0.2s ease;       /* Transición estándar para animaciones */
 
     /* TABLAS */
+    /* Altura de barra inferior global para cálculo de contenido */
+    --footer-height: 40px;
     --table-font-size: 12px;            /* Tamaño base de texto en tablas */
     --table-header-font-size: 13px;     /* Tamaño de texto para encabezados de tabla */
     --table-line-height: 1.3;           /* Interlineado para filas de tabla */
@@ -59,6 +94,12 @@
     --action-btn-padding: 4px 6px;
     --action-btn-font-size: 10px;
     --action-btn-radius: 4px;
+
+    /* MODALES (tamaños globales para todos los módulos) */
+    --modal-max-width: 1200px;          /* Ancho máximo de modales estándar */
+    --modal-max-height: 90vh;           /* Altura máxima relativa al viewport */
+    --modal-compact-max-width: 720px;   /* Ancho máximo de modales compactos */
+    --modal-compact-max-height: 85vh;   /* Altura máxima de modales compactos */
 }
 
 /* ================================ */
@@ -107,14 +148,18 @@ header {
 }
 
 .header-titles h1 {
-    font-size: var(--text-size-xlarge); /* Título principal con tamaño enorme */
-    font-weight: var(--font-weight-bold);    /* Texto en negrita para destacar */
+    font-size: var(--ty-title-size);   /* Título principal */
+    font-weight: var(--ty-title-weight);    /* Peso homologado */
+    letter-spacing: var(--ty-title-spacing); /* Espaciado sutil */
+    line-height: var(--ty-title-line); /* Altura de línea homologada */
     color: var(--primary-color);        /* Color corporativo para el título */
 }
 
 .header-titles h2 {
-    font-size: var(--text-size-large); /* Subtítulo con tamaño grande */
-    font-weight: var(--font-weight-semibold); /* Semi-negrita para jerarquía visual */
+    font-size: var(--ty-subtitle-size); /* Subtítulo */
+    font-weight: var(--ty-subtitle-weight); /* Peso homologado */
+    letter-spacing: var(--ty-subtitle-spacing); /* Espaciado sutil */
+    line-height: var(--ty-subtitle-line); /* Altura de línea */
     color: var(--secondary-color);      /* Color gris para el subtítulo */
 }
 
@@ -323,8 +368,9 @@ header {
     border: none;                        /* Sin borde */
     border-radius: var(--border-radius);   /* Bordes redondeados */
     cursor: pointer;                     /* Cursor de mano para indicar clickeable */
-    font-weight: var(--font-weight-semibold);  /* Peso de fuente seminegrita */
-    font-size: var(--text-size-normal); /* Tamaño de texto normal homologado */
+    font-weight: var(--ty-tab-weight, var(--font-weight-semibold));  /* Peso homologado con barra de pestañas */
+    font-size: var(--ty-tab-size, var(--text-size-normal)); /* Tamaño homologado con barra de pestañas */
+    line-height: var(--ty-tab-line, 1.2); /* Altura de línea homologada */
     transition: all 0.2s ease;           /* Transición suave para efectos */
     width: 100%;                         /* Ancho completo del contenedor */
     text-align: left;                    /* Alineación de texto a la izquierda */
@@ -378,7 +424,9 @@ header {
     white-space: nowrap;                   /* Evita salto de línea */
     overflow: hidden;                      /* Oculta texto que sobresalga */
     text-overflow: ellipsis;               /* Muestra "..." si el texto es muy largo */
-    font-size: var(--text-size-normal); /* Tamaño de texto normal homologado */
+    font-size: var(--ty-tab-size, var(--text-size-normal)); /* Igual a pestañas de barra */
+    font-weight: var(--ty-tab-weight, var(--font-weight-semibold));
+    line-height: var(--ty-tab-line, 1.2);
 }
 
 /* ================================ */
@@ -427,12 +475,14 @@ header {
     border: none;                        /* Sin borde */
     background: none;                    /* Sin fondo */
     cursor: pointer;                     /* Cursor de mano */
-    font-size: var(--text-size-normal); /* Tamaño de texto normal homologado */
+    font-size: var(--ty-tab-size, var(--text-size-normal)); /* Igual a pestañas de barra */
+    font-weight: var(--ty-tab-weight, var(--font-weight-semibold));
+    line-height: var(--ty-tab-line, 1.2);
     transition: all 0.2s ease;           /* Transición suave para efectos */
     width: 100%;                         /* Ancho completo */
     text-align: left;                    /* Alineación de texto a la izquierda */
     min-height: 20px;                    /* Altura mínima consistente */
-    line-height: 1.1;                    /* Altura de línea compacta */
+    /* line-height homogenized arriba con token */
 }
 
 /* Items con iconos - mantener misma alineación */
@@ -641,14 +691,11 @@ header {
     color: var(--secondary-color);
 }
 
-/* Mantener tablas de formularios (form-table) */
-.form-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: var(--text-size-normal);
-}
-.form-table .label-cell { width: 140px; color: var(--secondary-color); }
-.form-table .input-cell input, .form-table .input-cell select { width: 100%; padding: 6px; }
+/*
+   Centralización de tablas de formularios:
+   Las reglas de .form-table viven en public/modules.css para compartir
+   un estilo único entre todos los módulos. Evitamos duplicación aquí.
+*/
 .barra-herramientas-container {
     display: none;                       /* Oculto por defecto */
     background: var(--white-color);     /* Fondo blanco para la barra */
@@ -671,7 +718,7 @@ header {
     display: flex;                       /* Flexbox para pestañas */
     background: var(--white-color) !important; /* Fondo blanco forzado */
     border-bottom: 2px solid var(--border-color); /* Línea inferior */
-    padding: 3px 0px 0px 5px;            /* Padding asimétrico */
+    padding: 5px 0px 0px 5px;            /* Padding asimétrico */
     gap: px;                           /* Espacio entre pestañas */
     overflow-x: auto;                   /* Scroll horizontal si es necesario */
     flex-shrink: 0;                     /* No se reduce */
@@ -692,9 +739,10 @@ header {
     min-width: 110px;                   /* Ancho mínimo para pestañas - AJUSTADO */
     max-width: 200px;                   /* Ancho máximo para pestañas */
     position: relative;                 /* Para posicionamiento interno */
-    font-size: 12px;                    /* Tamaño de fuente específico para pestañas */
-    font-weight: var(--font-weight-semibold); /* Peso de fuente semi-negrita */
-    color: var(--secondary-color);     /* Color de texto secundario */
+    font-size: var(--ty-tab-size);      /* Tamaño homologado pestañas */
+    font-weight: var(--ty-tab-weight);  /* Peso homologado pestañas */
+    color: var(--ty-tab-color);         /* Color homologado pestañas */
+    line-height: var(--ty-tab-line);    /* Altura de línea pestañas */
 }
 
 .pestana:hover {
@@ -824,6 +872,16 @@ header {
 .barra-pestañas::-webkit-scrollbar-thumb:hover {
     background: var(--secondary-color); /* Color del thumb al hacer hover */
 }
+
+/* Utilidades tipográficas (opcionales en HTML) */
+.ty-title    { font-size: var(--ty-title-size); font-weight: var(--ty-title-weight); letter-spacing: var(--ty-title-spacing); color: var(--primary-color); }
+.ty-subtitle { font-size: var(--ty-subtitle-size); font-weight: var(--ty-subtitle-weight); letter-spacing: var(--ty-subtitle-spacing); color: var(--secondary-color); }
+.ty-tab      { font-size: var(--ty-tab-size); font-weight: var(--ty-tab-weight); color: var(--ty-tab-color); }
+.ty-subtab   { font-size: var(--ty-subtab-size); font-weight: var(--ty-subtab-weight); }
+.ty-th       { font-size: var(--ty-th-size); font-weight: var(--ty-th-weight); letter-spacing: var(--ty-th-spacing); }
+.ty-form-lbl { font-size: var(--ty-form-label-size); font-weight: var(--font-weight-semibold); }
+.ty-form-ctl { font-size: var(--ty-form-control-size); }
+.ty-td       { font-size: var(--ty-td-size); }
 
 /* ================================ */
 /* 14. CLASES DE CONTROL DE VISIBILIDAD */

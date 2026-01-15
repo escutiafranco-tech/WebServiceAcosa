@@ -9,9 +9,10 @@ exports.login = (req, res) => {
 
   if (!user) return res.status(401).json({ message: 'Usuario o contraseña incorrecto' });
 
+  const JWT_SECRET = process.env.JWT_SECRET || 'secretKey';
   const token = jwt.sign(
-    { id: user.id, username: user.username, role: user.role }, 
-    'secretKey', 
+    { id: user.id, username: user.username, role: user.role },
+    JWT_SECRET,
     { expiresIn: '2h' }
   );
 

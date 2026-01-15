@@ -1,87 +1,85 @@
-﻿/* ================================ */
-/* Secciones colapsables (global)   */
-/* ================================ */
-.collapsible-section {
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    background: var(--white-color);
-    box-shadow: var(--shadow-soft);
-    margin: 6px 0;
-}
-
-.collapsible-section .section-header-collapse {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 10px;
-    cursor: pointer;
-    user-select: none;
-    background: var(--background-color);
-    border-bottom: 1px solid var(--border-color);
-}
-
-.collapsible-section .section-header-collapse .collapse-icon {
-    display: inline-block;
-    transition: transform 0.2s ease;
-    font-size: 12px;
-    color: var(--primary-color);
-}
-
-.collapsible-section .section-header-collapse.collapsed .collapse-icon {
-    transform: rotate(-90deg);
-}
-
-.collapsible-section .section-title-text {
-    font-size: var(--text-size-normal);
-    font-weight: var(--font-weight-semibold);
-    color: var(--text-color);
-}
-
-.collapsible-section .section-body {
-    padding: 10px;
-}
-
-/* Estado colapsado: ocultar cuerpo (fallback JS ya alterna display) */
-.collapsible-section .section-header-collapse.collapsed + .section-body {
-    display: none;
-}
-/* ==========================================================================
+﻿/* ==========================================================================
    CONTENEDORES PRINCIPALES Y ESTRUCTURA DEL MÓDULO
    ========================================================================== */
-
-/*** Contenedores principales para módulos y formularios, Diseño flexbox para layout completo de pantalla*/
+/*** Contenedores principales para módulos y formularios. Diseño flexbox a pantalla completa */
 .module-container,
 .form-container {
-    height: 100vh;                    /* Altura exacta de viewport */                   
-    max-height: 100%;                 /* Altura máxima 100% */
-    background: white;              /* Fondo blanco para contraste */
-    margin: 0;                        /* Sin márgenes */
-    padding: 0;                       /* Sin padding */
-    box-shadow: none;                 /* Sin sombra por defecto */
-    display: flex;                    /* Layout flexbox */
-    flex-direction: column;           /* Dirección vertical */
-    overflow: hidden;                 /* Oculta overflow para forzar contenido interno */
-    position: relative;               /* Posicionamiento relativo para elementos hijos */
-    -left: 0;                         /* Sin borde */
+    height: 100vh;                    /* Altura de viewport completa */
+    max-height: 100%;                 /* No excede el 100% del padre */
+    background: white;              /* Fondo blanco legible */
+    margin: 0;                        /* Sin márgenes externos */
+    padding: 0;                       /* Sin padding interno global */
+    box-shadow: none;                 /* Sin sombra inicial */
+    display: flex;                    /* Activa layout flex */
+    flex-direction: column;           /* Apila elementos verticalmente */
+    overflow: hidden;                 /* Oculta desbordes globales */
+    position: relative;               /* Referencia para hijos posicionados */
+    left: 0;                          /* Alinea al borde izquierdo */
     justify-content: space-between;   /* Empuja barra inferior al fondo */
 }
-
-/** Ocultar headers duplicados en módulos para evitar redundancia visual */
 .module-header,
 .form-header {
-    display: none !important;         /* Oculta completamente */
+    display: none !important;         /* Oculta headers duplicados */
 }
 
 .header-content h1,
 .header-content p {
-    display: none;                    /* Oculta títulos y párrafos del header */
+    display: none;                    /* Evita títulos redundantes */
+}
+
+/*** Secciones colapsables (global) Agrupan campos con header clickeable */
+
+.collapsible-section {
+    border: 1px solid var(--border-color);  /* Borde del bloque */
+    border-radius: var(--border-radius);    /* Esquinas redondeadas */
+    background: var(--white-color);         /* Fondo blanco */
+    box-shadow: var(--shadow-soft);         /* Sombra sutil */
+    margin: 6px 0;                          /* Separación vertical */
+}
+
+.collapsible-section .section-header-collapse {
+    display: flex;                            /* Ícono + texto en fila */
+    align-items: center;                      /* Centrado vertical */
+    gap: 8px;                                 /* Separación interna */
+    padding: 8px 10px;                        /* Altura del header */
+    cursor: pointer;                          /* Interactivo */
+    user-select: none;                        /* Evita selección */
+    background: var(--background-color);      /* Fondo claro */
+    border-bottom: 1px solid var(--border-color); /* Línea inferior */
+}
+
+.collapsible-section .section-header-collapse .collapse-icon {
+    display: inline-block;                   /* Ícono visible */
+    transition: transform 0.2s ease;         /* Rotación suave */
+    font-size: 12px;                         /* Tamaño del ícono */
+    color: var(--primary-color);             /* Color institucional */
+}
+
+.collapsible-section .section-header-collapse.collapsed .collapse-icon {
+    transform: rotate(-90deg);               /* Indica estado cerrado */
+}
+
+.collapsible-section .section-title-text {
+    font-size: var(--ty-subtitle-size, var(--text-size-normal)); /* Tamaño del título desde tokens */
+    line-height: var(--ty-subtitle-line, 1.2); /* Altura de línea homogénea */
+    font-weight: var(--ty-subtitle-weight, var(--font-weight-semibold)); /* Peso desde tokens */
+    color: var(--text-color);                /* Color de texto */
+}
+
+.collapsible-section .section-body {
+    padding: 10px;                           /* Aire interno del cuerpo */
+}
+
+/* Estado colapsado: ocultar cuerpo (fallback JS ya alterna display) */
+.collapsible-section .section-header-collapse.collapsed + .section-body {
+    display: none;                           /* Oculta el cuerpo al colapsar */
 }
 
 /* ==========================================================================
    BARRA SUPERIOR - NAVEGACIÓN Y CONTROLES
    ========================================================================== */
-
 /*** Barra superior compacta para controles de módulo*/
+
 .barra-superior-modulo {
     background: var(--light-color);   /* Fondo claro usando variable CSS */
     padding: 0;                       /* Sin padding */
@@ -115,8 +113,7 @@
 /* ==========================================================================
    COMPONENTES DE BÚSQUEDA Y FILTROS
    ========================================================================== */
-
-   /*** Caja de búsqueda con input integrado */
+/*** Caja de búsqueda con input integrado */
 
 .search-box {
     display: flex;
@@ -132,7 +129,8 @@
     padding: 8px 12px;                /* Padding interno */
     flex: 1;                          /* Ocupa todo el espacio disponible */
     outline: none;                    /* Sin outline por defecto */
-    font-size: var(--text-size-normal); * Tamaño de fuente */
+    font-size: var(--ty-form-control-size, var(--text-size-normal)); /* Tamaño de fuente desde tokens */
+    line-height: var(--ty-form-line, 1.2);       /* Altura de línea homogénea */
 }
 
 /** Filtro de fechas con rango*/
@@ -151,54 +149,56 @@
     border: none;                       /* Sin borde propio */
     padding: 8px 0;                     /* Padding vertical */
     outline: none;                      /* Sin outline */
-    font-size: var(--text-size-normal); /* Fuente más pequeña */
+    font-size: var(--ty-form-control-size, var(--text-size-normal)); /* Tamaño de control desde tokens */
+    line-height: var(--ty-form-line, 1.2);       /* Altura de línea homogénea */
     width: 110px;                       /* Ancho fijo */
 }
 
 .separador-fechas {
     color: var(--secondary-color);    /* Color secundario */
-    font-size: 12px;                  /* Tamaño pequeño */
+    font-size: var(--ty-form-label-size);  /* Tamaño pequeño desde tokens */
+    line-height: var(--ty-form-line, 1.0); /* Altura de línea homogénea */
 }
 
 /* ==========================================================================
    CONTENEDOR PRINCIPAL Y SISTEMA DE TABLAS
    ========================================================================== */
-
 /*** Contenedor principal del contenido*/
+
 .main-content {
-    flex: 1;                          /* Ocupa todo el espacio disponible */
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;                 /* Oculta overflow */
-    padding: 0;                       /* Sin padding */
-    padding-bottom: 32px;             /* Espacio para barra inferior */
-    margin: 0;                        /* Sin margen */
-    min-height: 0;                    /* Permite reducción */
+    flex: 1;                          /* Ocupa todo el espacio vertical disponible */
+    display: flex;                    /* Layout en columna para contenido */
+    flex-direction: column;           /* Apila secciones internas */
+    overflow: hidden;                 /* Oculta desbordes, scroll sólo dentro de hijos */
+    padding: 0;                       /* Sin padding global */
+    margin: 0;                        /* Sin margen externo */
+    min-height: 0;                    /* Permite reducir altura en flex */
+    height: calc(100vh - var(--footer-height)); /* Ajusta altura total restando footer */
 }
 
 /**
  * Contenedor de tabla con scroll
  */
 .table-container {
-    flex: 1;                          /* Ocupa espacio disponible */
-    display: flex;
-    flex-direction: column;
-    /* Permitimos scroll horizontal cuando la tabla es más ancha que el contenedor */
-    overflow: hidden;                 /* Controla overflow vertical del módulo */
+    flex: 1;                          /* Ocupa el área disponible */
+    display: flex;                    /* Contenedor en columna */
+    flex-direction: column;           /* Header (si aplica) + body */
+    overflow: hidden;                 /* Oculta desbordes verticales */
     overflow-x: auto;                 /* Scroll horizontal para tablas anchas */
-    padding: 0;                       /* Sin padding */
-    margin: 0;                        /* Sin margen */
-    min-height: 0;                    /* Permite reducción */
+    padding: 0;                       /* Sin padding interno */
+    margin: 0;                        /* Sin margen externo */
+    min-height: 0;                    /* Permite reducción de altura */
+    height: 100%;                     /* Llena el alto disponible del main-content */
 }
 
 .table-header {
-    display: none !important;         /* Oculta header de tabla duplicado */
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    padding: 15px 0;
-    border-bottom: 2px solid var(--border-color);
-    flex-shrink: 0;
+    display: none !important;         /* Evita encabezado duplicado */
+    justify-content: space-between;   /* Distribución de controles */
+    align-items: center;              /* Centrado vertical */
+    margin-bottom: 15px;              /* Separación inferior */
+    padding: 15px 0;                  /* Altura del header */
+    border-bottom: 2px solid var(--border-color); /* Línea inferior marcada */
+    flex-shrink: 0;                   /* No se reduce al comprimir */
 }
 
 /*** Tabla principal de custodias*/
@@ -217,25 +217,21 @@
 }
 
 /* Reglas globales para cualquier tabla del tipo '...-table' */
-/* Usamos selector de atributo para aplicar el mismo estilo a clases que terminen en '-table',
-   por ejemplo: 'custodias-table', 'proveedores-table', 'orders-table', etc. */
+
 [class$="-table"] {
-    /* Usa la variable específica si existe, si no usa el tamaño normal de texto del sistema */
-    font-size: var(--table-font-size, var(--text-size-normal));    /* Texto homogéneo para tablas */
-    /* Forzar tamaño legible por defecto en caso de reglas conflictivas */
-    font-size: var(--table-font-size, var(--text-size-normal)) !important;
-    line-height: var(--table-line-height, 1.3);
+    font-size: var(--ty-td-size, var(--table-font-size, var(--text-size-normal))) !important; /* Tamaño base de filas desde tokens */
+    line-height: var(--ty-td-line, var(--table-line-height, 1.3));        /* Altura de línea desde tokens */
 }
 
 [class$="-table"] .table-row > div {
-    padding: var(--table-cell-padding, 4px 0px);   /* Usar padding centralizado */
+    padding: var(--table-cell-padding, 4px 0px);   /* Padding de celdas centralizado */
 }
 
 [class$="-table"] .header-row > div {
-    font-weight: 600;   /* Encabezados ligeramente destacados */
-    font-size: var(--table-header-font-size, var(--text-size-large));
-    /* Forzar tamaño de encabezado consistente con módulos */
-    font-size: var(--table-header-font-size, var(--text-size-normal)) !important;
+    font-weight: var(--ty-th-weight, 600);                                  /* Encabezados destacados */
+    font-size: var(--ty-th-size, var(--table-header-font-size, var(--text-size-normal))) !important; /* Tamaño homogéneo */
+    letter-spacing: var(--ty-th-spacing, 0);            /* Espaciado de letras */
+    line-height: var(--ty-th-line, var(--table-line-height, 1.3));         /* Altura de línea encabezado */
 }
 
 /* Media query: reducir tamaño base de tablas en pantallas pequeñas usando variable dedicada */
@@ -248,154 +244,179 @@
    ========================================================================== */
 
 .toolbar-module {
-    background: white;
-    padding: 2px 6px;
-    margin-bottom: 1px;
-    display: flex;
-    align-items: center;
-    gap: 0;
-    box-shadow: var(--shadow-soft);
+    background: white;                     /* Fondo de la barra */
+    padding: 2px 5px;                        /* Altura y aire compacto (−10%) */
+    margin-bottom: 1px;                      /* Separación del contenido */
+    display: flex;                           /* Controles en fila */
+    align-items: center;                     /* Centrado vertical */
+    gap: 0;                                  /* Sin separación horizontal */
+    box-shadow: var(--shadow-soft);          /* Sombra sutil */
 }
 
 .toolbar-btn {
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    padding: 3px 6px;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1px;
-    transition: all 0.2s;
-    min-width: 44px;
-    border-right: 1px solid #e0e0e0;
+    background: transparent;                 /* Fondo sin color */
+    border: 1px solid transparent;           /* Borde transparente por defecto */
+    border-radius: 4px;                      /* Esquinas redondeadas */
+    padding: 3px 5px;                        /* Tamaño compacto del botón (−~10%) */
+    cursor: pointer;                         /* Interactivo */
+    display: flex;                           /* Ícono + texto en columna */
+    flex-direction: column;                  /* Ícono arriba, label abajo */
+    align-items: center;                     /* Centrado horizontal */
+    gap: 1px;                                /* Separación mínima entre ícono y label */
+    transition: all 0.2s;                    /* Animación de hover/active */
+    min-width: 40px;                         /* Ancho mínimo táctil (−~10%) */
+    border-right: 1px solid #e0e0e0;         /* Separador vertical entre botones */
 }
 
 .toolbar-btn:last-of-type {
-    border-right: none;
+    border-right: none;                      /* Quita separador en último botón */
 }
 
 .toolbar-btn:hover {
-    background: var(--background-color);
-    border-color: var(--border-color);
+    background: var(--background-color);     /* Fondo claro al hover */
+    border-color: var(--border-color);       /* Borde visible al hover */
 }
 
 .toolbar-btn:active {
-    background: var(--primary-color);
-    color: white;
+    background: var(--primary-color);        /* Fondo primario al presionar */
+    color: white;                            /* Texto blanco para contraste */
 }
 
 .toolbar-btn:active .toolbar-icon {
-    transform: scale(0.95);
+    transform: scale(0.95);                  /* Ligera reducción del ícono */
 }
 
 .toolbar-icon {
-    width: 28px;
-    height: 28px;
-    object-fit: contain;
+    width: 25px;                             /* Tamaño del ícono (−~10%) */
+    height: 25px;                            /* Altura del ícono (−~10%) */
+    object-fit: contain;                     /* Mantener proporción sin recorte */
 }
 
 .toolbar-label {
-    font-size: 9px;
-    font-weight: 500;
-    color: var(--text-color);
-    text-align: center;
+    font-size: var(--ty-form-label-size, 12px); /* Texto pequeño desde tokens */
+    line-height: var(--ty-form-line, 1.2);     /* Altura de línea homogénea */
+    font-weight: 500;                        /* Peso medio para legibilidad */
+    color: var(--text-color);                /* Color estándar de texto */
+    text-align: center;                      /* Centrado bajo el ícono */
+}
+
+/* Ajuste de tono para íconos de la barra (Nuevo, Filtros)
+   - Normal: gris medio (coincide con texto de pestañas)
+   - Hover/Active: más oscuro para resaltar selección */
+.toolbar-icon {
+    filter: grayscale(40%) brightness(0.50); /* Normal en gris medio */
+    opacity: 0.60;                           /* Ligera atenuación */
+}
+
+/* Hover: ícono más oscuro (casi negro) */
+.toolbar-btn:hover .toolbar-icon {
+    filter: grayscale(0%) brightness(1);     /* Máximo contraste */
+    opacity: 1;                              /* Sin atenuación */
+}
+
+/* Active: asegura el contraste al presionar */
+.toolbar-btn:active .toolbar-icon {
+    filter: grayscale(0%) brightness(1);     /* Máximo contraste */
+    opacity: 1;
 }
 
 .toolbar-divider {
-    width: 1px;
-    height: 40px;
-    background: #e0e0e0;
-    margin: 0 4px;
-    flex-shrink: 0;
+    width: 1px;                              /* Grosor del separador */
+    height: 40px;                            /* Altura visible */
+    background: #e0e0e0;                     /* Color gris claro */
+    margin: 0 4px;                           /* Aire lateral */
+    flex-shrink: 0;                          /* No se reduce en flex */
 }
 
 .toolbar-search {
-    flex: 1;
-    max-width: 300px;
-    margin-left: auto;
-    display: flex;
-    gap: 4px;
+    flex: 1;                                 /* Ocupa el espacio sobrante */
+    max-width: 300px;                        /* Limita ancho máximo */
+    margin-left: auto;                       /* Empuja a la derecha */
+    display: flex;                           /* Input + botón en fila */
+    gap: 4px;                                /* Separación mínima */
 }
 
 .toolbar-search input {
-    flex: 1;
-    padding: 6px 12px;
-    border: 1.5px solid var(--border-color);
-    border-radius: var(--border-radius);
-    font-size: 13px;
-    transition: border-color 0.2s;
+    flex: 1;                                 /* Input ocupa el ancho disponible */
+    padding: 6px 12px;                       /* Altura y aire interno */
+    border: 1.5px solid var(--border-color); /* Borde del input */
+    border-radius: var(--border-radius);     /* Esquinas redondeadas */
+    font-size: var(--ty-form-control-size, 13px); /* Tamaño de fuente del input desde tokens */
+    line-height: var(--ty-form-line, 1.2);       /* Altura de línea homogénea */
+    transition: border-color 0.2s;           /* Cambio de borde al focus */
 }
 
 .toolbar-search input:focus {
-    outline: none;
-    border-color: var(--primary-color);
+    outline: none;                           /* Quita contorno nativo */
+    border-color: var(--primary-color);      /* Resalta con color primario */
 }
 
 .search-btn {
-    background: white;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
+    background: white;                        /* Fondo del botón buscar */
+    border: 1px solid var(--border-color);    /* Borde homogéneo */
+    border-radius: var(--border-radius);      /* Esquinas redondeadas */
+    padding: 5px;                             /* Tamaño del botón (−~10%) */
+    cursor: pointer;                          /* Interactivo */
+    transition: all 0.2s;                     /* Animación hover */
+    display: flex;                            /* Centrado del ícono */
+    align-items: center;                      /* Centrado vertical */
+    justify-content: center;                  /* Centrado horizontal */
+    width: 29px;                              /* Ancho fijo (−~10%) */
+    height: 29px;                             /* Alto fijo (−~10%) */
 }
 
 .search-btn:hover {
-    background: var(--background-color);
-    border-color: var(--primary-color);
+    background: var(--background-color);      /* Fondo claro al hover */
+    border-color: var(--primary-color);       /* Borde resalta al hover */
 }
 
 /* Panel de Filtros */
 .filtros-panel {
-    background: var(--background-color);
-    border: 1.5px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: 12px;
-    margin-bottom: 16px;
-    animation: slideDown 0.2s ease;
+    background: var(--background-color);      /* Fondo del panel */
+    border: 1.5px solid var(--border-color);  /* Borde del panel */
+    border-radius: var(--border-radius);      /* Esquinas redondeadas */
+    padding: 12px;                            /* Aire interno */
+    margin-bottom: 16px;                      /* Separación respecto a la tabla */
+    animation: slideDown 0.2s ease;           /* Animación de despliegue */
 }
 
 @keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
+    from {                                   /* Estado inicial oculto */
+        opacity: 0;                          /* Transparente */
+        transform: translateY(-10px);        /* Desplazado hacia arriba */
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    to {                                     /* Estado final visible */
+        opacity: 1;                          /* Opaco */
+        transform: translateY(0);            /* Posición normal */
     }
 }
 
 .filtros-content {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
+    display: flex;                            /* Contenido del panel en fila */
+    align-items: center;                      /* Centrado vertical */
+    gap: 12px;                                /* Separación entre controles */
+    flex-wrap: wrap;                          /* Permite salto de línea */
 }
 
 .filtros-content label {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-color);
+    font-size: var(--ty-form-label-size); /* Tamaño de etiqueta desde tokens */
+    line-height: var(--ty-form-line, 1.2);      /* Altura de línea homogénea */
+    font-weight: 500;                         /* Peso medio */
+    color: var(--text-color);                 /* Color de texto */
 }
 
 .filtros-content input[type="date"] {
-    padding: 6px 10px;
-    border: 1.5px solid var(--border-color);
-    border-radius: var(--border-radius);
-    font-size: 12px;
+    padding: 6px 10px;                        /* Altura y aire interno */
+    border: 1.5px solid var(--border-color);  /* Borde homogéneo */
+    border-radius: var(--border-radius);      /* Esquinas redondeadas */
+    font-size: var(--ty-form-control-size, 12px); /* Tamaño de control desde tokens */
+    line-height: var(--ty-form-line, 1.2);        /* Altura de línea homogénea */
 }
 
 .btn-sm {
-    padding: 6px 14px;
-    font-size: 12px;
+    padding: 6px 14px;                        /* Tamaño compacto de botón */
+    font-size: var(--ty-subtab-size, 12px);    /* Texto pequeño desde tokens */
+    line-height: var(--ty-subtab-line, 1.2);   /* Altura de línea homogénea */
 }
 
 /* Responsive Toolbar */
@@ -495,43 +516,43 @@
 
 /*** Fila de cabecera de tabla con funcionalidad de redimensionamiento*/
 .header-row {
-    background: #f8f9fa !important; /* Gris institucional claro */
-    color: var(--text-color) !important;        /* Texto normal */
-    font-weight: 300;                 /* Texto normal, no bold */
-    font-size: var(--table-header-font-size, var(--text-size-large)); /* Tamaño de encabezado centralizado */
-    position: sticky;                 /* Posición fija al hacer scroll */
-    top: 0px;                           /* Pegado al top */
-    z-index: 10;                      /* Por encima del contenido */
-    margin: 2px solid #dee2e6;
-    display: grid;                  /* Header en grid para alinear con filas */
-    grid-template-columns: var(--table-cols, auto); /* plantilla compartida */
-    gap: 0; /* sin separación entre columnas */
+    background: #f8f9fa !important;  /* Fondo claro de encabezado */
+    color: var(--text-color) !important; /* Color de texto */
+    font-weight: 300;                /* Peso ligero */
+    font-size: var(--table-header-font-size, var(--text-size-large)); /* Tamaño del header */
+    position: sticky;                /* Se mantiene visible al hacer scroll */
+    top: 0px;                        /* Pegado al borde superior */
+    z-index: 10;                     /* Por encima de las filas */
+    margin: 2px solid #dee2e6;       /* Borde sutil */
+    display: grid;                   /* Alineación en grid con filas */
+    grid-template-columns: var(--table-cols, auto); /* Plantilla compartida con el cuerpo */
+    gap: 0;                          /* Sin separación entre columnas */
 }
 
 
 .header-row > div {
-    cursor: grab;                     /* Indica que se puede arrastrar (reordenar) */
-    user-select: none;                /* No permite selección de texto */
-    position: relative;
-    border-width: 1px 1px 1px 1px;   /* Borde superior e inferior más grueso */
-    border-style: solid;
-    border-color: #e0dfdf;
+    cursor: grab;                     /* Permite arrastrar para reordenar */
+    user-select: none;                /* Bloquea selección de texto */
+    position: relative;               /* Necesario para pseudo-elemento de resize */
+    border-width: 1px 1px 1px 1px;    /* Borde alrededor del header */
+    border-style: solid;              /* Tipo de borde */
+    border-color: #e0dfdf;            /* Color del borde */
     background: #f5f5f5;              /* Fondo gris claro */
-    padding: 6px 8px;                 /* Padding más consistente con células */
+    padding: 6px 8px;                 /* Padding del encabezado */
 }
 
 
 .header-row > div:hover {
-    background: #ebebeb;              /* Hover un poco más oscuro */
+    background: #ebebeb;              /* Oscurece al pasar el cursor */
 }
 
 /* Indicadores de orden en encabezados */
 .header-row > div.sorted-asc::after,
 .header-row > div.sorted-desc::after {
-    content: '';
-    position: absolute;
-    right: 8px;
-    font-size: 10px;
+    content: '';                      /* Indicador visual de orden */
+    position: absolute;               /* Posicionado dentro del header */
+    right: 8px;                       /* Alineado a la derecha */
+    font-size: 10px;                  /* Tamaño del indicador */
 }
 .header-row > div.sorted-asc::after { content: '▲'; }
 .header-row > div.sorted-desc::after { content: '▼'; }
@@ -539,63 +560,60 @@
 /**
  * Área de redimensionamiento invisible en cabeceras*/
 .header-row > div::after {
-    content: '';
-    position: absolute;
-    right: -8px;                      /* Posicionado a la derecha */
-    top: 0;
-    bottom: 0;
-    width: 12px;                      /* Área clickeable más amplia para redimensionar */
-    background: transparent;          /* Invisible por defecto */
+    content: '';                      /* Área de resize invisible */
+    position: absolute;               /* Pegada al borde derecho */
+    right: -8px;                      /* Extiende clic hacia fuera */
+    top: 0;                           /* Desde arriba */
+    bottom: 0;                        /* Hasta abajo */
+    width: 12px;                      /* Ancho de zona clickeable */
+    background: transparent;          /* Invisible */
     cursor: col-resize;               /* Cursor de redimensionamiento */
-    z-index: 20;                      /* Por encima del contenido */
+    z-index: 20;                      /* Encima del contenido */
 }
 
 .header-row > div:hover::after {
-    background: rgba(0, 123, 255, 0.3); /* Color azul al hover */
+    background: rgba(0, 123, 255, 0.3); /* Muestra zona de resize al hover */
 }
 
 /*** Estados de redimensionamiento y arrastre*/
 .header-row > div.resizing {
-    background: rgba(0, 123, 255, 0.1); /* Fondo azul claro durante redimensionamiento */
-    border-right: 2px solid #007bff;  /* Borde azul */
+    background: rgba(0, 123, 255, 0.1); /* Indica redimensionamiento en curso */
+    border-right: 2px solid #007bff;    /* Borde azul para feedback */
 }
 
 .header-row > div.dragging {
-    background: rgba(40, 167, 69, 0.06); /* Fondo verde claro durante arrastre */
-    border: 1px dashed #28a745;       /* Borde verde punteado */
-    opacity: 0.95;                    /* Menos transparencia para mejor contraste */
+    background: rgba(40, 167, 69, 0.06); /* Visualiza arrastre */
+    border: 1px dashed #28a745;         /* Borde punteado verde */
+    opacity: 0.95;                      /* Contraste durante el drag */
 }
 
 .header-row > div.drop-zone {
-    background: rgba(255, 193, 7, 0.1); /* Fondo amarillo para zona de drop */
-    border: 1.5px dashed #ffc107;       /* Borde amarillo punteado */
+    background: rgba(255, 193, 7, 0.1); /* Indica posible posición de drop */
+    border: 1.5px dashed #ffc107;       /* Borde punteado amarillo */
 }
 
 /* ==========================================================================
    CUERPO DE TABLA Y ESTADOS VISUALES
    ========================================================================== */
 
-/**
- * Filas del cuerpo de la tabla
- */
+/*** Filas del cuerpo de la tabla*/
+
 .table-body .table-row {
-    border-bottom: 1px solid var(--border-color); /* Línea separadora */
-    transition: var(--transition);    /* Transición suave */
+    border-bottom: 1px solid var(--border-color); /* Línea separadora entre filas */
+    transition: var(--transition);                  /* Transición en hover/estado */
 }
 
 .table-body .table-row:hover {
-    background: #f8f9fa;              /* Fondo gris claro al hover */
+    background: #f8f9fa;              /* Resalta fila al pasar el cursor */
 }
 
-/**
- * Badges de estado para diferentes situaciones
- */
+/*** Badges de estado para diferentes situaciones */
 .status-badge {
-    padding: 4px 8px;                 /* Padding compacto */
+    padding: 4px 8px;                 /* Tamaño compacto del badge */
     border-radius: 12px;              /* Bordes muy redondeados */
     font-size: 11px;                  /* Texto pequeño */
-    font-weight: 600;                 /* Texto en negrita */
-    text-transform: uppercase;        /* Texto en mayúsculas */
+    font-weight: 600;                 /* Peso alto para destacar */
+    text-transform: uppercase;        /* Convierte a mayúsculas */
 }
 
 .status-badge.pendiente {
@@ -612,17 +630,15 @@
    COLUMNA DE ACCIONES Y BOTONES
    ========================================================================== */
 
-/**
- * Contenedor de botones de acción
- */
+/*** Contenedor de botones de acción */
 .col-acciones {
-    display: flex;
-    gap: 6px;                         /* Espacio entre botones */
+    display: flex;                    /* Contenedor en fila */
+    gap: 6px;                         /* Separación entre botones */
 }
 
 /* Anchos por columna centralizados: modificar aquí para afectar todos los módulos */
-.col-acciones { width: 60px; }
-.col-acciones { position: sticky; left: 0; z-index: 5; background: var(--table-row-bg); }
+.col-acciones { width: 60px; }                                  /* Ancho fijo columna Acciones */
+.col-acciones { position: sticky; left: 0; z-index: 5; background: var(--table-row-bg); } /* Fija a la izquierda */
 .col-id { width: 100px; }
 .col-codigo { width: 140px; }
 .col-nombre { width: 360px; }
@@ -640,47 +656,47 @@
  * Botones de acción genéricos
  */
 .btn-action {
-    padding: var(--action-btn-padding); /* Padding compacto */
-    font-size: var(--action-btn-font-size); /* Texto homogéneo */
-    border-radius: var(--action-btn-radius); /* Bordes ligeramente redondeados */
-    border: var(--action-btn-border); /* Borde desde variable */
-    cursor: pointer;                  /* Cursor pointer */
-    transition: var(--transition);    /* Transición suave */
+    padding: var(--action-btn-padding);        /* Tamaño del botón de acción */
+    font-size: var(--action-btn-font-size);    /* Texto homogéneo */
+    border-radius: var(--action-btn-radius);   /* Bordes redondeados */
+    border: var(--action-btn-border);          /* Borde configurable */
+    cursor: pointer;                            /* Interactivo */
+    transition: var(--transition);              /* Animación al hover */
 }
 
 /* Íconos dentro de botones de acción */
 .btn-action img.icon-action {
-    width: 18px;
-    height: 18px;
-    display: inline-block;
-    vertical-align: middle;
+    width: 18px;                                 /* Tamaño del ícono */
+    height: 18px;                                /* Altura del ícono */
+    display: inline-block;                       /* Ícono en línea */
+    vertical-align: middle;                      /* Alineación vertical */
 }
 
-.btn-action { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.btn-action { display: inline-flex; align-items: center; justify-content: center; gap: 6px; } /* Layout del botón */
 
 .btn-action.view {
-    background: var(--action-btn-bg);    /* Fondo homogéneo */
-    color: var(--action-btn-color);      /* Texto homogéneo */
+    background: var(--action-btn-bg);        /* Fondo caso Ver */
+    color: var(--action-btn-color);          /* Color de texto */
 }
 
 .btn-action.edit {
-    background: var(--action-btn-bg);
-    color: var(--action-btn-color);
+    background: var(--action-btn-bg);        /* Fondo caso Editar */
+    color: var(--action-btn-color);          /* Color de texto */
 }
 
 .btn-action.delete {
-    background: var(--action-btn-bg);
-    color: var(--action-btn-color);
+    background: var(--action-btn-bg);        /* Fondo caso Eliminar */
+    color: var(--action-btn-color);          /* Color de texto */
 }
 
 /* Envoltorio opcional para agrupar botones de acción dentro de la celda */
-.table-action { display:flex; gap:6px; align-items:center; }
+.table-action { display:flex; gap:6px; align-items:center; } /* Envoltorio de botones dentro de celda */
 
 /* Columnas que deben permitir wrap para mostrar contenido completo */
 .col-proveedor, .col-ubicacion {
-    white-space: normal;             /* Permitir varias líneas */
-    max-width: none;                 /* Quitar limitación de ancho */
-    overflow-wrap: anywhere;         /* Romper palabras largas si es necesario */
+    white-space: normal;                 /* Permite varias líneas */
+    max-width: none;                     /* Quita limitación de ancho */
+    overflow-wrap: anywhere;             /* Rompe palabras largas si se requiere */
 }
 
 /* ==========================================================================
@@ -691,25 +707,51 @@
  * Estado vacío para tablas sin datos
  */
 .empty-state {
-    grid-column: 1 / -1;              /* Ocupa todas las columnas */
-    text-align: center;               /* Texto centrado */
-    padding: 40px 20px;               /* Padding reducido */
-    color: var(--secondary-color);    /* Color secundario */
-    display: flex;
-    flex-direction: column;
+    grid-column: 1 / -1;              /* Ocupa todo el ancho de la grilla */
+    text-align: center;               /* Centra el texto */
+    padding: 40px 20px;               /* Aire interno */
+    color: var(--secondary-color);    /* Color del mensaje */
+    display: flex;                    /* Contenedor flexible */
+    flex-direction: column;           /* Apila título y texto */
     justify-content: center;          /* Centra verticalmente */
     align-items: center;              /* Centra horizontalmente */
-    min-height: 100px;                /* Altura mínima reducida */ 
+    min-height: 100px;                /* Altura mínima */ 
 }
 
 .empty-state div {
-    font-size: 18px;                  /* Título más grande */
-    margin-bottom: 5px;              /* Espacio inferior */
+    font-size: var(--ty-title-size, 18px);   /* Título desde tokens */
+    line-height: var(--ty-title-line, 1.2);  /* Altura de línea homogénea */
+    margin-bottom: 5px;               /* Espacio inferior con el texto */
 }
 
 .empty-state p {
-    margin-bottom: 0;                 /* Sin margen inferior */
-    font-size: 14px;                  /* Texto normal */
+    margin-bottom: 0;                 /* Elimina margen inferior */
+    font-size: var(--ty-subtitle-size, 14px); /* Texto detalle desde tokens */
+    line-height: var(--ty-subtitle-line, 1.2); /* Altura de línea homogénea */
+}
+
+/* Mensaje estandarizado "En desarrollo" con icono de construcción */
+.en-desarrollo {
+    grid-column: 1 / -1;              /* Ocupa el ancho completo */
+    display: flex;                    /* Alinea ícono y texto */
+    align-items: center;              /* Centrado vertical */
+    justify-content: center;          /* Centrado horizontal */
+    gap: var(--spacing-small);        /* Separación entre ícono y texto */
+    padding: 4px 0;                   /* Espaciado compacto */
+    color: var(--secondary-color);    /* Color del mensaje */
+    font-size: var(--ty-td-size, var(--text-size-normal)); /* Tamaño de texto desde tokens */
+    line-height: var(--ty-td-line, 1.3);                     /* Altura de línea homogénea */
+}
+
+.en-desarrollo::before {
+    content: '';                      /* Inserta ícono de construcción */
+    width: 20px;                      /* Ancho del ícono */
+    height: 20px;                     /* Alto del ícono */
+    display: inline-block;            /* Se comporta como ícono inline */
+    background-image: url('../Imagenes/Ico_Construccion.png'); /* Ícono estándar */
+    background-size: contain;         /* Ajusta sin recortar */
+    background-repeat: no-repeat;     /* No repetir imagen */
+    filter: grayscale(0.1);           /* Ajuste estético ligero */
 }
 
 /* ==========================================================================
@@ -720,68 +762,68 @@
  * Barra inferior con estadísticas y controles de paginación
  */
 .barra-inferior-unificada {
-    display: flex;
-    justify-content: space-between;   /* Espacio entre secciones */
-    align-items: center;              /* Centra verticalmente */
+    display: flex;                    /* Contenedor flexible */
+    justify-content: space-between;   /* Secciones a los lados */
+    align-items: center;              /* Centrado vertical */
     background: #f8f9fa;              /* Fondo gris claro */
-    padding: 4px 10px;                /* Padding reducido - más baja */
-    border-top: 1px solid #dee2e6;    /* Línea separadora superior */
-    margin-top: auto;                 /* Empuja al fondo del contenedor */
-    flex-wrap: wrap;                  /* Permite wrap en móviles */
-    gap: 10px;                        /* Espacio reducido entre elementos */
-    position: absolute;               /* Absolute para posicionar en el fondo */
-    bottom: 0;                        /* SIN espacio - pegada al fondo */
-    z-index: 100;                     /* Por encima del contenido */
-    flex-shrink: 0;                   /* No se reduce */
-    width: 100%;                      /* Ancho completo */
+    padding: 2px 10px;                /* Altura compacta */
+    border-top: 1px solid #dee2e6;    /* Separador superior */
+    margin-top: auto;                 /* Empuja al fondo del módulo */
+    flex-wrap: wrap;                  /* Permite salto de línea en móvil */
+    gap: 10px;                        /* Separación entre elementos */
+    position: absolute;               /* Posiciona en el fondo del contenedor */
+    bottom: 0;                        /* Pegada al borde inferior */
+    z-index: 100;                     /* Encima del contenido */
+    flex-shrink: 0;                   /* Evita reducción */
+    width: 100%;                      /* Ocupa todo el ancho */
 }
 /*** Contenedor de estadísticas inferiores*/
 .estadisticas-inferiores {
-    display: flex;
-    gap: 10px;                        /* Espacio reducido entre estadísticas */
-    align-items: center;
-    flex-wrap: wrap;                  /* Wrap en pantallas pequeñas */
-    flex: 1;                          /* Ocupa espacio disponible */
+    display: flex;                    /* Contenedor de estadísticas */
+    gap: 10px;                        /* Separación entre ítems */
+    align-items: center;              /* Centrado vertical */
+    flex-wrap: wrap;                  /* Permite salto de línea */
+    flex: 1;                          /* Ocupa el espacio disponible */
 }
 
 /**
  * Items individuales de estadística
  */
 .stat-item-inferior {
-    display: flex;
-    align-items: center;
-    gap: 5px;                         /* Espacio entre label y número */
+    display: flex;                    /* Ítem con label + número */
+    align-items: center;              /* Centrado vertical */
+    gap: 10px;                         /* Separación entre label y número */
 }
 
 .stat-label-inferior {
-    font-size: 11px;                  /* Texto más pequeño */
-    color: #6c757d;                   /* Color gris */
-    font-weight: 400;                 /* Texto seminegrita */
-    white-space: nowrap;              /* Sin wrap */
+    font-size: 12px;                  /* Tamaño del label */
+    color: #6c757d;                 /* Color gris */
+    font-weight: 400;                 /* Peso medio */
+    white-space: nowrap;              /* Evita salto de línea */
 }
 
 .stat-numero-inferior {
-    font-size: 11px;                  /* Texto más pequeño */
-    font-weight: 600;                 /* Texto en negrita */
+    font-size: 12px;                  /* Tamaño del número */
+    font-weight: 600;                 /* Peso alto */
     color: var(--primary-color);      /* Color primario */
-    background: white;                /* Fondo blanco */
-    padding: 1px 4px;                 /* Padding más compacto */
-    border-radius: 4px;               /* Bordes redondeados */
+    background: white;                /* Fondo del número */
+    padding: 1px 4px;                 /* Aire interno compacto */
+    border-radius: 4px;               /* Esquinas redondeadas */
     min-width: 20px;                  /* Ancho mínimo */
-    text-align: center;               /* Texto centrado */
+    text-align: center;               /* Centrado del número */
     border: 1px solid #dee2e6;        /* Borde sutil */
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* Sombra muy sutil */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* Sombra tenue */
 }
 
 /*** Contador de registros*/
 .contador-registros {
-    display: flex;
-    align-items: center;
-    gap: 6px;                         /* Espacio reducido entre elementos */
+    display: flex;                    /* Contenedor del contador */
+    align-items: center;              /* Centrado vertical */
+    gap: 6px;                         /* Separación entre elementos */
     color: #6c757d;                   /* Color gris */
-    font-size: 11px;                  /* Texto más pequeño */
+    font-size: 12px;                  /* Tamaño del texto */
     font-weight: 500;                 /* Peso medio */
-    justify-content: center;          /* Centra horizontalmente */
+    justify-content: center;          /* Centrado horizontal */
     flex: 1;                          /* Ocupa espacio disponible */
 }
 
@@ -789,18 +831,18 @@
  * Botones de icono genéricos
  */
 .btn-icon {
-    background: white;                /* Fondo blanco */
+    background: white;                /* Fondo del botón */
     border: 1px solid #dee2e6;        /* Borde sutil */
-    padding: 4px 8px;                 /* Padding compacto */
-    border-radius: var(--border-radius); /* Bordes redondeados */
-    cursor: pointer;                  /* Cursor pointer */
-    transition: var(--transition);    /* Transición suave */
-    color: #6c757d;                   /* Color gris */
+    padding: 4px 8px;                 /* Tamaño compacto */
+    border-radius: var(--border-radius); /* Esquinas redondeadas */
+    cursor: pointer;                  /* Interactivo */
+    transition: var(--transition);    /* Animación hover */
+    color: #6c757d;                   /* Color de ícono */
 }
 
 .btn-icon:hover {
-    background: #e9ecef;              /* Fondo gris al hover */
-    transform: rotate(90deg);         /* Rotación animada */
+    background: #e9ecef;              /* Fondo al hover */
+    transform: rotate(90deg);         /* Animación de rotación */
     border-color: #adb5bd;            /* Borde más oscuro */
 }
 
@@ -808,54 +850,13 @@
  * Controles de paginación inferior
  */
 .paginacion-inferior {
-    display: flex;
-    align-items: center;
-    gap: 8px;                         /* Espacio reducido entre controles */
+    display: flex;                    /* Controles de paginación en fila */
+    align-items: center;              /* Centrado vertical */
+    gap: 8px;                         /* Separación entre controles */
     color: #6c757d;                   /* Color gris */
-    font-size: 11px;                  /* Texto más pequeño */
+    font-size: 11px;                  /* Tamaño del texto */
     justify-content: flex-end;        /* Alineado a la derecha */
     flex: 1;                          /* Ocupa espacio disponible */
-}
-
-/* ==========================================================================
-   ESTADOS DE CARGA Y ANIMACIONES
-   ========================================================================== */
-
-/**
- * Overlay de carga para operaciones asíncronas
- */
-.loading-overlay {
-    display: none;                    /* Oculto por defecto */
-    position: fixed;                  /* Posición fija */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.9); /* Fondo blanco semitransparente */
-    z-index: 1000;                    /* Por encima de todo */
-    justify-content: center;          /* Centra horizontalmente */
-    align-items: center;              /* Centra verticalmente */
-    flex-direction: column;           /* Disposición vertical */
-}
-
-/**
- * Spinner de carga animado
- */
-.loading-spinner {
-    border: 4px solid #f3f3f3;        /* Borde exterior gris */
-    border-top: 4px solid var(--primary-color); /* Borde superior color primario */
-    border-radius: 50%;               /* Forma circular */
-    width: 50px;                      /* Tamaño fijo */
-    height: 50px;                     /* Tamaño fijo */
-    animation: spin 1s linear infinite; /* Animación infinita */
-}
-
-/**
- * Animación keyframes para el spinner
- */
-@keyframes spin {
-    0% { transform: rotate(0deg); }   /* Inicio: 0 grados */
-    100% { transform: rotate(360deg); } /* Fin: 360 grados (rotación completa) */
 }
 
 /* ==========================================================================
@@ -863,52 +864,53 @@
    ========================================================================== */
 
 .table-input {
-    width: 100%;
-    padding: 8px 10px;
-    border: 1.5px solid var(--border-color);
-    border-radius: var(--border-radius);
-    font-size: 14px;
-    font-family: inherit;
-    transition: border-color 0.2s;
-    background: white;
+    width: 100%;                                 /* Ocupa todo el ancho */
+    padding: 8px 10px;                           /* Altura del control */
+    border: 1.5px solid var(--border-color);     /* Borde homogéneo */
+    border-radius: var(--border-radius);         /* Esquinas redondeadas */
+    font-size: var(--ty-form-control-size, 12px); /* Tamaño de texto homologado */
+    font-family: inherit;                        /* Hereda la fuente */
+    line-height: var(--ty-form-line, 1.2);       /* Altura de línea homologada */
+    transition: border-color 0.2s;               /* Cambio suave al focus */
+    background: white;                           /* Fondo blanco */
 }
 
 .table-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(47, 49, 88, 0.1);
+    outline: none;                               /* Quita contorno nativo */
+    border-color: var(--primary-color);          /* Resalta borde */
+    box-shadow: 0 0 0 2px rgba(47, 49, 88, 0.1); /* Halo suave */
 }
 
 .table-input:hover:not([readonly]) {
-    border-color: #adb5bd;
+    border-color: #adb5bd;                       /* Borde ligeramente más oscuro */
 }
 
 .table-input[readonly] {
-    background: var(--background-color);
-    color: #6c757d;
-    cursor: not-allowed;
-    border-color: #dee2e6;
+    background: var(--background-color);         /* Fondo desactivado */
+    color: #6c757d;                              /* Texto gris */
+    cursor: not-allowed;                         /* No interactivo */
+    border-color: #dee2e6;                       /* Borde sutil */
 }
 
 .table-input::placeholder {
-    color: #adb5bd;
-    font-style: italic;
+    color: #adb5bd;                              /* Color del placeholder */
+    font-style: italic;                          /* Estilo del placeholder */
 }
 
 /* Select específico en tablas */
 select.table-input {
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    padding-right: 30px;
+    cursor: pointer;                              /* Interactivo */
+    appearance: none;                            /* Oculta estilo nativo */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); /* Flecha personalizada */
+    background-repeat: no-repeat;                /* No repetir imagen */
+    background-position: right 10px center;      /* Posición de la flecha */
+    padding-right: 30px;                         /* Espacio para la flecha */
 }
 
 /* Textarea en tablas */
 textarea.table-input {
-    resize: vertical;
-    font-family: inherit;
+    resize: vertical;                            /* Permite ajustar altura */
+    font-family: inherit;                        /* Hereda la fuente */
 }
 
 /* ==========================================================================
@@ -916,393 +918,394 @@ textarea.table-input {
    ========================================================================== */
 
 .loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    backdrop-filter: blur(4px);
+    position: fixed;                         /* Cubre toda la pantalla */
+    top: 0;                                  /* Borde superior */
+    left: 0;                                 /* Borde izquierdo */
+    right: 0;                                /* Borde derecho */
+    bottom: 0;                               /* Borde inferior */
+    background: rgba(0, 0, 0, 0.6);         /* Oscurece con transparencia */
+    display: flex;                           /* Centrado con flex */
+    flex-direction: column;                  /* Ícono arriba, texto abajo */
+    align-items: center;                     /* Centra horizontalmente */
+    justify-content: center;                 /* Centra verticalmente */
+    z-index: 9999;                           /* Por encima de todo */
+    backdrop-filter: blur(4px);              /* Efecto de desenfoque */
 }
 
 .loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
+    width: 50px;                              /* Diámetro del spinner */
+    height: 50px;                             /* Altura del spinner */
+    border: 4px solid rgba(255, 255, 255, 0.3); /* Grosor y color del borde */
+    border-top-color: white;                  /* Color del borde superior */
+    border-radius: 50%;                       /* Forma circular */
+    animation: spin 0.8s linear infinite;     /* Rotación continua */
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
+@keyframes spin { to { transform: rotate(360deg); } } /* Animación de giro */
 
 .loading-overlay p {
-    color: white;
-    margin-top: 16px;
-    font-size: 16px;
-    font-weight: 500;
+    color: white;                             /* Texto del mensaje */
+    margin-top: 16px;                         /* Separación del spinner */
+    font-size: var(--ty-subtitle-size, 16px); /* Tamaño de texto desde tokens */
+    line-height: var(--ty-subtitle-line, 1.2);/* Altura de línea homogénea */
+    font-weight: 500;                         /* Peso medio */
 }
 
 /* ==========================================================================
    MODAL DE FORMULARIO ESTILO SAE
+   --------------------------------------------------------------------------
+   Qué es: conjunto de estilos para modales (compactos, con pestañas
+   y secciones colapsables). Cambia tamaños, colores y comportamiento visual.
+   Cómo ajustar:
+   - Tamaño del modal: tocar width/max-width/max-height en .modal-container
+   - Tamaño compacto: usar .modal-compact (max-width y max-height)
+   - Scroll interno: controlar en .modal-content-compact (min/max-height)
+   - Header/Footers: padding y colores en .modal-header/.modal-footer
    ========================================================================== */
 
+/* Capa oscura y centrado del modal en pantalla */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-    backdrop-filter: blur(2px);
-    animation: fadeIn 0.2s ease;
+    position: fixed;                 /* Se fija a la ventana completa */
+    top: 0;                          /* Borde superior */
+    left: 0;                         /* Borde izquierdo */
+    right: 0;                        /* Borde derecho */
+    bottom: 0;                       /* Borde inferior */
+    background: rgba(0, 0, 0, 0.5);  /* Oscurece detrás del modal */
+    display: flex;                   /* Centrado con flexbox */
+    align-items: center;             /* Centra vertical */
+    justify-content: center;         /* Centra horizontal */
+    z-index: 10000;                  /* Encima de todo */
+    backdrop-filter: blur(2px);      /* Desenfoque del fondo */
+    animation: fadeIn 0.2s ease;     /* Entrada suave */
 }
 
+/* Contenedor principal del modal (tamaño y caja) */
 .modal-container {
-    background: white;
-    border-radius: 4px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    width: 90%;
-    max-width: 1200px;
-    max-height: 90vh;
-    display: flex;
-    flex-direction: column;
-    animation: slideUp 0.3s ease;
+    background: white;               /* Fondo del modal */
+    border-radius: 4px;              /* Bordes redondeados */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); /* Sombra flotante */
+    width: 90%;                      /* Ocupa 90% del ancho de la ventana */
+    max-width: var(--modal-max-width);   /* Ancho máximo desde tokens globales */
+    max-height: var(--modal-max-height); /* Altura máxima desde tokens globales */
+    display: flex;                   /* Layout interno vertical */
+    flex-direction: column;          /* Encabezado/Contenido/Footer en columna */
+    animation: slideUp 0.3s ease;    /* Animación de aparición desde abajo */
 }
 
+/* Variante más compacta de modal (útil para formularios pequeños) */
 .modal-compact {
-    max-width: 720px;
-    max-height: 85vh;
+    max-width: var(--modal-compact-max-width);   /* Ancho compacto desde tokens */
+    max-height: var(--modal-compact-max-height); /* Altura compacta desde tokens */
 }
 
+/* Animación de opacidad al mostrar overlay */
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
 }
 
+/* Animación del contenedor subiendo al aparecer */
 @keyframes slideUp {
     from { transform: translateY(20px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
 
-/* Header del Modal */
+/* Encabezado del modal (título y acciones) */
 .modal-header {
-    background: var(--primary-color);
-    color: white;
-    padding: 8px 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--primary-color);/* Color institucional del header */
+    color: white;                    /* Texto en blanco */
+    padding: 8px 12px;               /* Espaciado interno */
+    display: flex;                   /* Distribución de elementos */
+    justify-content: space-between;  /* Título a la izquierda, acciones a la derecha */
+    align-items: center;             /* Centrado vertical */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Línea sutil inferior */
 }
 
+/* Título (icono + texto) */
 .modal-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    display: flex;                   /* Icono + texto alineados */
+    align-items: center;             /* Centrado vertical */
+    gap: 8px;                        /* Separación entre icono y texto */
 }
 
-.modal-icon {
-    font-size: 18px;
-}
+/* Tamaño del icono del modal */
+.modal-icon { font-size: 18px; }
 
+/* Texto del título */
 .modal-title h2 {
-    margin: 0;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+    margin: 0;                       /* Sin márgenes */
+    font-size: var(--ty-title-size, 14px);    /* Título desde tokens */
+    line-height: var(--ty-title-line, 1.2);   /* Altura de línea homogénea */
+    font-weight: var(--ty-title-weight, 600); /* Peso desde tokens */
+    letter-spacing: 0.5px;           /* Espaciado de letras sutil */
 }
 
+/* Botonera del header (cerrar, etc.) */
 .modal-header-buttons {
-    display: flex;
-    gap: 4px;
+    display: flex;                   /* Botones en fila */
+    gap: 4px;                        /* Separación entre botones */
 }
 
+/* Botones del header (estilo de icono) */
 .btn-header-icon {
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 2px;
-    transition: background 0.2s;
-    font-weight: bold;
+    background: transparent;         /* Fondo transparente */
+    border: none;                    /* Sin borde */
+    color: white;                    /* Color de icono */
+    font-size: 16px;                 /* Tamaño de icono */
+    cursor: pointer;                 /* Manito al pasar */
+    padding: 4px 8px;                /* Espaciado interno */
+    border-radius: 2px;              /* Bordes suaves */
+    transition: background 0.2s;     /* Hover suave */
+    font-weight: bold;               /* Peso del icono */
 }
 
-.btn-header-icon:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
+/* Hover de botones del header */
+.btn-header-icon:hover { background: rgba(255, 255, 255, 0.2); }
 
-/* Tabs del Modal */
+/* Pestañas superiores del modal */
 .modal-tabs {
-    background: #e8e8e8;
-    display: flex;
-    border-bottom: 1px solid #c0c0c0;
+    background: var(--background-color); /* Fondo gris claro desde variable */
+    display: flex;                   /* Pestañas en fila */
+    border-bottom: 1px solid var(--border-color);/* Línea inferior desde variable */
 }
 
+/* Botón de pestaña (tab) */
 .tab-button {
-    background: #d4d4d4;
-    border: none;
-    border-right: 1px solid #a0a0a0;
-    border-bottom: 1px solid #a0a0a0;
-    padding: 6px 16px;                /* Padding reducido - pestañas más bajas */
-    font-size: 10px;                  /* Fuente legible */
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    color: #333;
+    background: var(--white-color);  /* Fondo por defecto */
+    border: none;                    /* Sin borde propio */
+    border-right: 1px solid var(--border-color); /* Separador entre pestañas */
+    border-bottom: 1px solid var(--border-color);/* Línea inferior para relieve */
+    padding: 6px 16px;               /* Altura de pestaña */
+    font-size: var(--ty-tab-size, 12px);     /* Tamaño de pestañas principales */
+    font-weight: var(--ty-tab-weight, 600);  /* Peso de pestañas principales */
+    line-height: var(--ty-tab-line, 1.2);    /* Altura de línea pestañas principales */
+    cursor: pointer;                 /* Cursor interactivo */
+    transition: all 0.2s;            /* Transición suave */
+    color: var(--text-color);        /* Color de texto */
 }
 
-.tab-button:hover {
-    background: #e0e0e0;
-}
+/* Hover de pestaña */
+.tab-button:hover { background: var(--background-color); }
 
+/* Pestaña activa (contenido visible) */
 .tab-button.active {
-    background: white;
-    border-bottom: 1px solid white;
-    color: var(--primary-color);
+    background: var(--white-color);  /* Fondo blanco al estar activa */
+    border-bottom: 1px solid var(--white-color);  /* Une con contenido */
+    color: var(--primary-color);     /* Resalta con color primario */
 }
 
-/* Contenido del Modal Compacto */
+/* Área de contenido para modales compactos (scroll vertical) */
 .modal-content-compact {
-    padding: 12px;
-    overflow-y: auto;
-    flex: 1;
-    background: #f5f5f5;
-    min-height: 500px;
-    max-height: 500px;
+    padding: 12px;                   /* Espaciado interno */
+    overflow-y: auto;                /* Habilita scroll vertical */
+    flex: 1;                         /* Ocupa altura disponible */
+    background: var(--background-color); /* Fondo gris suave desde variable */
+    min-height: 500px;               /* Altura mínima: sube/baja para cambiar lo visible */
+    max-height: 500px;               /* Altura máxima: limita el scroll interno */
 }
 
-/* Tab Content */
-.tab-content {
-    display: none;
-}
+/* Contenido de cada pestaña: oculto por defecto */
+.tab-content { display: none; }
+/* Mostrar pestaña activa */
+.tab-content.active { display: block; }
 
-.tab-content.active {
-    display: block;
-}
-
-/* Secciones Colapsables */
+/* Secciones colapsables dentro del modal */
 .collapsible-section {
-    background: white;
-    border: 1px solid #c0c0c0;
-    margin-bottom: 8px;
+    background: white;               /* Fondo de la sección */
+    border: 1px solid #c0c0c0;       /* Borde gris */
+    margin-bottom: 8px;              /* Separación entre secciones */
 }
 
+/* Encabezado clickeable de la sección */
 .section-header-collapse {
-    background: linear-gradient(to bottom, #f0f0f0 0%, #e0e0e0 100%);
-    border-bottom: 1px solid #c0c0c0;
-    padding: 6px 10px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    user-select: none;
+    background: linear-gradient(to bottom, #f0f0f0 0%, #e0e0e0 100%); /* Degradado clásico SAE */
+    border-bottom: 1px solid #c0c0c0;/* Línea inferior */
+    padding: 6px 10px;               /* Altura del encabezado */
+    cursor: pointer;                 /* Interactivo */
+    display: flex;                   /* Ícono + texto en fila */
+    align-items: center;             /* Centrado vertical */
+    gap: 8px;                        /* Separación */
+    user-select: none;               /* Evita selección de texto al click */
 }
 
+/* Hover del encabezado de sección */
 .section-header-collapse:hover {
     background: linear-gradient(to bottom, #e8e8e8 0%, #d8d8d8 100%);
 }
 
-.collapse-icon {
-    font-size: 10px;
-    transition: transform 0.2s;
-}
+/* Ícono de colapso (triangulito) */
+.collapse-icon { font-size: 10px; transition: transform 0.2s; }
 
-.section-header-collapse.collapsed .collapse-icon {
-    transform: rotate(-90deg);
-}
+/* Rotación del ícono cuando está colapsado */
+.section-header-collapse.collapsed .collapse-icon { transform: rotate(-90deg); }
 
+/* Texto del título de sección */
 .section-title-text {
-    font-size: 10px;
-    font-weight: 700;
-    color: #333;
-    letter-spacing: 0.5px;
+    font-size: var(--ty-subtitle-size, 10px);   /* Tamaño desde tokens */
+    line-height: var(--ty-subtitle-line, 1.2);  /* Altura de línea desde tokens */
+    font-weight: var(--ty-subtitle-weight, 700);/* Peso desde tokens */
+    color: var(--text-color);                /* Color centralizado */
 }
 
+/* Homologación: Menús de módulo con desplegables del formulario */
+.module-header .module-text {
+    font-size: var(--ty-subtitle-size, var(--text-size-normal));
+    line-height: var(--ty-subtitle-line, 1.2);
+    font-weight: var(--ty-subtitle-weight, var(--font-weight-semibold));
+}
+
+.submenu-item {
+    font-size: var(--ty-subtitle-size, var(--text-size-normal));
+    line-height: var(--ty-subtitle-line, 1.2);
+    font-weight: var(--ty-subtitle-weight, var(--font-weight-semibold));
+}
+
+/* Cuerpo de sección (área de los campos) */
 .section-body {
-    padding: 12px;
-    overflow: hidden;
-    max-height: 1000px;
-    transition: max-height 0.3s ease, padding 0.3s ease;
+    padding: 12px;                   /* Espaciado interno */
+    overflow: hidden;                /* Oculta contenido al colapsar */
+    max-height: 1000px;              /* Altura máxima al expandir */
+    transition: max-height 0.3s ease, padding 0.3s ease; /* Animación suave */
 }
 
+/* Estado colapsado: ocultar cuerpo y reducir padding */
 .section-header-collapse.collapsed + .section-body {
-    max-height: 0;
-    padding: 0 12px;
-    overflow: hidden;
+    max-height: 0;                   /* Cierra sección */
+    padding: 0 12px;                 /* Mantiene bordes laterales */
+    overflow: hidden;                /* Oculta contenido */
 }
 
-/* Tabla de Formulario */
-.form-table {
-    width: 100%;
-    border-collapse: collapse;
-}
+/* Tabla de formulario (layout clásico SAE de etiqueta/campo) */
+.form-table { width: 100%; border-collapse: collapse; }
+.form-table tr { border-bottom: 1px solid #e0e0e0; }
+.form-table tr:last-child { border-bottom: none; }
 
-.form-table tr {
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.form-table tr:last-child {
-    border-bottom: none;
-}
-
+/* Celda de etiqueta del formulario */
 .label-cell {
-    width: 25%;
-    padding: 6px 8px;
-    font-size: 10px;
-    font-weight: 600;
-    color: #333;
-    background: #f8f8f8;
-    border-right: 1px solid #e0e0e0;
-    vertical-align: middle;
+    width: 25%;                      /* Ancho fijo para etiquetas */
+    padding: 6px 8px;                /* Espaciado interno */
+    font-size: var(--ty-form-label-size); /* Tamaño de etiqueta */
+    font-weight: 600;                /* Peso de etiqueta */
+    color: var(--text-color);        /* Color de texto (variable global) */
+    background: var(--background-color); /* Fondo (variable global) */
+    border-right: 1px solid var(--border-color); /* Separador (variable global) */
+    vertical-align: middle;          /* Centrado vertical */
+    line-height: var(--ty-form-line, 1.2); /* Altura de línea etiqueta */
 }
 
-.input-cell {
-    padding: 4px 8px;
-}
+/* Celda de entrada del formulario */
+.input-cell { padding: 4px 8px; }
 
+/* Inputs y selects dentro de la celda */
 .input-cell input,
 .input-cell select {
-    width: 100%;
-    padding: 4px 6px;
-    border: 1px solid #c0c0c0;
-    border-radius: 2px;
-    font-size: 10px;
-    font-family: inherit;
+    width: 100%;                     /* Ocupan todo el ancho disponible */
+    padding: 4px 6px;                /* Altura del control */
+    border: 1px solid #c0c0c0;       /* Borde clásico SAE */
+    border-radius: 2px;              /* Bordes ligeramente redondeados */
+    font-size: var(--ty-form-control-size, 12px); /* Tamaño de control */
+    font-family: inherit;            /* Hereda fuente del sistema */
+    line-height: var(--ty-form-line, 1.2); /* Altura de línea control */
 }
 
+/* Estado de enfoque en inputs/selects */
 .input-cell input:focus,
 .input-cell select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 1px var(--primary-color);
+    outline: none;                   /* Sin contorno por defecto */
+    border-color: var(--primary-color); /* Resalta con color institucional */
+    box-shadow: 0 0 0 1px var(--primary-color); /* Halo de enfoque */
 }
 
+/* Input solo lectura */
 .input-cell input[readonly] {
-    background: #f0f0f0;
-    color: #666;
-    cursor: not-allowed;
+    background: #f0f0f0;             /* Fondo gris (no editable) */
+    color: #666;                      /* Texto gris */
+    cursor: not-allowed;              /* Cursor bloqueado */
 }
 
-/* Grid de Ubicaciones */
+/* Grilla de ubicaciones (dos columnas por defecto) */
 .ubicaciones-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    display: grid;                   /* Usa CSS Grid */
+    grid-template-columns: 1fr 1fr;  /* Dos columnas iguales */
+    gap: 12px;                       /* Separación entre columnas */
 }
 
-.ubicacion-column {
-    background: white;
-    border: 1px solid #c0c0c0;
-}
+/* Contenedor de cada bloque de ubicación */
+.ubicacion-column { background: white; border: 1px solid #c0c0c0; }
 
+/* Título de cada bloque de ubicación */
 .ubicacion-title {
-    background: linear-gradient(to bottom, #f0f0f0 0%, #e0e0e0 100%);
-    border-bottom: 1px solid #c0c0c0;
-    padding: 6px 10px;
-    font-size: 10px;
-    font-weight: 700;
-    color: #333;
-    text-align: center;
-    letter-spacing: 0.5px;
+    background: linear-gradient(to bottom, #f0f0f0 0%, #e0e0e0 100%); /* Degradado */
+    border-bottom: 1px solid #c0c0c0;/* Separador inferior */
+    padding: 6px 10px;               /* Altura del título */
+    font-size: var(--ty-subtitle-size, 10px);   /* Tamaño desde tokens */
+    line-height: var(--ty-subtitle-line, 1.2);  /* Altura de línea desde tokens */
+    font-weight: var(--ty-subtitle-weight, 700);/* Peso desde tokens */
+    color: #333;                     /* Color del texto */
+    text-align: center;              /* Centrado horizontal */
+    letter-spacing: 0;               /* Sin espaciado extra */
 }
 
-/* Textarea en Observaciones */
+/* Textarea para Observaciones dentro de secciones */
 .section-body textarea {
-    width: 100%;
-    min-height: 80px;
-    padding: 6px 8px;
-    border: 1px solid #c0c0c0;
-    border-radius: 2px;
-    font-size: 12px;
-    font-family: inherit;
-    resize: vertical;
+    width: 100%;                     /* Ancho completo */
+    min-height: 80px;                /* Altura mínima */
+    padding: 6px 8px;                /* Espaciado interno */
+    border: 1px solid #c0c0c0;       /* Borde clásico */
+    border-radius: 2px;              /* Bordes suaves */
+    font-size: 12px;                 /* Texto un poco más grande que inputs */
+    font-family: inherit;            /* Hereda fuente */
+    resize: vertical;                /* Permite cambiar altura */
 }
 
+/* Enfoque de textarea */
 .section-body textarea:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 1px var(--primary-color);
+    outline: none;                   /* Sin contorno por defecto */
+    border-color: var(--primary-color); /* Resalta con primario */
+    box-shadow: 0 0 0 1px var(--primary-color); /* Halo de enfoque */
 }
 
-.char-counter {
-    text-align: right;
-    font-size: 10px;
-    color: #666;
-    margin-top: 4px;
-}
+/* Contador de caracteres en observaciones */
+.char-counter { text-align: right; font-size: 10px; color: #666; margin-top: 4px; }
 
-.required {
-    color: #dc3545;
-    font-weight: 700;
-}
+/* Indicador de campo requerido */
+.required { color: #dc3545; font-weight: 700; }
 
-/* Empty Tab */
-.empty-tab {
-    text-align: center;
-    padding: 40px 20px;
-    color: #666;
-}
+/* Estado vacío de la pestaña (cuando no hay contenido) */
+.empty-tab { text-align: center; padding: 0; color: var(--secondary-color); }
+.empty-tab p { font-size: var(--ty-td-size, var(--text-size-normal)); line-height: var(--ty-td-line, 1.3); margin: 0; }
+.empty-tab small { font-size: var(--ty-form-label-size, var(--text-size-small)); line-height: var(--ty-form-line, 1.2); color: var(--secondary-color); margin: 0; }
 
-.empty-tab p {
-    font-size: 16px;
-    margin-bottom: 8px;
-}
-
-.empty-tab small {
-    font-size: 12px;
-    color: #999;
-}
-
-/* Footer del Modal */
+/* Pie del modal con botones (Aceptar/Cancelar) */
 .modal-footer {
-    background: #f0f0f0;
-    border-top: 1px solid #c0c0c0;
-    padding: 10px 12px;
-    display: flex;
-    justify-content: center;
-    gap: 12px;
+    background: #f0f0f0;             /* Fondo gris claro */
+    border-top: 1px solid #c0c0c0;   /* Separador superior */
+    padding: 10px 12px;              /* Espaciado interno */
+    display: flex;                   /* Botones centrados */
+    justify-content: center;         /* Centra horizontalmente */
+    gap: 12px;                       /* Separación entre botones */
 }
 
+/* Tamaño mínimo de los botones del footer */
 .modal-footer .btn {
-    min-width: 120px;
-    padding: 8px 16px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+    min-width: 120px;                /* Ancho mínimo */
+    padding: 8px 16px;               /* Altura del botón */
+    font-size: 12px;                 /* Tamaño del texto */
+    font-weight: 600;                /* Peso del texto */
+    letter-spacing: 0.5px;           /* Estética SAE */
 }
 
-/* Responsive para Modal */
+/* Responsive para Modal (comportamiento en pantallas pequeñas) */
 @media (max-width: 768px) {
     .modal-compact {
-        width: 95%;
-        max-height: 95vh;
+        width: 95%;                  /* Menor margen lateral en móvil */
+        max-height: 95vh;            /* Permite más altura disponible */
     }
 
-    .ubicaciones-grid {
-        grid-template-columns: 1fr;
-    }
+    .ubicaciones-grid { grid-template-columns: 1fr; } /* Pasa a una columna */
 
-    .modal-footer {
-        flex-direction: column;
-    }
-
-    .modal-footer .btn {
-        width: 100%;
-    }
+    .modal-footer { flex-direction: column; }         /* Botones en columna */
+    .modal-footer .btn { width: 100%; }               /* Botón a todo el ancho */
 }
 
 /* ==========================================================================
@@ -1313,16 +1316,17 @@ textarea.table-input {
  * Tablet: 1024px y menos
  */
 @media (max-width: 1024px) {
-    .table-row,
-        display: grid;
-        width: 100%;
-        grid-template-columns: var(--table-cols, auto); /* plantilla compartida */
-            minmax(120px, 1fr) 
-            minmax(100px, 1fr) 
-        gap: 0; /* sin separación entre columnas */
-            minmax(160px, 1.5fr) 
-            minmax(120px, 1fr) 
-            minmax(130px, 1fr);
+    /* Ajustes para tablet: usa plantilla de columnas centralizada
+       Define --table-cols en el contenedor de la tabla para controlar anchos.
+       Ejemplo: --table-cols: 60px 100px 140px 1fr 160px 260px 120px; */
+    .header-row {
+        font-size: var(--text-size-normal);   /* Reduce tamaño del header */
+    }
+    .table-row {
+        display: grid;                        /* Mantiene grid */
+        width: 100%;                          /* Ocupa ancho completo */
+        grid-template-columns: var(--table-cols, auto); /* Usa plantilla definida */
+        gap: 0;                               /* Sin separación entre columnas */
     }
 }
 
@@ -1436,7 +1440,7 @@ textarea.table-input {
         justify-content: space-between; /* Espacio entre label y número */
     }
     .stat-label-inferior { 
-        font-size: 11px;               /* Texto más pequeño */
+        font-size: 12px;               /* Texto más pequeño */
     }
     .stat-numero-inferior { 
         font-size: 12px; 
@@ -1452,4 +1456,54 @@ textarea.table-input {
         padding: 30px 10px; 
         min-height: 120px;             /* Altura mínima reducida */
     }
+}
+
+/* ==========================================================================
+   ESTILOS PARA TABLA DE PROVEEDORES
+   ========================================================================== */
+.list-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px;
+}
+
+.list-body {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--ty-body-size, 14px);
+    margin: 0 auto;
+}
+
+.list-body th,
+.list-body td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.list-body th {
+    background: var(--background-color);
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.list-body tr:hover {
+    background: var(--hover-color, #f5f5f5);
+}
+
+.list-body button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 0 2px;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+.list-body button:hover {
+    background: var(--primary-color);
+    color: white;
 }

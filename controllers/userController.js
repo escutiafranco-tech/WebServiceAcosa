@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const usersFile = path.join(__dirname, '..', 'data', 'users.json');
+const usersFile = path.join(__dirname, '..', 'data', 'system', 'users.json');
 
 exports.getAllUsers = (req, res) => {
   const users = JSON.parse(fs.readFileSync(usersFile, 'utf8'));

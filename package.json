@@ -3,12 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "start": "node server.js",
     "invoices:excel": "node scripts/generate-invoice-excel.js"
   },
   "dependencies": {
+    "dotenv": "^16.4.5",
     "exceljs": "^4.3.0",
     "express": "^5.2.1",
     "fast-xml-parser": "^4.5.0",
-    "jsonwebtoken": "^9.0.3"
+    "jsonwebtoken": "^9.0.3",
+    "node-firebird": "^1.0.5",
+    "sqlite3": "^5.1.7"
   }
 }

@@ -1,12 +1,12 @@
 ﻿/* ==========================================================================
-   CONTENEDORES PRINCIPALES Y ESTRUCTURA DEL MÓDULO
+   CONTENEDORES PRINCIPALES Y ESTRUCTURA DEL MÓDULO 
    ========================================================================== */
-/*** Contenedores principales para módulos y formularios. Diseño flexbox a pantalla completa */
-.module-container,
+
+   .module-container,
 .form-container {
     height: 100vh;                    /* Altura de viewport completa */
     max-height: 100%;                 /* No excede el 100% del padre */
-    background: white;              /* Fondo blanco legible */
+    background: var(--white-color);   /* Fondo blanco legible */
     margin: 0;                        /* Sin márgenes externos */
     padding: 0;                       /* Sin padding interno global */
     box-shadow: none;                 /* Sin sombra inicial */
@@ -17,6 +17,78 @@
     left: 0;                          /* Alinea al borde izquierdo */
     justify-content: space-between;   /* Empuja barra inferior al fondo */
 }
+
+/* ==========================================================================
+   REGLAS GLOBALES PARA TABLAS (APLICA A TODOS LOS MÓDULOS)
+   ========================================================================== */
+
+/* Contenedores que albergan tablas/listados deben comportarse como flex column */
+.module-container .list-container,
+.module-container .table-container,
+.list-container,
+.table-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;    /* permite que los hijos con overflow hagan scroll correctamente */
+    padding: 0;
+    margin: 0;
+}
+
+/* Elementos que representan tablas (clásicas o con clase específica) */
+table.list-body,
+[class$="-table"],
+.list-body,
+.table-responsive {
+    width: 100%;
+    display: block;               /* separar thead/tbody para scroll interno */
+    border-collapse: collapse;
+}
+
+/* Thead se mantiene como tabla y ocupa todo el ancho */
+table.list-body thead,
+[class$="-table"] thead,
+.list-body thead {
+    display: table;
+    width: 100%;
+    table-layout: fixed;          /* usa anchos definidos por columnas */
+}
+
+/* Cuerpo con scroll interno */
+table.list-body tbody,
+[class$="-table"] tbody,
+.list-body tbody,
+.table-body {
+    display: block;
+    overflow-y: auto;
+    overflow-x: auto;
+    min-height: 0;
+    max-height: 100%;
+}
+
+/* Estilos base para celdas (padding/ellipsis) */
+table.list-body thead th,
+table.list-body tbody td,
+.list-body thead th,
+.list-body tbody td,
+[class$="-table"] thead th,
+[class$="-table"] tbody td {
+    padding: 8px 10px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Filas del tbody deben comportarse como tabla para mantener alineación */
+table.list-body tbody tr,
+[class$="-table"] tbody tr,
+.list-body tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
 .module-header,
 .form-header {
     display: none !important;         /* Oculta headers duplicados */
@@ -30,11 +102,9 @@
 /*** Secciones colapsables (global) Agrupan campos con header clickeable */
 
 .collapsible-section {
-    border: 1px solid var(--border-color);  /* Borde del bloque */
-    border-radius: var(--border-radius);    /* Esquinas redondeadas */
-    background: var(--white-color);         /* Fondo blanco */
-    box-shadow: var(--shadow-soft);         /* Sombra sutil */
-    margin: 6px 0;                          /* Separación vertical */
+    background: var(--white-color);           /* Fondo de la sección */
+    border: 1px solid #c0c0c0;              /* Borde gris */
+    margin-bottom: 6px;                       /* Separación entre secciones */
 }
 
 .collapsible-section .section-header-collapse {
@@ -60,19 +130,29 @@
 }
 
 .collapsible-section .section-title-text {
-    font-size: var(--ty-subtitle-size, var(--text-size-normal)); /* Tamaño del título desde tokens */
-    line-height: var(--ty-subtitle-line, 1.2); /* Altura de línea homogénea */
-    font-weight: var(--ty-subtitle-weight, var(--font-weight-semibold)); /* Peso desde tokens */
+    font-size: var(--text-size-normal, var(--text-size-normal)); /* Tamaño del título desde tokens */
+    line-height: var(--Comp-Subtitle-LineHeight, 1.2); /* Altura de línea homogénea para subtítulos */
+    font-weight: var(--Comp-Subtitle-Weight, var(--font-weight-semibold)); /* Peso desde componentes */
     color: var(--text-color);                /* Color de texto */
 }
 
 .collapsible-section .section-body {
     padding: 10px;                           /* Aire interno del cuerpo */
+    display: block;                          /* Mostrar siempre cuando no está colapsada */
+    min-height: 80px;                        /* Altura mínima para mostrar contenido de desarrollo */
 }
 
 /* Estado colapsado: ocultar cuerpo (fallback JS ya alterna display) */
 .collapsible-section .section-header-collapse.collapsed + .section-body {
-    display: none;                           /* Oculta el cuerpo al colapsar */
+    display: none !important;                /* Oculta el cuerpo al colapsar */
+}
+
+/* Título simple para subformularios (sin pestañas ni colapso) */
+.subform-title {
+    font-size: 12px;                        /* Tamaño de título en subformularios */
+    font-weight: var(--font-weight-semibold); /* Peso semi-negrita para títulos */
+    color: var(--text-color);               /* Color de texto principal */
+    margin-bottom: 8px;                     /* Espacio inferior del título */
 }
 
 /* ==========================================================================
@@ -129,8 +209,8 @@
     padding: 8px 12px;                /* Padding interno */
     flex: 1;                          /* Ocupa todo el espacio disponible */
     outline: none;                    /* Sin outline por defecto */
-    font-size: var(--ty-form-control-size, var(--text-size-normal)); /* Tamaño de fuente desde tokens */
-    line-height: var(--ty-form-line, 1.2);       /* Altura de línea homogénea */
+    font-size: var(--Comp-FormControl-Size, var(--text-size-normal)); /* Tamaño de fuente desde componentes */
+    line-height: var(--Comp-FormControl-LineHeight, 1.2);       /* Altura de línea homogénea para inputs */
 }
 
 /** Filtro de fechas con rango*/
@@ -149,15 +229,15 @@
     border: none;                       /* Sin borde propio */
     padding: 8px 0;                     /* Padding vertical */
     outline: none;                      /* Sin outline */
-    font-size: var(--ty-form-control-size, var(--text-size-normal)); /* Tamaño de control desde tokens */
-    line-height: var(--ty-form-line, 1.2);       /* Altura de línea homogénea */
-    width: 110px;                       /* Ancho fijo */
+    font-size: var(--Comp-FormControl-Size, var(--text-size-normal)); /* Tamaño de control desde componentes */
+    line-height: var(--Comp-FormControl-LineHeight, 1.2);       /* Altura de línea homogénea para inputs */
+    width: 110px;                       /* Ancho fijo para inputs de fecha */
 }
 
 .separador-fechas {
     color: var(--secondary-color);    /* Color secundario */
-    font-size: var(--ty-form-label-size);  /* Tamaño pequeño desde tokens */
-    line-height: var(--ty-form-line, 1.0); /* Altura de línea homogénea */
+    font-size: var(--Comp-FormLabel-Size);  /* Tamaño pequeño desde componentes */
+    line-height: var(--Comp-FormLabel-LineHeight, 1.0); /* Altura de línea homogénea para etiquetas */
 }
 
 /* ==========================================================================
@@ -219,8 +299,8 @@
 /* Reglas globales para cualquier tabla del tipo '...-table' */
 
 [class$="-table"] {
-    font-size: var(--ty-td-size, var(--table-font-size, var(--text-size-normal))) !important; /* Tamaño base de filas desde tokens */
-    line-height: var(--ty-td-line, var(--table-line-height, 1.3));        /* Altura de línea desde tokens */
+    font-size: var(--Comp-TableCell-Size, var(--table-font-size, var(--text-size-normal))) !important; /* Tamaño base de celdas desde componentes */
+    line-height: var(--Comp-TableCell-LineHeight, var(--table-line-height, 1.3));        /* Altura de línea desde componentes */
 }
 
 [class$="-table"] .table-row > div {
@@ -228,10 +308,10 @@
 }
 
 [class$="-table"] .header-row > div {
-    font-weight: var(--ty-th-weight, 600);                                  /* Encabezados destacados */
-    font-size: var(--ty-th-size, var(--table-header-font-size, var(--text-size-normal))) !important; /* Tamaño homogéneo */
-    letter-spacing: var(--ty-th-spacing, 0);            /* Espaciado de letras */
-    line-height: var(--ty-th-line, var(--table-line-height, 1.3));         /* Altura de línea encabezado */
+    font-weight: var(--Comp-TableHeader-Weight, 600);                                  /* Encabezados destacados */
+    font-size: var(--Comp-TableHeader-Size, var(--table-header-font-size, var(--text-size-normal))) !important; /* Tamaño homogéneo desde componentes */
+    letter-spacing: var(--Comp-TableHeader-Spacing, 0);            /* Espaciado de letras en encabezados */
+    line-height: var(--Comp-TableHeader-LineHeight, var(--table-line-height, 1.3));         /* Altura de línea encabezado */
 }
 
 /* Media query: reducir tamaño base de tablas en pantallas pequeñas usando variable dedicada */
@@ -293,8 +373,8 @@
 }
 
 .toolbar-label {
-    font-size: var(--ty-form-label-size, 12px); /* Texto pequeño desde tokens */
-    line-height: var(--ty-form-line, 1.2);     /* Altura de línea homogénea */
+    font-size: var(--Comp-FormLabel-Size, 12px); /* Texto pequeño desde componentes */
+    line-height: var(--Comp-FormLabel-LineHeight, 1.2);     /* Altura de línea homogénea */
     font-weight: 500;                        /* Peso medio para legibilidad */
     color: var(--text-color);                /* Color estándar de texto */
     text-align: center;                      /* Centrado bajo el ícono */
@@ -341,8 +421,8 @@
     padding: 6px 12px;                       /* Altura y aire interno */
     border: 1.5px solid var(--border-color); /* Borde del input */
     border-radius: var(--border-radius);     /* Esquinas redondeadas */
-    font-size: var(--ty-form-control-size, 13px); /* Tamaño de fuente del input desde tokens */
-    line-height: var(--ty-form-line, 1.2);       /* Altura de línea homogénea */
+    font-size: var(--Comp-FormControl-Size, 13px); /* Tamaño de fuente del input desde componentes */
+    line-height: var(--Comp-FormControl-LineHeight, 1.2);       /* Altura de línea homogénea para inputs */
     transition: border-color 0.2s;           /* Cambio de borde al focus */
 }
 
@@ -399,8 +479,8 @@
 }
 
 .filtros-content label {
-    font-size: var(--ty-form-label-size); /* Tamaño de etiqueta desde tokens */
-    line-height: var(--ty-form-line, 1.2);      /* Altura de línea homogénea */
+    font-size: var(--Comp-FormLabel-Size); /* Tamaño de etiqueta desde componentes */
+    line-height: var(--Comp-FormLabel-LineHeight, 1.2);      /* Altura de línea homogénea */
     font-weight: 500;                         /* Peso medio */
     color: var(--text-color);                 /* Color de texto */
 }
@@ -409,8 +489,8 @@
     padding: 6px 10px;                        /* Altura y aire interno */
     border: 1.5px solid var(--border-color);  /* Borde homogéneo */
     border-radius: var(--border-radius);      /* Esquinas redondeadas */
-    font-size: var(--ty-form-control-size, 12px); /* Tamaño de control desde tokens */
-    line-height: var(--ty-form-line, 1.2);        /* Altura de línea homogénea */
+    font-size: var(--Comp-FormControl-Size, 12px); /* Tamaño de control desde componentes */
+    line-height: var(--Comp-FormControl-LineHeight, 1.2);        /* Altura de línea homogénea */
 }
 
 .btn-sm {
@@ -766,16 +846,13 @@
     justify-content: space-between;   /* Secciones a los lados */
     align-items: center;              /* Centrado vertical */
     background: #f8f9fa;              /* Fondo gris claro */
-    padding: 2px 10px;                /* Altura compacta */
+    padding: 8px 10px;                /* Altura adecuada */
     border-top: 1px solid #dee2e6;    /* Separador superior */
-    margin-top: auto;                 /* Empuja al fondo del módulo */
     flex-wrap: wrap;                  /* Permite salto de línea en móvil */
     gap: 10px;                        /* Separación entre elementos */
-    position: absolute;               /* Posiciona en el fondo del contenedor */
-    bottom: 0;                        /* Pegada al borde inferior */
-    z-index: 100;                     /* Encima del contenido */
     flex-shrink: 0;                   /* Evita reducción */
     width: 100%;                      /* Ocupa todo el ancho */
+    order: 3;                         /* Última posición en flex */
 }
 /*** Contenedor de estadísticas inferiores*/
 .estadisticas-inferiores {
@@ -842,7 +919,7 @@
 
 .btn-icon:hover {
     background: #e9ecef;              /* Fondo al hover */
-    transform: rotate(90deg);         /* Animación de rotación */
+    transform: scale(1.03);           /* Ligero escalado al hover */
     border-color: #adb5bd;            /* Borde más oscuro */
 }
 
@@ -952,31 +1029,24 @@ textarea.table-input {
 }
 
 /* ==========================================================================
-   MODAL DE FORMULARIO ESTILO SAE
-   --------------------------------------------------------------------------
-   Qué es: conjunto de estilos para modales (compactos, con pestañas
-   y secciones colapsables). Cambia tamaños, colores y comportamiento visual.
-   Cómo ajustar:
-   - Tamaño del modal: tocar width/max-width/max-height en .modal-container
-   - Tamaño compacto: usar .modal-compact (max-width y max-height)
-   - Scroll interno: controlar en .modal-content-compact (min/max-height)
-   - Header/Footers: padding y colores en .modal-header/.modal-footer
+   MODULOS DE FORMULARIOS:
+   ESTRUCTURA, ESTILOS Y ANIMACIONES
    ========================================================================== */
 
-/* Capa oscura y centrado del modal en pantalla */
+/* Capa oscura y centrado del modal en pantalla */ 
 .modal-overlay {
-    position: fixed;                 /* Se fija a la ventana completa */
-    top: 0;                          /* Borde superior */
-    left: 0;                         /* Borde izquierdo */
-    right: 0;                        /* Borde derecho */
-    bottom: 0;                       /* Borde inferior */
+    position: fixed;                   /* Se fija a la ventana completa */
+    top: 0;                            /* Borde superior */
+    left: 0;                           /* Borde izquierdo */
+    right: 0;                          /* Borde derecho */
+    bottom: 0;                         /* Borde inferior */
     background: rgba(0, 0, 0, 0.5);  /* Oscurece detrás del modal */
-    display: flex;                   /* Centrado con flexbox */
-    align-items: center;             /* Centra vertical */
-    justify-content: center;         /* Centra horizontal */
-    z-index: 10000;                  /* Encima de todo */
-    backdrop-filter: blur(2px);      /* Desenfoque del fondo */
-    animation: fadeIn 0.2s ease;     /* Entrada suave */
+    display: flex;                     /* Centrado con flexbox */
+    align-items: center;               /* Centra vertical */
+    justify-content: center;           /* Centra horizontal */
+    z-index: 10000;                    /* Encima de todo */
+    backdrop-filter: blur(2px);        /* Desenfoque del fondo */
+    animation: fadeIn 0.2s ease;       /* Entrada suave */
 }
 
 /* Contenedor principal del modal (tamaño y caja) */
@@ -998,6 +1068,39 @@ textarea.table-input {
     max-height: var(--modal-compact-max-height); /* Altura compacta desde tokens */
 }
 
+/* Variante aún más baja para subformularios simples (servicio, sucursal,
+   contacto). Reduce la altura máxima del contenedor completo. */
+.modal-small {
+    max-width: 340px;   /* Ancho razonable para campos completos */
+    max-height: 45vh;   /* Más bajo; se adapta mejor al contenido */
+}
+
+/* Formularios dentro de submodales pequeños: altura adaptable al contenido
+   (evita que hereden el height:100vh de .form-container global) */
+.modal-small .form-container {
+    height: auto;
+    max-height: none;
+    display: block;
+    overflow: visible;
+}
+
+/* Campos en submodales: ocupar prácticamente todo el ancho del cuadro */
+.modal-small .section-body > table {
+    width: 100%;
+    margin: 0;
+}
+
+.modal-small .section-body table td:first-child {
+    width: 30%;
+    padding-right: 6px;
+    white-space: nowrap;  /* Evita que el texto de la etiqueta se rompa raro */
+}
+
+.modal-small .section-body table td:last-child input.form-control {
+    width: 100%;
+    box-sizing: border-box;  /* El input llena su celda sin desbordar */
+}
+
 /* Animación de opacidad al mostrar overlay */
 @keyframes fadeIn {
     from { opacity: 0; }
@@ -1013,8 +1116,8 @@ textarea.table-input {
 /* Encabezado del modal (título y acciones) */
 .modal-header {
     background: var(--primary-color);/* Color institucional del header */
-    color: white;                    /* Texto en blanco */
-    padding: 8px 12px;               /* Espaciado interno */
+    color: white;                  /* Texto en blanco */
+    padding: 8px 18px;                /* Espaciado interno */
     display: flex;                   /* Distribución de elementos */
     justify-content: space-between;  /* Título a la izquierda, acciones a la derecha */
     align-items: center;             /* Centrado vertical */
@@ -1104,17 +1207,20 @@ textarea.table-input {
     max-height: 500px;               /* Altura máxima: limita el scroll interno */
 }
 
+/* Variante más pequeña de contenido de modal para subformularios sencillos
+   (ej. Agregar servicio / sucursal / contacto)
+   Mantiene el mismo estilo pero con altura más baja. */
+.modal-content-small {
+    padding: 12px;
+    overflow-y: auto;
+    /* Sin flex: deja que la altura sea la del contenido */
+    background: var(--background-color);
+}
+
 /* Contenido de cada pestaña: oculto por defecto */
 .tab-content { display: none; }
 /* Mostrar pestaña activa */
 .tab-content.active { display: block; }
-
-/* Secciones colapsables dentro del modal */
-.collapsible-section {
-    background: white;               /* Fondo de la sección */
-    border: 1px solid #c0c0c0;       /* Borde gris */
-    margin-bottom: 8px;              /* Separación entre secciones */
-}
 
 /* Encabezado clickeable de la sección */
 .section-header-collapse {
@@ -1193,6 +1299,21 @@ textarea.table-input {
     line-height: var(--ty-form-line, 1.2); /* Altura de línea etiqueta */
 }
 
+/* Etiquetas e inputs en tablas simples de formulario dentro de secciones colapsables
+   (ej. bloque "Información general" del modal de proveedores)
+   - Homologa tamaño de letra con el resto de formularios
+   - Usa la paleta global de texto */
+.collapsible-section .section-body table td strong {
+    font-size: var(--Comp-FormLabel-Size);          /* Igual que otras etiquetas de formulario desde componentes */
+    font-weight: var(--font-weight-semibold);      /* Semi-negrita consistente */
+    color: var(--text-color);                      /* Color de texto institucional */
+}
+
+.collapsible-section .section-body table input.form-control {
+    font-size: var(--Comp-FormControl-Size, 12px);  /* Tamaño compacto y legible desde componentes */
+    line-height: var(--Comp-FormControl-LineHeight, 1.2);         /* Altura de línea homogénea para inputs */
+}
+
 /* Celda de entrada del formulario */
 .input-cell { padding: 4px 8px; }
 
@@ -1207,6 +1328,117 @@ textarea.table-input {
     font-family: inherit;            /* Hereda fuente del sistema */
     line-height: var(--ty-form-line, 1.2); /* Altura de línea control */
 }
+
+/* Asegurar que la tabla de servicios dentro del modal mantenga el mismo tamaño de texto que los controles del formulario */
+.table-servicios td,
+.table-servicios th,
+.table-sucursales td,
+.table-sucursales th,
+.table-contactos td,
+.table-contactos th {
+    font-size: var(--Comp-FormControl-Size, 12px); /* Tamaño de control desde componentes */
+    line-height: var(--Comp-FormControl-LineHeight, 1.2); /* Altura de línea control */
+    padding: 8px 10px;
+    text-align: left;                 /* Contenido alineado a la izquierda */
+}
+
+/* Columnas de acciones con ancho fijo para que los botones no se desborden/encojen */
+.table-servicios th:first-child,
+.table-servicios td:first-child,
+.table-sucursales th:first-child,
+.table-sucursales td:first-child,
+.table-contactos th:first-child,
+.table-contactos td:first-child {
+    width: 90px;
+    min-width: 90px;
+    max-width: 90px;
+    box-sizing: border-box;
+    padding-left: 6px;
+}
+
+/* Líneas horizontales sutiles y punteadas para mejorar alineación visual */
+.table-servicios tbody tr td,
+.table-sucursales tbody tr td,
+.table-contactos tbody tr td {
+    border-bottom: 1px dashed rgba(47,49,88,0.16); /* línea un poco más marcada basada en el primario */
+}
+
+/* Líneas verticales punteadas suaves para marcar límites de columnas */
+.table-servicios tbody tr td + td,
+.table-sucursales tbody tr td + td,
+.table-contactos tbody tr td + td {
+    border-left: 1px dashed rgba(47,49,88,0.16);
+}
+
+.table-servicios thead th + th,
+.table-sucursales thead th + th,
+.table-contactos thead th + th {
+    border-left: 1px dashed rgba(47,49,88,0.25);
+}
+
+/* Encabezado con línea inferior más marcada para separar */
+.table-servicios thead th,
+.table-sucursales thead th,
+.table-contactos thead th {
+    border-bottom: 2px solid rgba(47,49,88,0.25);
+}
+
+/* Asegurar que los botones de acción sean inline-flex y no alteren el layout */
+.table-servicios .btn,
+.table-sucursales .btn,
+.table-contactos .btn,
+.table-servicios .btn-icon,
+.table-sucursales .btn-icon,
+.table-contactos .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 4px;           /* ~50% más compacto que el tamaño base */
+    font-size: 11px;            /* Ícono/texto ligeramente más pequeño */
+    min-width: 20px;            /* Asegura área clickeable mínima */
+    min-height: 20px;
+}
+
+/* Ajustes para listas basadas en <table> (ej. Proveedores) */
+.list-body {
+    width: 100%;
+    border-collapse: collapse;
+    display: block;               /* Permite separar thead/tbody para scroll interno */
+}
+
+.list-body thead {
+    display: table;
+    width: 100%;
+    table-layout: fixed;          /* Usa anchos definidos por columnas para estabilidad */
+}
+
+.list-body tbody {
+    display: block;
+    overflow-y: auto;            /* Scroll interno solo en el cuerpo */
+    overflow-x: auto;
+    flex: 1 1 auto;
+    max-height: calc(100%);      /* Ocupa el resto del alto disponible */
+    min-height: 0;
+}
+
+.list-body thead th,
+.list-body tbody td {
+    padding: 8px 10px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Forzar anchos para columnas no-flexibles; dejar la columna Nombre (3) flexible */
+.list-body thead th:nth-child(1), .list-body tbody td:nth-child(1) { width: 60px; }
+.list-body thead th:nth-child(2), .list-body tbody td:nth-child(2) { width: 140px; }
+.list-body thead th:nth-child(4), .list-body tbody td:nth-child(4) { width: 160px; }
+.list-body thead th:nth-child(6), .list-body tbody td:nth-child(6) { width: 120px; }
+
+/* Asegurar filas del tbody con layout estable */
+.list-body tbody tr { display: table; width: 100%; table-layout: fixed; }
+
 
 /* Estado de enfoque en inputs/selects */
 .input-cell input:focus,
@@ -1278,22 +1510,15 @@ textarea.table-input {
 
 /* Pie del modal con botones (Aceptar/Cancelar) */
 .modal-footer {
-    background: #f0f0f0;             /* Fondo gris claro */
-    border-top: 1px solid #c0c0c0;   /* Separador superior */
-    padding: 10px 12px;              /* Espaciado interno */
-    display: flex;                   /* Botones centrados */
-    justify-content: center;         /* Centra horizontalmente */
-    gap: 12px;                       /* Separación entre botones */
+    background: var(--background-color); /* Fondo gris claro institucional */
+    border-top: 1px solid var(--border-color);   /* Separador superior */
+    padding: 10px 16px;              /* Espaciado interno */
+    display: flex;                   /* Botones en fila */
+    justify-content: center;         /* Botones centrados */
+    gap: 10px;                       /* Separación entre botones */
 }
 
-/* Tamaño mínimo de los botones del footer */
-.modal-footer .btn {
-    min-width: 120px;                /* Ancho mínimo */
-    padding: 8px 16px;               /* Altura del botón */
-    font-size: 12px;                 /* Tamaño del texto */
-    font-weight: 600;                /* Peso del texto */
-    letter-spacing: 0.5px;           /* Estética SAE */
-}
+/* Los botones usan el tamaño y estilo global de .btn; aquí solo controlamos alineación */
 
 /* Responsive para Modal (comportamiento en pantallas pequeñas) */
 @media (max-width: 768px) {
@@ -1302,10 +1527,9 @@ textarea.table-input {
         max-height: 95vh;            /* Permite más altura disponible */
     }
 
-    .ubicaciones-grid { grid-template-columns: 1fr; } /* Pasa a una columna */
-
-    .modal-footer { flex-direction: column; }         /* Botones en columna */
-    .modal-footer .btn { width: 100%; }               /* Botón a todo el ancho */
+     .ubicaciones-grid { grid-template-columns: 1fr; } /* Pasa a una columna */
+     /* Mantener el footer del modal igual que en escritorio para que
+         Guardar y Cancelar sigan en la misma fila aún en pantallas pequeñas */
 }
 
 /* ==========================================================================
@@ -1357,11 +1581,8 @@ textarea.table-input {
     }
     .main-content { 
         padding: 0 5px; 
-        padding-bottom: 100px;         /* Más espacio para barra inferior */
     }
     .barra-inferior-unificada { 
-        position: fixed;               /* Fijo en móvil */
-        bottom: 40px; 
         padding: 8px 15px; 
         gap: 12px; 
     }
@@ -1383,11 +1604,8 @@ textarea.table-input {
         order: 2;                      /* Segunda posición */
         flex: none; 
     }
-    .paginacion-inferior { 
-        width: 100%; 
-        justify-content: center;       /* Centra controles */
-        order: 3;                      /* Tercera posición */
-        flex: none; 
+    .list-container {
+        padding-bottom: 10px;
     }
     .table-row { 
         grid-template-columns: 1fr;    /* Una columna en móvil */
@@ -1427,7 +1645,6 @@ textarea.table-input {
         font-size: 12px;               /* Texto más pequeño */
     }
     .barra-inferior-unificada { 
-        bottom: 35px; 
         padding: 6px 12px; 
     }
     .estadisticas-inferiores { 
@@ -1464,14 +1681,15 @@ textarea.table-input {
 .list-container {
     flex: 1;
     overflow-y: auto;
-    padding: 0 10px;
+    padding: 0; /* Quitar padding lateral para que la tabla llegue al borde del contenedor */
+    margin: 0;  /* Asegurar que no exista margen que desplace la tabla */
 }
 
 .list-body {
     width: 100%;
     border-collapse: collapse;
     font-size: var(--ty-body-size, 14px);
-    margin: 0 auto;
+    margin: 0; /* Evitar centrar la tabla con margin:auto */
 }
 
 .list-body th,

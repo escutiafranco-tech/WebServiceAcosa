@@ -1,304 +1,49 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- CONFIGURACIÓN BÁSICA DEL DOCUMENTO -->
-    <meta charset="UTF-8">                       <!-- Define la codificación de caracteres como UTF-8 para soportar español -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Hace la página responsive en dispositivos móviles -->
-    <title>Custodias - ACOSA</title>             <!-- Título de la página que aparece en la pestaña del navegador -->
-  
-    <!-- ENLACES A HOJAS DE ESTILO -->
-    <!-- Cargar variables y estilos globales desde public -->
-    <link rel="stylesheet" href="/Style.css">  <!-- Variables globales y estilos base (normalizado según custodias) -->
-    <link rel="stylesheet" href="/modules.css"> <!-- Estilos de módulos -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Custodias - ACOSA</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/modules.css">
 </head>
 <body>
-    <!-- CONTENEDOR PRINCIPAL DEL MÓDULO -->
-    <div class="module-container">
-        
-        <!-- ====================================== -->
-        <!-- BARRA DE ACCESOS RÁPIDOS -->
-        <!-- ====================================== -->
-      
-        <div class="toolbar-module">
-            <button id="btnNuevo" class="toolbar-btn">
-                <img src="/Imagenes/Acc_Agregar.png" alt="Nuevo" class="toolbar-icon">
-                <span class="toolbar-label">Nuevo</span>
-            </button>
-            <button id="btnFiltroFechas" class="toolbar-btn">
-                <img src="/Imagenes/Acc_Filtrar.png" alt="Filtros" class="toolbar-icon">
-                <span class="toolbar-label">Filtros</span>
-            </button>
-            <div class="toolbar-divider"></div>
-
-            <!-- Buscador compacto -->
-            <div class="toolbar-search">
-                <input type="text" id="buscar" placeholder="Buscar...">
-                <button id="btnBuscar" class="search-btn">
-                    <img src="/Imagenes/Acc_Filtrar.png" alt="Buscar"  style="width: 16px; height: 16px;">
-                </button>
-            </div>
-        </div>    
-
-        <!-- Panel de filtros de fechas (oculto por defecto) -->
-        <div class="filtros-panel" id="filtrosPanel" style="display: none;">
-            <div class="filtros-content">
-                <label>Fecha inicial:</label>
-                <input type="date" id="fechaInicial">
-                <label>Fecha final:</label>
-                <input type="date" id="fechaFinal">
-                <button class="btn btn-primary btn-sm" id="btnAplicarFiltros">Aplicar</button>
-                <button class="btn btn-secondary btn-sm" id="btnLimpiarFiltros">Limpiar</button>
-            </div>
-        </div>
-
-    <!-- Contenedor de lista mínimo (sin tablas) -->
-                <div class="list-container">
-                    <div class="list-body" id="listaCustodias"></div>
-                </div>
-
-                <div class="barra-inferior-unificada">
-                    <div class="estadisticas-inferiores">
-                        <div class="stat-item-inferior">
-                            <span class="stat-label-inferior">Activos:</span>
-                            <span class="stat-numero-inferior" id="enActivos">0</span>
-                        </div>
-                        <div class="stat-item-inferior">
-                            <span class="stat-label-inferior">Inactivos:</span>
-                            <span class="stat-numero-inferior" id="enInactivos">0</span>
-                        </div>
-                    </div>
-                    <div class="contador-registros">
-                        <span id="mostrandoRegistros">Mostrando 0 de 0</span>
-                        <button id="btnRecargar" class="btn btn-icon">🔄</button>
-                    </div>
-                    <div class="paginacion-inferior">
-                        <button id="btnAnterior" class="btn btn-outline" disabled>← Anterior</button>
-                        <span id="infoPagina">Página 1 de 1</span>
-                        <button id="btnSiguiente" class="btn btn-outline" disabled>Siguiente →</button>
-                    </div>
-                </div>
-
-        <!-- ================================ -->
-        <!-- MODAL DE FORMULARIO DE CUSTODIA -->
-        <!-- ================================ -->
-
-        <div class="modal-overlay" id="modalCustodia" style="display:none;">
-            <div class="modal-container modal-compact">
-                 <!-- Header del Modal -->
-                  <div class="modal-header">
-                    <div class="modal-title"><h2 id="modalTitleCustodia">Custodia</h2></div>
-                    <div class="modal-header-buttons"><button class="btn-header-icon" id="btnCloseModalCustodia" title="Cerrar">✕</button></div>
-                </div>
-                <!-- Tabs del Modal -->
-                <div class="modal-tabs">
-                    <button class="tab-button active" data-tab="datosGenerales">
-                        Datos generales
-                    </button>
-                    <button class="tab-button" data-tab="documentacion">
-                        Documentación
-                    </button>
-                </div>
-
-                <!-- Contenido del Modal -->
-                <div class="modal-content-compact">
-                    <form id="formCustodia">
-                        <!-- TAB: DATOS GENERALES -->
-                        <div class="tab-content active" id="tabDatosGenerales">
-                            <!-- Sección: SOLICITUD -->
-                            <div class="collapsible-section">
-                                <div class="section-header-collapse">
-                                    <span class="collapse-icon">▼</span>
-                                    <span class="section-title-text">Solicitud</span>
-                                </div>
-                                <div class="section-body">
-                                    <table class="form-table">
-                                        <tr>
-                                            <td class="label-cell">ID de custodia</td>
-                                            <td class="input-cell">
-                                                <input type="text" id="modalIdCustodia" readonly>
-                                            </td>
-                                            <td class="label-cell">Fecha de solicitud</td>
-                                            <td class="input-cell">
-                                                <input type="text" id="modalFechaSolicitud" readonly>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="label-cell">Proveedor <span class="required">*</span></td>
-                                            <td class="input-cell" colspan="3">
-                                                <select id="modalProveedor" required>
-                                                    <option value="">Seleccione un proveedor</option>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="label-cell">Fecha del servicio <span class="required">*</span></td>
-                                            <td class="input-cell">
-                                                <input type="date" id="modalFechaServicio" required>
-                                            </td>
-                                            <td class="label-cell">Hora de solicitud <span class="required">*</span></td>
-                                            <td class="input-cell">
-                                                <input type="time" id="modalHoraServicio" required>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="label-cell">Tipo de movimiento <span class="required">*</span></td>
-                                            <td class="input-cell" colspan="3">
-                                                <select id="modalTipoMovimiento" required>
-                                                    <option value="">Seleccione tipo de movimiento</option>
-                                                    <option value="entrada">Entrada</option>
-                                                    <option value="salida">Salida</option>
-                                                    <option value="traslado">Traslado</option>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <!-- Sección: UBICACIONES -->
-                            <div class="collapsible-section">
-                                <div class="section-header-collapse">
-                                    <span class="collapse-icon">▼</span>
-                                    <span class="section-title-text">Ubicaciones</span>
-                                </div>
-                                <div class="section-body">
-                                    <div class="ubicaciones-grid">
-                                        <!-- Ubicación Inicial -->
-                                        <div class="ubicacion-column">
-                                            <div class="ubicacion-title">Ubicación inicial</div>
-                                            <table class="form-table">
-                                                <tr>
-                                                    <td class="label-cell">País <span class="required">*</span></td>
-                                                    <td class="input-cell">
-                                                        <input type="text" id="modalInicialPais" value="México" required>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="label-cell">Código postal <span class="required">*</span></td>
-                                                    <td class="input-cell">
-                                                        <input type="text" id="modalInicialCP" maxlength="5" required>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="label-cell">Estado <span class="required">*</span></td>
-                                                    <td class="input-cell">
-                                                        <input type="text" id="modalInicialEstado" required>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="label-cell">Municipio <span class="required">*</span></td>
-                                                    <td class="input-cell">
-                                                        <input type="text" id="modalInicialMunicipio" required>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="label-cell">Colonia <span class="required">*</span></td>
-                                                    <td class="input-cell">
-                                                        <input type="text" id="modalInicialColonia" required>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="label-cell">Calle y número <span class="required">*</span></td>
-                                                    <td class="input-cell">
-                                                        <input type="text" id="modalInicialCalle" required>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </div>
-
-                                        <!-- Ubicación Final -->
-                                        <div class="ubicacion-column">
-                                            <div class="ubicacion-title">Ubicación final</div>
-                                            <table class="form-table">
-                                                <tr>
-                                                    <td class="label-cell">País <span class="required">*</span></td>
-                                                    <td class="input-cell">
-                                                        <input type="text" id="modalDestinoPais" value="México" required>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="label-cell">Código postal <span class="required">*</span></td>
-                                                    <td class="input-cell">
-                                                        <input type="text" id="modalDestinoCP" maxlength="5" required>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="label-cell">Estado <span class="required">*</span></td>
-                                                    <td class="input-cell">
-                                                        <input type="text" id="modalDestinoEstado" required>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="label-cell">Municipio <span class="required">*</span></td>
-                                                    <td class="input-cell">
-                                                        <input type="text" id="modalDestinoMunicipio" required>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="label-cell">Colonia <span class="required">*</span></td>
-                                                    <td class="input-cell">
-                                                        <input type="text" id="modalDestinoColonia" required>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="label-cell">Calle y Número <span class="required">*</span></td>
-                                                    <td class="input-cell">
-                                                        <input type="text" id="modalDestinoCalle" required>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Sección: OBSERVACIONES -->
-                            <div class="collapsible-section">
-                                <div class="section-header-collapse">
-                                    <span class="collapse-icon">▼</span>
-                                    <span class="section-title-text">Observaciones</span>
-                                </div>
-                                <div class="section-body">
-                                    <textarea id="modalObservaciones" maxlength="1000" 
-                                              placeholder="Describa los detalles del servicio de custodia..."></textarea>
-                                    <div class="char-counter">
-                                        <span id="modalCharCount">0</span>/1000 caracteres
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- TAB: DOCUMENTACIÓN -->
-                        <div class="tab-content" id="tabDocumentacion">
-                            <div class="empty-tab">
-                                <p>📄 Sección de documentación en desarrollo</p>
-                                <small>Aquí podrás adjuntar documentos relacionados con la custodia</small>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Footer del Modal con botones -->
-                <div class="modal-footer">
-                    <button class="btn btn-primary" id="btnGuardarModal">
-                        GUARDAR
-                    </button>
-                    <button class="btn btn-secondary" id="btnImprimirCustodia">
-                        IMPRIMIR
-                    </button>
-                </div>
-            </div>
-        </div>
+  <div class="module-container">
+    <div class="toolbar-module">
+      <button id="btnNuevaCustodia" class="toolbar-btn">
+        <img src="/Imagenes/Acc_Agregar.png" alt="Nueva" class="toolbar-icon">
+        <span class="toolbar-label">Nueva</span>
+      </button>
+      <button id="btnRefrescarCustodias" class="toolbar-btn">
+        <img src="/Imagenes/Acc_Actualizar.png" alt="Refrescar" class="toolbar-icon">
+        <span class="toolbar-label">Refrescar</span>
+      </button>
     </div>
 
-    <!-- Overlay de carga (custodias) oculto por defecto -->
+    <div class="list-container custodias-table">
+      <div class="list-body" id="listaCustodias"></div>
+    </div>
+
+    <div class="barra-inferior-unificada">
+      <div class="estadisticas-inferiores">
+        <div class="stat-item-inferior">
+          <span class="stat-label-inferior">Total custodias:</span>
+          <span class="stat-numero-inferior" id="totalCustodias">0</span>
+        </div>
+      </div>
+      <div class="contador-registros">
+        <span id="mostrandoCustodias">Mostrando 0 de 0</span>
+        <button id="btnRecargarCustodias" class="btn btn-icon">🔄</button>
+      </div>
+    </div>
+
     <div class="loading-overlay" id="loadingCustodias" style="display:none;">
-        <div class="loading-spinner"></div>
-        <p>Cargando custodias...</p>
+      <div class="loading-spinner"></div>
+      <p>Cargando custodias...</p>
     </div>
+  </div>
 
-
-    <!-- SCRIPTS JAVASCRIPT -->
-    <script src="/modules/logistica/expedientes-carga/custodias/custodias.js"></script> <!-- Carga la lógica del módulo Custodias -->
+  <script src="/desarrollo.js"></script>
+  <script src="/modules/logistica/expedientes-carga/custodias/custodias.js"></script>
 </body>
 </html>

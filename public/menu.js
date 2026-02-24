@@ -1,4 +1,10 @@
 // Menu.js - Sistema de Gestión para ACOSA (VERSIÓN COMPLETA CON PERSISTENCIA CORREGIDA)
+
+// ✅ CARGAR SCRIPT DE DESARROLLO GLOBAL
+const scriptDesarrollo = document.createElement('script');
+scriptDesarrollo.src = '/desarrollo.js';
+document.head.appendChild(scriptDesarrollo);
+
 document.addEventListener('DOMContentLoaded', function() {
     // ================================
     // 01. CONFIGURACIÓN Y VARIABLES GLOBALES
@@ -16,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Estado de la aplicación - Control de pestañas y navegación
     let pestañasAbiertas = [];           // Array para almacenar pestañas abiertas
     let pestañaActiva = null;            // ID de la pestaña actualmente activa
-    const MAX_PESTAÑAS = 6;              // Límite máximo de pestañas permitidas
+    const MAX_PESTAÑAS = 8;              // Límite máximo de pestañas permitidas
 
     // ================================
     // 02. INICIALIZACIÓN PRINCIPAL DEL SISTEMA
@@ -39,6 +45,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // ✅ INICIALIZAR PERSISTENCIA - ESTA LÍNEA ES CLAVE
                 inicializarPersistenciaCompleta();
+                
+                // ✅ INICIALIZAR SISTEMA DE DESARROLLO GLOBAL
+                setTimeout(() => {
+                  if (typeof inicializarPestanasDesarrollo === 'function') {
+                    inicializarPestanasDesarrollo();
+                  }
+                }, 100);
             } else {
                 throw new Error('No se pudieron cargar los menús');
             }
@@ -54,8 +67,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // ================================
     async function cargarMenusDesdeJSON() {
         try {
-            // Realizar petición fetch al archivo JSON de menús
-            const res = await fetch('data/system/menus.json', {
+            // Realizar petición fetch al archivo JSON de menús (ruta absoluta)
+            const res = await fetch('/data/system/menus.json', {
                 headers: { 
                     'Content-Type': 'application/json',
                 }
@@ -91,6 +104,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Si es el botón de Salir, ejecutar función salir
                 if (titulo === 'Salir') {
                     salir();
+                } else if (titulo === 'Configuración') {
+                    // ✅ Nuevo: Abrir panel de administración si es admin
+                    abrirAdministracion();
                 } else {
                     // Para los otros botones, mostrar alerta temporal
                     alert(`🔧 Accediendo a: ${titulo}`);
@@ -116,14 +132,83 @@ document.addEventListener('DOMContentLoaded', function() {
     window.salir = salir;
 
     // ================================
+    // ✅ NUEVA: FUNCIÓN ABRIR ADMINISTRACIÓN
+    // ================================
+    function abrirAdministracion() {
+        const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+        
+        // Verificar que sea administrador
+        if (usuario.role !== 'Administrador') {
+            alert('❌ No tienes permiso para acceder a la configuración. Solo administradores pueden ingresar.');
+            return;
+        }
+
+        // Abrir Configuración como modal
+        abrirConfiguracionModal();
+    }
+
+    // Función para abrir el modal de Configuración
+    function abrirConfiguracionModal() {
+        // Cargar configuracion.html directamente
+        fetch('/configuracion.html')
+            .then(response => response.text())
+            .then(html => {
+                // Crear un contenedor temporal para parsear el HTML
+                const temp = document.createElement('div');
+                temp.innerHTML = html;
+                
+                // Extraer el modal del HTML
+                const modal = temp.querySelector('#modalConfiguracion');
+                
+                if (modal) {
+                    // Agregar al body
+                    document.body.appendChild(modal);
+                    
+                    // Mostrar modal con delay para que CSS se aplique
+                    setTimeout(() => {
+                        modal.style.display = 'flex';
+                    }, 10);
+                }
+            })
+            .catch(error => console.error('Error cargando configuración:', error));
+    }
+
+    // Función global para cerrar el modal desde dentro
+    window.cerrarConfiguracion = function() {
+        const modal = document.getElementById('modalConfiguracion');
+        if (modal) {
+            modal.style.display = 'none';
+            // Remover después de la animación
+            setTimeout(() => {
+                if (modal.parentNode) {
+                    modal.parentNode.removeChild(modal);
+                }
+            }, 300);
+        }
+    };
+
+    // Hacerla global
+    window.abrirAdministracion = abrirAdministracion;
+
+    // ================================
     // 05. GESTIÓN DE INFORMACIÓN DE USUARIO
     // ================================
     function cargarInformacionUsuario() {
-        // Simular información de usuario (en producción vendría del token de autenticación)
-        const usuario = {
+        // ✅ NUEVO: Leer información del usuario desde localStorage
+        const usuarioGuardado = localStorage.getItem('usuario');
+        
+        let usuario = {
             username: 'admin',
             role: 'Administrador'
         };
+        
+        if (usuarioGuardado) {
+            try {
+                usuario = JSON.parse(usuarioGuardado);
+            } catch (err) {
+                console.error('Error leyendo usuario de localStorage:', err);
+            }
+        }
         
         // Actualizar footer con información del usuario
         const usuarioLogeado = document.getElementById('usuarioLogeado');
@@ -298,15 +383,8 @@ document.addEventListener('DOMContentLoaded', function() {
         submenuItem.addEventListener('click', function(e) {
             e.stopPropagation(); // Prevenir propagación
             
-            // Remover estado activo de todos los items
-            document.querySelectorAll('.submenu-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Activar item clickeado
-            this.classList.add('active');
-            
             // Abrir el módulo correspondiente en una pestaña
+            // (No dejamos marcado el item; el efecto visual debe ser solo en hover)
             abrirModulo(itemData.action, itemData.name);
         });
     
@@ -421,8 +499,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 id: 'pestana-' + Date.now(), // ID único basado en timestamp
                 nombre: nombreModulo,
                 archivo: archivoHTML,
-                contenido: generarContenidoPestaña(nombreModulo, archivoHTML)
+                contenido: null // Se genera después de crear el objeto
             };
+            
+            // Generar contenido CON el ID de la pestaña ya disponible
+            nuevaPestaña.contenido = generarContenidoPestaña(nombreModulo, archivoHTML, nuevaPestaña.id);
             
             // Agregar a array de pestañas abiertas
             pestañasAbiertas.push(nuevaPestaña);
@@ -487,12 +568,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // ================================
     // 14. GENERACIÓN DE CONTENIDO PARA PESTAÑAS
     // ================================
-    function generarContenidoPestaña(nombreModulo, archivoHTML) {
+    function generarContenidoPestaña(nombreModulo, archivoHTML, pestanaId) {
         // Si hay archivo HTML específico, cargarlo en iframe
         if (archivoHTML) {
+            // Agregar parámetro pestana_id a la URL para que el módulo pueda cerrar correctamente
+            const urlConPestana = archivoHTML + (archivoHTML.includes('?') ? '&' : '?') + 'pestana_id=' + pestanaId;
             return `
                 <div class="contenido-pestana">
-                    <iframe src="${archivoHTML}" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                    <iframe src="${urlConPestana}" frameborder="0" style="width: 100%; height: 100%;"></iframe>
                 </div>
             `;
         } else {
@@ -524,17 +607,21 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!contenedorPestañas) {
             contenedorPestañas = document.createElement('div');
             contenedorPestañas.id = 'contenedorPestañas';
-            contenedorPestañas.className = 'sistema-pestañas';
+            contenedorPestañas.className = 'sistema-pestañas visible';
             
             // Insertar después del content-area
             const contentArea = document.querySelector('.content-area');
             if (contentArea) {
-                contentArea.parentNode.insertBefore(contenedorPestañas, contentArea.nextSibling);
+                contentArea.parentNode.insertBefore(contenedorPestañas, contentArea);
             }
         }
         
-        // Crear barra de pestañas si no existe
-        const barraPestañas = document.querySelector('.barra-pestañas') || crearBarraPestañas(contenedorPestañas);
+        // Buscar barra de pestañas (dentro del container o en el contenedor si existe)
+        let barraPestañas = contenedorPestañas.querySelector('.barra-pestañas');
+        if (!barraPestañas) {
+            // Si no existe, crear todo
+            barraPestañas = crearBarraPestañas(contenedorPestañas);
+        }
         
         // Crear elemento de pestaña en la barra
         const elementoPestaña = document.createElement('div');
@@ -555,7 +642,7 @@ document.addEventListener('DOMContentLoaded', function() {
         barraPestañas.appendChild(elementoPestaña);
         
         // Crear área de contenido si no existe
-        const areaContenido = document.querySelector('.area-contenido-pestañas') || crearAreaContenido(contenedorPestañas);
+        const areaContenido = contenedorPestañas.querySelector('.area-contenido-pestañas') || crearAreaContenido(contenedorPestañas);
         
         // Crear contenido de pestaña
         const contenidoPestaña = document.createElement('div');
@@ -571,9 +658,45 @@ document.addEventListener('DOMContentLoaded', function() {
     // 16. FUNCIONES AUXILIARES PARA CREACIÓN DE UI
     // ================================
     function crearBarraPestañas(contenedor) {
+        // Crear contenedor wrapper con botones de navegación
+        const barraPestañasContainer = document.createElement('div');
+        barraPestañasContainer.className = 'barra-pestañas-container';
+        
+        // Botón para ir a la izquierda
+        const btnIzq = document.createElement('button');
+        btnIzq.className = 'btn-nav-pestanas';
+        btnIzq.innerHTML = '◀';
+        btnIzq.title = 'Navegar izquierda';
+        btnIzq.onclick = () => {
+            const barra = contenedor.querySelector('.barra-pestañas');
+            if (barra) {
+                barra.scrollLeft -= 200;
+            }
+        };
+        
+        // Crear barra de pestañas
         const barraPestañas = document.createElement('div');
         barraPestañas.className = 'barra-pestañas';
-        contenedor.appendChild(barraPestañas);
+        
+        // Botón para ir a la derecha
+        const btnDer = document.createElement('button');
+        btnDer.className = 'btn-nav-pestanas';
+        btnDer.innerHTML = '▶';
+        btnDer.title = 'Navegar derecha';
+        btnDer.onclick = () => {
+            const barra = contenedor.querySelector('.barra-pestañas');
+            if (barra) {
+                barra.scrollLeft += 200;
+            }
+        };
+        
+        // Armar estructura
+        barraPestañasContainer.appendChild(btnIzq);
+        barraPestañasContainer.appendChild(barraPestañas);
+        barraPestañasContainer.appendChild(btnDer);
+        
+        contenedor.appendChild(barraPestañasContainer);
+        
         // Inicializar comportamiento arrastrable y persistencia
         try { setupSortableOn(barraPestañas); } catch (e) { console.warn('No se pudo inicializar draggable en barra de pestañas', e); }
         return barraPestañas;
@@ -871,7 +994,7 @@ document.addEventListener('DOMContentLoaded', function() {
             contenidoPestaña.className = 'contenido-pestana-container';
             contenidoPestaña.id = `contenido-${pestaña.id}`;
             contenidoPestaña.style.display = 'none';
-            contenidoPestaña.innerHTML = pestaña.contenido || generarContenidoPestaña(pestaña.nombre, pestaña.archivo);
+            contenidoPestaña.innerHTML = pestaña.contenido || generarContenidoPestaña(pestaña.nombre, pestaña.archivo, pestaña.id);
             
             areaContenido.appendChild(contenidoPestaña);
         }

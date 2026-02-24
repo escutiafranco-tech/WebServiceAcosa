@@ -1,611 +1,751 @@
-/*
-    Módulo: proveedores.js
-    Propósito: conectar la UI de Proveedores (botón "+", modal de sucursal y lista)
-    Cómo funciona: escuchamos eventos, abrimos/cerramos el modal y pintamos la sucursal en la lista.
-*/
-(function () {
-    const qs = (id) => document.getElementById(id);
-    const LS_KEY = 'proveedores_sucursales';
+// Módulo de Proveedores (Compras)
+// -------------------------------
+// Controla la pantalla de catálogo de proveedores:
+//  - Carga la lista desde la API /api/proveedores.
+//  - Aplica filtro de texto en memoria.
+//  - Abre un modal para alta/edición de proveedor.
+//  - Gestiona servicios, sucursales y contactos asociados vía API.
 
-    function openModalSucursal() {
-        const overlay = qs('modalSucursal');
-        if (overlay) overlay.style.display = 'flex';
-    }
+document.addEventListener('DOMContentLoaded', () => {
+  // Referencias a elementos del DOM usados en la pantalla.
+  const listaProveedores = document.getElementById('listaProveedores');
+  const loading = document.getElementById('loadingProveedores');
+  const txtBuscar = document.getElementById('buscarProveedor');
+  const lblMostrando = document.getElementById('mostrandoProveedores');
+  const lblActivos = document.getElementById('proveedoresActivos');
+  const lblInactivos = document.getElementById('proveedoresInactivos');
+  const btnRefrescar = document.getElementById('btnRefrescarProveedores');
+  const btnBuscar = document.getElementById('btnBuscarProveedor');
+  const modal = document.getElementById('modalProveedor');
+  const tituloModal = document.getElementById('tituloModalProveedor');
+  const btnCerrarModal = document.getElementById('btnCerrarModalProveedor');
+  const btnGuardar = document.getElementById('btnGuardarProveedor');
+  const btnCancelar = document.getElementById('btnCancelarProveedor');
+  const form = document.getElementById('formProveedor');
+  const inputId = document.getElementById('provId');
+  const inputIdVisible = document.getElementById('provIdVisible');
+  const inputCodigo = document.getElementById('provCodigo');
+  const inputRFC = document.getElementById('provRFC');
+  const inputNombre = document.getElementById('provNombre');
+  const inputDireccion = document.getElementById('provDireccion');
+  const inputFechaReg = document.getElementById('provFechaRegistro');
+  const inputActivo = document.getElementById('provActivo');
+  const tbodyServicios = document.getElementById('tbodyServicios');
+  const tbodySucursales = document.getElementById('tbodySucursales');
+  const tbodyContactos = document.getElementById('tbodyContactos');
+  const btnNuevoServicio = document.getElementById('btnNuevoServicio');
+  const btnNuevaSucursal = document.getElementById('btnNuevaSucursal');
+  const btnNuevoContacto = document.getElementById('btnNuevoContacto');
 
-    function closeModalSucursal() {
-        const overlay = qs('modalSucursal');
-        if (overlay) overlay.style.display = 'none';
-    }
+  // Modales secundarios para servicios, sucursales y contactos
+  const modalServicio = document.getElementById('modalServicio');
+  const modalSucursal = document.getElementById('modalSucursal');
+  const modalContacto = document.getElementById('modalContacto');
 
-    function getFormData() {
-        return {
-            id: crypto && crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
-            tipo: qs('modalSucursalTipo')?.value || '',
-            nombre: qs('modalSucursalNombre')?.value || '',
-            pais: qs('modalSucursalPais')?.value || '',
-            estado: qs('modalSucursalEstado')?.value || '',
-            municipio: qs('modalSucursalMunicipio')?.value || '',
-            localidad: qs('modalSucursalLocalidad')?.value || '',
-            calle: qs('modalSucursalCalle')?.value || '',
-            colonia: qs('modalSucursalColonia')?.value || '',
-            cp: qs('modalSucursalCP')?.value || '',
-            noExterior: qs('modalSucursalNoExterior')?.value || '',
-            noInterior: qs('modalSucursalNoInterior')?.value || '',
-            codigoColonia: qs('modalSucursalCodigoColonia')?.value || '',
-            codigoLocalidad: qs('modalSucursalCodigoLocalidad')?.value || ''
-        };
-    }
+  const formServicio = document.getElementById('formServicio');
+  const inputSrvNombre = document.getElementById('srvNombre');
+  const inputSrvDescripcion = document.getElementById('srvDescripcion');
+  const btnGuardarServicio = document.getElementById('btnGuardarServicio');
+  const btnCancelarServicio = document.getElementById('btnCancelarServicio');
+  const btnCerrarModalServicio = document.getElementById('btnCerrarModalServicio');
 
-    function setFormData(data) {
-        if (!data) return;
-        if (qs('modalSucursalTipo')) qs('modalSucursalTipo').value = data.tipo || '';
-        if (qs('modalSucursalNombre')) qs('modalSucursalNombre').value = data.nombre || '';
-        if (qs('modalSucursalPais')) qs('modalSucursalPais').value = data.pais || '';
-        if (qs('modalSucursalEstado')) qs('modalSucursalEstado').value = data.estado || '';
-        if (qs('modalSucursalMunicipio')) qs('modalSucursalMunicipio').value = data.municipio || '';
-        if (qs('modalSucursalLocalidad')) qs('modalSucursalLocalidad').value = data.localidad || '';
-        if (qs('modalSucursalCalle')) qs('modalSucursalCalle').value = data.calle || '';
-        if (qs('modalSucursalColonia')) qs('modalSucursalColonia').value = data.colonia || '';
-        if (qs('modalSucursalCP')) qs('modalSucursalCP').value = data.cp || '';
-        if (qs('modalSucursalNoExterior')) qs('modalSucursalNoExterior').value = data.noExterior || '';
-        if (qs('modalSucursalNoInterior')) qs('modalSucursalNoInterior').value = data.noInterior || '';
-        if (qs('modalSucursalCodigoColonia')) qs('modalSucursalCodigoColonia').value = data.codigoColonia || '';
-        if (qs('modalSucursalCodigoLocalidad')) qs('modalSucursalCodigoLocalidad').value = data.codigoLocalidad || '';
-    }
+  const formSucursal = document.getElementById('formSucursal');
+  const inputSucTipo = document.getElementById('sucTipo');
+  const inputSucNombre = document.getElementById('sucNombre');
+  const inputSucPais = document.getElementById('sucPais');
+  const inputSucEstado = document.getElementById('sucEstado');
+  const inputSucMunicipio = document.getElementById('sucMunicipio');
+  const btnGuardarSucursal = document.getElementById('btnGuardarSucursal');
+  const btnCancelarSucursal = document.getElementById('btnCancelarSucursal');
+  const btnCerrarModalSucursal = document.getElementById('btnCerrarModalSucursal');
 
-    function loadSucursales() {
-        try {
-            const raw = localStorage.getItem(LS_KEY);
-            return raw ? JSON.parse(raw) : [];
-        } catch (e) {
-            return [];
-        }
-    }
+  const formContacto = document.getElementById('formContacto');
+  const inputCtoArea = document.getElementById('ctoArea');
+  const inputCtoNombre = document.getElementById('ctoNombre');
+  const inputCtoTelefono = document.getElementById('ctoTelefono');
+  const inputCtoCorreo = document.getElementById('ctoCorreo');
+  const btnGuardarContacto = document.getElementById('btnGuardarContacto');
+  const btnCancelarContacto = document.getElementById('btnCancelarContacto');
+  const btnCerrarModalContacto = document.getElementById('btnCerrarModalContacto');
+  let proveedores = [];
+  let soloActivos = false; // reservado para filtrar solo activos más adelante
 
-    function saveSucursales(list) {
-        try {
-            localStorage.setItem(LS_KEY, JSON.stringify(list || []));
-        } catch (e) {
-            /* noop */
-        }
-    }
+  // Lógica de pestañas del modal (DATOS GENERALES / EXPEDIENTE / VENTAS / SALDOS / AGENDA)
+  const tabButtons = modal ? modal.querySelectorAll('.tab-button') : [];
+  const tabContents = modal ? modal.querySelectorAll('.tab-content') : [];
 
-    function renderSucursales() {
-        const lista = qs('listaSucursales');
-        if (!lista) return;
-        lista.innerHTML = '';
-        const data = loadSucursales();
-        data.forEach((suc) => {
-            const item = document.createElement('div');
-            item.className = 'sucursal-item';
-            item.dataset.id = suc.id;
+  function activarTab(tabId) {
+    if (!tabId) return;
 
-            const info = document.createElement('span');
-            info.className = 'sucursal-info';
-            info.textContent = `${suc.tipo ? suc.tipo.toUpperCase() : 'Sucursal'} - ${suc.nombre}`;
-
-            const actions = document.createElement('div');
-            actions.className = 'sucursal-actions';
-
-            const btnVer = document.createElement('button');
-            btnVer.id = 'Ico_Visaulaiazar';
-            btnVer.title = 'Visualizar';
-            btnVer.textContent = '👁️';
-
-            const btnEditar = document.createElement('button');
-            btnEditar.id = 'Ico_Editar';
-            btnEditar.title = 'Editar';
-            btnEditar.textContent = '✏️';
-
-            actions.appendChild(btnVer);
-            actions.appendChild(btnEditar);
-
-            item.appendChild(info);
-            item.appendChild(actions);
-            lista.appendChild(item);
-        });
-    }
-
-    function setupSucursalEvents() {
-        const btnAgregar = qs('btnAgregarSucursal');
-        const btnClose = qs('btnCloseModalSucursal');
-        const btnCancelar = qs('btnCancelarSucursal');
-        const btnGuardar = qs('btnGuardarSucursal');
-
-        if (btnAgregar) {
-            btnAgregar.addEventListener('click', (e) => {
-                e.preventDefault();
-                // Limpiar formulario para alta
-                setFormData({});
-                // Marcar que no hay edición activa
-                qs('modalSucursal').dataset.editingId = '';
-                openModalSucursal();
-            });
-        }
-
-        if (btnClose) btnClose.addEventListener('click', closeModalSucursal);
-        if (btnCancelar) btnCancelar.addEventListener('click', (e) => {
-            e.preventDefault();
-            closeModalSucursal();
-        });
-
-        if (btnGuardar) {
-            btnGuardar.addEventListener('click', (e) => {
-                e.preventDefault();
-                const list = loadSucursales();
-                const editingId = qs('modalSucursal').dataset.editingId || '';
-                if (editingId) {
-                    // Actualizar existente
-                    const idx = list.findIndex((x) => x.id === editingId);
-                    if (idx >= 0) {
-                        const current = list[idx];
-                        const updated = { ...current, ...getFormData(), id: editingId };
-                        list[idx] = updated;
-                    }
-                } else {
-                    // Alta nueva
-                    const data = getFormData();
-                    list.push(data);
-                }
-                saveSucursales(list);
-                renderSucursales();
-                closeModalSucursal();
-            });
-        }
-
-        // Delegación de eventos para Visualizar/Editar
-        const lista = qs('listaSucursales');
-        if (lista) {
-            lista.addEventListener('click', (e) => {
-                const target = e.target;
-                const item = target && target.closest('.sucursal-item');
-                if (!item) return;
-                const id = item.dataset.id;
-                const list = loadSucursales();
-                const suc = list.find((x) => x.id === id);
-                if (!suc) return;
-
-                if (target.id === 'Ico_Visaulaiazar') {
-                    // Solo visualizar: llenar formulario y abrir en modo lectura
-                    setFormData(suc);
-                    qs('modalSucursal').dataset.editingId = '';
-                    openModalSucursal();
-                }
-
-                if (target.id === 'Ico_Editar') {
-                    // Editar: llenar formulario, marcar edición y abrir
-                    setFormData(suc);
-                    qs('modalSucursal').dataset.editingId = id;
-                    openModalSucursal();
-                }
-            });
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        renderSucursales();
-        setupSucursalEvents();
+    tabButtons.forEach(btn => {
+      const target = btn.getAttribute('data-tab');
+      if (target === tabId) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
     });
-})();
-// ProveedoresManager - Paridad funcional con Custodias
-class ProveedoresManager { // Clase principal que gestiona proveedores
-    constructor() { // Constructor: inicializa estado y arranca
-        this.proveedores = []; // Lista de proveedores en memoria
-        this.contactos = []; // Lista de contactos en memoria
-        this.currentPage = 1; // Página actual para paginación
-        this.itemsPerPage = 10; // Registros por página
-        this.currentFilter = ''; // Texto de filtro de búsqueda
-        this.sortColumn = null; // Columna por defecto para ordenar (null = sin orden)
-        this.sortDirection = 'asc'; // Dirección de orden: 'asc' o 'desc'
-        // Eliminado: configuración de columnas/tabla
-        this.storageKey = 'acosa_proveedores'; // Clave de localStorage
 
-        this.hideLoading(); // Oculta spinner de carga
-        this.init(); // Ejecuta flujo de inicialización
-    }
-
-    hideLoading(){ const l = document.getElementById('loading'); if(l) l.style.display='none'; } // Oculta indicador de carga
-    showLoading(){ const l = document.getElementById('loading'); if(l) l.style.display='flex'; } // Muestra indicador de carga
-
-    async init(){ // Carga preferencias, datos y configura UI
-        await this.loadProveedores(); // Carga datos desde API
-        this.setupEventListeners(); // Enlaza eventos de UI
-        // No render de datos: solo estructura
-        this.updateStats(); // Actualiza contadores de estado
-        this.updateBottomBar(); // Actualiza barra inferior y renderiza lista
-        this.renderContactos(); // Renderiza contactos
-    }
-
-    async loadProveedores(){ // Carga proveedores desde API
-        this.showLoading(); // Muestra loading
-        try{
-            console.log('Cargando proveedores desde API...');
-            const res = await fetch('/api/proveedores'); // Solicita API
-            console.log('Respuesta fetch:', res.status);
-            if(res.ok){ 
-                const data = await res.json(); 
-                console.log('Datos recibidos:', data.length);
-                this.proveedores = data || []; 
-            } // Asigna
-            else { 
-                console.error('Error en fetch:', res.statusText);
-                this.proveedores = []; 
-            } // Si falla, lista vacía
-            // Normalizar registros: asegurar ID y campos básicos
-            this.normalizeProveedores(); // Limpia y completa campos
-        }catch(e){ 
-            console.error('Error cargando proveedores:', e); 
-            this.proveedores = []; 
-        } // Manejo de error
-        finally{ this.hideLoading(); }
-        console.log('Proveedores cargados:', this.proveedores.length); // Oculta loading
-    }
-
-    saveToStorage(){ const data = { proveedores: this.proveedores, contactos: this.contactos, metadata:{ total_registros: this.proveedores.length, ultima_actualizacion: new Date().toISOString() } }; localStorage.setItem(this.storageKey, JSON.stringify(data)); } // Persiste datos
-
-    setupEventListeners(){ // Configura listeners de UI mínimos
-        const btnNuevo = document.getElementById('btnNuevo'); // Botón nuevo unificado
-        const btnRecargar = document.getElementById('btnRecargar'); // Botón recargar
-        const buscar = document.getElementById('buscar'); // Input búsqueda unificado
-        const btnBuscar = document.getElementById('btnBuscar'); // Botón buscar unificado
-
-        if(btnNuevo) btnNuevo.addEventListener('click', ()=> this.openModal()); // Abre modal nuevo
-        if(btnRecargar) btnRecargar.addEventListener('click', async ()=>{ localStorage.removeItem(this.storageKey); await this.loadProveedores(); this.updateStats(); this.updateBottomBar(); }); // Recarga datos
-        if(buscar) buscar.addEventListener('input', (e)=>{ this.currentFilter = e.target.value.toLowerCase(); this.currentPage = 1; this.updateBottomBar(); }); // Actualiza filtro
-        if(btnBuscar) btnBuscar.addEventListener('click', ()=>{ const q = (buscar?.value||'').toLowerCase(); this.currentFilter = q; this.currentPage = 1; this.updateBottomBar(); }); // Aplica filtro al clic
-
-        const btnAnterior = document.getElementById('btnAnterior');
-        const btnSiguiente = document.getElementById('btnSiguiente');
-        if(btnAnterior) btnAnterior.addEventListener('click', ()=>{ if(this.currentPage>1){ this.currentPage--; this.updateBottomBar(); } });
-        if(btnSiguiente) btnSiguiente.addEventListener('click', ()=>{ const totalPages = Math.max(1, Math.ceil(this.getFilteredProveedores().length/this.itemsPerPage)); if(this.currentPage<totalPages){ this.currentPage++; this.updateBottomBar(); } });
-
-        // Eventos para contactos
-        const btnAgregarContacto = document.getElementById('btnAgregarContacto');
-        if(btnAgregarContacto) {
-            console.log('Añadiendo event listener a btnAgregarContacto');
-            btnAgregarContacto.addEventListener('click', (e) => {
-                e.preventDefault();
-                console.log('Botón agregar contacto clickeado');
-                this.openModalContacto();
-            });
-        } else {
-            console.log('btnAgregarContacto no encontrado');
-        }
-    }
-
-    getFilteredProveedores(){ // Devuelve lista filtrada por texto
-        let filtered = this.proveedores; // Base
-        if(this.currentFilter){ filtered = filtered.filter(p=> (p.nombre||'').toLowerCase().includes(this.currentFilter) || (p.codigo||'').toLowerCase().includes(this.currentFilter) || (p.rfc||'').toLowerCase().includes(this.currentFilter)); } // Aplica condiciones
-        return filtered; // Resultado
-    }
-
-    renderList(){ // Renderiza proveedores en tabla
-        console.log('Renderizando lista, proveedores:', this.proveedores.length);
-        const container = document.getElementById('listaProveedores');
-        if (!container) { console.error('No se encontró listaProveedores'); return; }
-        const tbody = container.querySelector('tbody');
-        if (!tbody) { console.error('No se encontró tbody'); return; }
-        tbody.innerHTML = '';
-        const filtered = this.getFilteredProveedores();
-        console.log('Proveedores filtrados:', filtered.length);
-        const start = (this.currentPage - 1) * this.itemsPerPage;
-        const end = start + this.itemsPerPage;
-        const pageItems = filtered.slice(start, end);
-        console.log('Items en página:', pageItems.length);
-        pageItems.forEach(p => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>
-                    <button onclick="window.ProveedoresManager.viewProveedor('${p.id}')" title="Ver">👁</button>
-                    <button onclick="window.ProveedoresManager.openModal('${p.id}')" title="Editar">✏</button>
-                    <button onclick="window.ProveedoresManager.deleteProveedor('${p.id}')" title="Eliminar">🗑</button>
-                </td>
-                <td>${this.escape(p.codigo)}</td>
-                <td>${this.escape(p.nombre)}</td>
-                <td>${this.escape(p.rfc)}</td>
-                <td>${this.escape(typeof p.direccion === 'object' ? (p.direccion.calle || '') + ', ' + (p.direccion.colonia || '') + ', ' + (p.direccion.municipio || '') : p.direccion)}</td>
-                <td>${p.activo ? 'Activo' : 'Inactivo'}</td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-
-    escape(s){ return (s||'').toString().replace(/[&<>\"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[c]); } // Escapa HTML básico
-
-    // Eliminado: eventos ligados a filas de tabla
-
-    viewProveedor(id){ const p = this.proveedores.find(x=>x.id===id); if(p) alert(`Proveedor: ${p.nombre}\nRFC: ${p.rfc}`); } // Muestra datos básicos
-
-    openModal(id=null){ // Abre modal para crear/editar
-        const modal = document.getElementById('modalProveedor'); const title = document.getElementById('modalTitleProveedor'); // Referencias modal
-        if(id){ title.textContent='Editar Proveedor'; const p = this.proveedores.find(x=>x.id===id); if(p) this.fillModalForm(p); } // Editar
-        else { title.textContent='Alta de Proveedor'; this.resetModalForm(); this.generateNewId(); } // Nuevo
-        document.getElementById('modalProveedor').style.display='flex'; document.body.style.overflow='hidden'; this.setupModalEvents(); // Muestra modal y bloquea scroll
-    }
-
-    closeModal(){ document.getElementById('modalProveedor').style.display='none'; document.body.style.overflow=''; } // Cierra modal y restaura scroll
-
-    resetModalForm(){ const f = document.getElementById('formProveedor'); if(f) f.reset(); document.getElementById('modalFechaRegistro').value = new Date().toLocaleString(); 
-        // Expandir todas las secciones
-        document.querySelectorAll('.section-header-collapse').forEach(header => {
-            header.classList.remove('collapsed');
-        });
-    } // Limpia formulario
-
-    generateNewId(){ const id = 'PROV-' + (this.proveedores.length+1).toString().padStart(4,'0'); document.getElementById('modalIdProveedor').value = id; } // Genera ID siguiente
-
-    fillModalForm(p){ document.getElementById('modalIdProveedor').value = p.id; document.getElementById('modalCodigo').value = p.codigo||''; document.getElementById('modalNombre').value = p.nombre||''; document.getElementById('modalRfc').value = p.rfc||''; document.getElementById('modalDireccion').value = p.direccion || ''; document.getElementById('modalEstatus').value = p.activo ? 'true' : 'false'; document.getElementById('modalFechaRegistro').value = p.fecha_registro || ''; } // Llena formulario
-
-    normalizeProveedores(){ // Normaliza estructura de registros
-        let counter = 0; // Contador para IDs
-        this.proveedores = (this.proveedores || []).map((p)=>{ // Mapea registros
-            const id = p.id && String(p.id).trim() ? String(p.id).trim() : ('PROV-' + (++counter).toString().padStart(4,'0')); // ID seguro
-            return { // Devuelve registro normalizado
-                id,
-                codigo: p.codigo || '',
-                nombre: p.nombre || p.razon_social || '',
-                rfc: p.rfc || '',
-                telefono: p.telefono || '',
-                email: p.email || '',
-                direccion: typeof p.direccion === 'string' ? p.direccion : `${p.direccion?.calle || ''} ${p.direccion?.numero || ''}, ${p.direccion?.colonia || ''}, ${p.direccion?.municipio || ''}, ${p.direccion?.estado || ''}, ${p.direccion?.cp || ''}, ${p.direccion?.pais || ''}`.trim(),
-                activo: typeof p.activo === 'boolean' ? p.activo : true,
-                fecha_registro: p.fecha_registro || new Date().toISOString()
-            };
-        });
-    }
-
-    setupModalEvents(){ // Enlaces dentro del modal
-        document.getElementById('btnCloseModalProveedor').onclick = ()=> this.closeModal(); // Cerrar modal
-        document.getElementById('btnGuardarModalProveedor').onclick = ()=> this.saveFromModal(); // Guardar proveedor
-        const btnImp = document.getElementById('btnImprimirProveedor');
-        if (btnImp) btnImp.style.display = 'none';
-        document.querySelectorAll('.tab-button').forEach(btn=> btn.onclick = ()=> this.switchTab(btn.dataset.tab)); // Cambiar pestaña
-
-        // Secciones colapsables: igual que en Custodias
-        document.querySelectorAll('.section-header-collapse').forEach(header => { // Headers colapsables
-            header.onclick = () => { // Toggle colapso
-                header.classList.toggle('collapsed'); // Cambia clase
-                const body = header.parentElement?.querySelector('.section-body'); // Cuerpo asociado
-                if (body) { // Si existe
-                    const isCollapsed = header.classList.contains('collapsed'); // Estado
-                    body.style.display = isCollapsed ? 'none' : ''; // Muestra/oculta
-                }
-            };
-        });
-    }
-
-    switchTab(tabName) {
-        // Ocultar todos los tabs
-        document.querySelectorAll('.tab-content').forEach(content => {
-            content.classList.remove('active');
-        });
-        document.querySelectorAll('.tab-button').forEach(btn => {
-            btn.classList.remove('active');
-        });
+    tabContents.forEach(c => {
+      if (c.id === tabId) {
+        c.classList.add('active');
         
-        // Mostrar tab seleccionado
-        document.getElementById(`tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).classList.add('active');
-        document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-
-        // Expandir todas las secciones colapsables en la nueva pestaña
-        const activeTab = document.getElementById(`tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`);
-        if (activeTab) {
-            activeTab.querySelectorAll('.section-header-collapse').forEach(header => {
-                header.classList.remove('collapsed');
-                const body = header.parentElement?.querySelector('.section-body');
-                if (body) body.style.display = '';
-            });
+        // ✅ VERIFICAR SI LA PESTAÑA ESTÁ VACÍA Y MOSTRAR "EN DESARROLLO"
+        if (typeof mostrarDesarrollo === 'function' && (!c.textContent.trim() || c.innerHTML.trim() === '')) {
+          c.innerHTML = mostrarDesarrollo({
+            titulo: 'Pestaña en Desarrollo',
+            descripcion: 'Esta pestaña está en desarrollo y estará disponible pronto.',
+            imagen: '/Imagenes/Ico_Construccion_03.png',
+            alturaMinima: 300
+          });
         }
+      } else {
+        c.classList.remove('active');
+      }
+    });
+  }
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-tab');
+      activarTab(target);
+    });
+  });
+
+  // Muestra/oculta el overlay de "Cargando" sobre la lista.
+  function mostrarLoading(show) {
+    if (!loading) return;
+    loading.style.display = show ? 'flex' : 'none';
+  }
+
+  // Dibuja la lista de proveedores en el contenedor principal.
+  // Aplica un filtro de texto (por código, nombre o RFC) en memoria.
+  function renderLista(filtro = '') {
+    if (!listaProveedores) return;
+    const term = (filtro || '').toLowerCase();
+    const filtrados = proveedores.filter(p => {
+      const texto = `${p.codigo || ''} ${p.nombre || ''} ${p.rfc || ''}`.toLowerCase();
+      const coincideTexto = texto.includes(term);
+      // si en el futuro quieres volver a filtrar por activos, puedes reusar soloActivos aquí
+      return coincideTexto;
+    });
+
+    listaProveedores.innerHTML = '';
+
+    if (filtrados.length === 0) {
+      const vacio = document.createElement('div');
+      vacio.className = 'tabla-vacia';
+      vacio.textContent = 'No hay proveedores para mostrar.';
+      listaProveedores.appendChild(vacio);
+    } else {
+      filtrados.forEach(p => {
+        const row = document.createElement('div');
+        row.className = 'table-row proveedor-row';
+        row.innerHTML = `
+          <div class="col-codigo">${p.codigo || ''}</div>
+          <div class="col-nombre">${p.nombre || ''}</div>
+          <div class="col-rfc">${p.rfc || ''}</div>
+          <div class="col-activo">${p.activo ? 'Activo' : 'Inactivo'}</div>
+        `;
+        listaProveedores.appendChild(row);
+      });
     }
 
-    saveFromModal(){ 
-        const modalIdEl = document.getElementById('modalIdProveedor');
-        if (!modalIdEl) { console.error('modalIdProveedor not found'); return; }
-        const id = modalIdEl.value; 
-        const nombreEl = document.getElementById('modalNombre');
-        if (!nombreEl) { console.error('modalNombre not found'); return; }
-        const nombre = nombreEl.value.trim(); 
-        if(!nombre){ alert('Nombre requerido'); return; } 
-        const codigoEl = document.getElementById('modalCodigo');
-        if (!codigoEl) { console.error('modalCodigo not found'); return; }
-        const codigo = codigoEl.value.trim(); 
-        const rfcEl = document.getElementById('modalRfc');
-        if (!rfcEl) { console.error('modalRfc not found'); return; }
-        const rfc = rfcEl.value.trim(); 
-        if(!rfc){ alert('RFC requerido'); return; }
-        const direccionEl = document.getElementById('modalDireccion');
-        if (!direccionEl) { console.error('modalDireccion not found'); return; }
-        const direccion = direccionEl.value.trim(); 
-        if(!direccion){ alert('Dirección fiscal requerida'); return; }
-        const estatusEl = document.getElementById('modalEstatus');
-        if (!estatusEl) { console.error('modalEstatus not found'); return; }
-        const activo = estatusEl.value === 'true'; 
-        const fechaRegistroEl = document.getElementById('modalFechaRegistro');
-        if (!fechaRegistroEl) { console.error('modalFechaRegistro not found'); return; }
-        const fecha_registro = fechaRegistroEl.value || new Date().toISOString(); 
-        const existing = this.proveedores.findIndex(p=>p.id===id); // Lee valores del formulario y valida nombre
-        const record = { id, codigo, nombre, rfc, direccion, activo, fecha_registro }; // Construye objeto
-        if(existing>=0) { this.proveedores[existing] = record; this.showNotification('Proveedor actualizado','success'); } // Actualiza si existe
-        else { this.proveedores.push(record); this.showNotification('Proveedor agregado','success'); } // Inserta si nuevo
-        fetch('/api/proveedores', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(record) }).then(res=>res.json()).then(data=>{ console.log('Guardado:', data); }).catch(e=>console.error('Error guardando:', e)); // Persiste en DB
-        this.saveToStorage(); /* sin render de datos */ this.updateStats(); this.updateBottomBar(); this.closeModal(); } // Persiste y refresca UI
+    // Se recalculan totales de activos/inactivos en base al filtrado.
+    const activos = filtrados.filter(p => p.activo).length;
+    const inactivos = filtrados.length - activos;
 
-    deleteProveedor(id){ if(!confirm('¿Cancelar proveedor?')) return; this.proveedores = this.proveedores.filter(p=>p.id!==id); fetch('/api/proveedores/' + id, { method: 'DELETE' }).then(res=>res.json()).then(data=>{ console.log('Eliminado:', data); }).catch(e=>console.error('Error eliminando:', e)); this.saveToStorage(); /* sin render de datos */ this.updateStats(); this.updateBottomBar(); this.showNotification('Proveedor cancelado','success'); } // Elimina por ID
+    if (lblActivos) lblActivos.textContent = activos;
+    if (lblInactivos) lblInactivos.textContent = inactivos;
+    if (lblMostrando) lblMostrando.textContent = `Mostrando ${filtrados.length} de ${proveedores.length}`;
+  }
 
-    printProveedor(){ this.showNotification('Función de impresión en desarrollo','info'); } // Placeholder de impresión
+  // Llama al backend para obtener la lista de proveedores
+  // y la adapta a la estructura usada en el frontend.
+  async function cargarProveedores() {
+    try {
+      mostrarLoading(true);
+      const res = await fetch('/api/proveedores');
+      if (!res.ok) throw new Error('Error al obtener proveedores');
+      const data = await res.json();
 
-    updateStats(){ const enActivos = document.getElementById('enActivos'); const enInactivos = document.getElementById('enInactivos'); if(enActivos) enActivos.textContent = this.proveedores.filter(p=>p.activo).length; if(enInactivos) enInactivos.textContent = this.proveedores.filter(p=>!p.activo).length; } // Actualiza contadores
+      // Adaptar estructura desde API (solo datos fiscales + activo)
+      proveedores = (data || []).map(p => ({
+        id: p.id,
+        codigo: p.codigo,
+        nombre: p.nombre,
+        rfc: p.rfc,
+        direccion: p.direccion,
+        fecha_registro: p.fecha_registro,
+        activo: p.activo === true || p.activo === 1
+      }));
+
+      renderLista(txtBuscar ? txtBuscar.value : '');
+    } catch (e) {
+      console.error('Error cargando proveedores', e);
+    } finally {
+      mostrarLoading(false);
+    }
+  }
+
+  // Eventos de barra superior (refrescar + búsqueda).
+  if (btnRefrescar) btnRefrescar.addEventListener('click', cargarProveedores);
+  if (btnBuscar && txtBuscar) btnBuscar.addEventListener('click', () => renderLista(txtBuscar.value));
+  if (txtBuscar) txtBuscar.addEventListener('keyup', () => renderLista(txtBuscar.value));
+
+  // Prepara y muestra el modal en modo "Nuevo proveedor".
+  function abrirModalNuevo() {
+    if (!modal) return;
+    if (tituloModal) tituloModal.textContent = 'Nuevo proveedor';
+    if (inputId) inputId.value = '';
+    if (inputIdVisible) inputIdVisible.value = '';
+    if (inputRFC) inputRFC.value = '';
+    if (inputNombre) inputNombre.value = '';
+    if (inputDireccion) inputDireccion.value = '';
+    if (inputFechaReg) inputFechaReg.value = '';
+    if (inputActivo) inputActivo.checked = true;
+    modal.style.display = 'flex';
+    activarTab('tab-datos-generales');
     
-    updateBottomBar(){ // Actualiza contador y paginación unificada
-        const total = (this.getFilteredProveedores()||[]).length;
-        const mostrando = document.getElementById('mostrandoRegistros');
-        const infoPagina = document.getElementById('infoPagina');
-        const btnAnterior = document.getElementById('btnAnterior');
-        const btnSiguiente = document.getElementById('btnSiguiente');
-        const totalPages = Math.max(1, Math.ceil(total/this.itemsPerPage));
-        if(mostrando){ const start = ((this.currentPage-1)*this.itemsPerPage)+1; const end = Math.min(this.currentPage*this.itemsPerPage, total); mostrando.textContent = total ? `Mostrando ${start}-${end} de ${total}` : `Mostrando 0 de 0`; }
-        if(infoPagina){ infoPagina.textContent = `Página ${Math.min(this.currentPage,totalPages)} de ${totalPages}`; }
-        if(btnAnterior) btnAnterior.disabled = this.currentPage<=1 || total===0;
-        if(btnSiguiente) btnSiguiente.disabled = this.currentPage>=totalPages || total===0;
-        this.renderList(); // Renderiza la lista actualizada
+    // ✅ Asegurar que solo la primera sección esté abierta
+    const allHeaders = modal.querySelectorAll('.section-header-collapse');
+    allHeaders.forEach((header, index) => {
+      if (index === 0) {
+        header.classList.remove('collapsed'); // Primera sección abierta
+      } else {
+        header.classList.add('collapsed'); // Resto colapsadas
+      }
+    });
+    
+    if (tbodyServicios) tbodyServicios.innerHTML = '';
+    if (tbodySucursales) tbodySucursales.innerHTML = '';
+    if (tbodyContactos) tbodyContactos.innerHTML = '';
+  }
+
+  // Cierra el modal de proveedor.
+  function cerrarModal() {
+    if (!modal) return;
+    modal.style.display = 'none';
+  }
+
+  function abrirModalServicio() {
+    if (!modalServicio) return;
+    if (formServicio) formServicio.reset();
+    modalServicio.style.display = 'flex';
+  }
+
+  function cerrarModalServicio() {
+    if (!modalServicio) return;
+    modalServicio.style.display = 'none';
+  }
+
+  function abrirModalSucursal() {
+    if (!modalSucursal) return;
+    if (formSucursal) formSucursal.reset();
+    if (inputSucTipo) inputSucTipo.value = 'Sucursal';
+    modalSucursal.style.display = 'flex';
+  }
+
+  function cerrarModalSucursal() {
+    if (!modalSucursal) return;
+    modalSucursal.style.display = 'none';
+  }
+
+  function abrirModalContacto() {
+    if (!modalContacto) return;
+    if (formContacto) formContacto.reset();
+    modalContacto.style.display = 'flex';
+  }
+
+  function cerrarModalContacto() {
+    if (!modalContacto) return;
+    modalContacto.style.display = 'none';
+  }
+
+  // Envía al backend el alta/edición de un proveedor (MERGE en server.js).
+  async function guardarProveedor() {
+    if (!inputNombre) return;
+    // Si no hay ID, dejamos que el servidor lo genere de forma consecutiva (PROV-00001...)
+    const id = inputId && inputId.value ? inputId.value : null;
+    const fechaRegistro = (inputFechaReg && inputFechaReg.value) ? inputFechaReg.value : null;
+
+    const body = {
+      id,
+      codigo: inputCodigo ? inputCodigo.value.trim() : null,
+      nombre: inputNombre.value.trim(),
+      rfc: (inputRFC?.value || '').trim(),
+      direccion: (inputDireccion?.value || '').trim(),
+      activo: inputActivo ? inputActivo.checked : true,
+      fecha_registro: fechaRegistro
+    };
+
+    try {
+      mostrarLoading(true);
+      const res = await fetch('/api/proveedores', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Error al guardar proveedor');
+      }
+      const data = await res.json().catch(() => ({}));
+      // Si el servidor generó un ID/fecha, reflejarlos en el formulario
+      if (data && data.id) {
+        if (inputId) inputId.value = data.id;
+        if (inputIdVisible) inputIdVisible.value = data.id;
+      }
+      if (data && data.fecha_registro && inputFechaReg && !inputFechaReg.value) {
+        inputFechaReg.value = data.fecha_registro;
+      }
+      await cargarProveedores();
+      cerrarModal();
+    } catch (e) {
+      console.error('Error guardando proveedor', e);
+      alert('No se pudo guardar el proveedor. Revisa la consola para más detalles.');
+    } finally {
+      mostrarLoading(false);
+    }
+  }
+
+  // Asegura que el proveedor exista en la base antes de agregar
+  // servicios, sucursales o contactos. Si aún no tiene ID, genera
+  // uno y hace un guardado rápido silencioso.
+  async function ensureProveedorPersistido() {
+    if (!inputId) return null;
+    if (inputId.value) return inputId.value;
+
+    if (!inputNombre) return null;
+
+    // Regla: para poder agregar servicios/sucursales/contactos,
+    // al menos debe estar capturado el Nombre del proveedor.
+    if (!inputNombre.value.trim()) {
+      alert('Primero captura el Nombre del proveedor y luego agrega los detalles.');
+      return null;
     }
 
-    updatePagination(total){ const btnAnterior = document.getElementById('btnAnterior'); const btnSiguiente = document.getElementById('btnSiguiente'); const infoPagina = document.getElementById('infoPagina'); const mostrando = document.getElementById('mostrandoRegistros'); const totalPages = Math.max(1, Math.ceil(total/this.itemsPerPage)); if(btnAnterior) btnAnterior.disabled = this.currentPage===1; if(btnSiguiente) btnSiguiente.disabled = this.currentPage===totalPages; if(infoPagina) infoPagina.textContent = `Página ${this.currentPage} de ${totalPages}`; if(mostrando){ const start = ((this.currentPage-1)*this.itemsPerPage)+1; const end = Math.min(this.currentPage*this.itemsPerPage, total); mostrando.textContent = `Mostrando ${start}-${end} de ${total} registros`; } } // Actualiza controles de paginación
+    const body = {
+      id: null,
+      codigo: inputCodigo ? inputCodigo.value.trim() : null,
+      nombre: inputNombre.value.trim(),
+      rfc: (inputRFC?.value || '').trim(),
+      direccion: (inputDireccion?.value || '').trim(),
+      activo: inputActivo ? inputActivo.checked : true,
+      fecha_registro: null
+    };
 
-    // Eliminado: utilidades de columnas (resize/reorder), render y ordenamiento
-
-    // Funciones para contactos
-    renderContactos() {
-        const lista = document.getElementById('listaContactos');
-        if (!lista) return;
-        lista.innerHTML = '';
-        this.contactos.forEach((contacto) => {
-            const item = document.createElement('div');
-            item.className = 'contacto-item';
-            item.dataset.id = contacto.id;
-
-            const info = document.createElement('span');
-            info.className = 'contacto-info';
-            info.textContent = `${contacto.area ? contacto.area.toUpperCase() : 'Contacto'} - ${contacto.nombre}`;
-
-            const actions = document.createElement('div');
-            actions.className = 'contacto-actions';
-
-            const btnVer = document.createElement('button');
-            btnVer.id = 'Ico_Visualizar';
-            btnVer.title = 'Visualizar';
-            btnVer.textContent = '👁️';
-
-            const btnEditar = document.createElement('button');
-            btnEditar.id = 'Ico_Editar';
-            btnEditar.title = 'Editar';
-            btnEditar.textContent = '✏️';
-
-            actions.appendChild(btnVer);
-            actions.appendChild(btnEditar);
-
-            item.appendChild(info);
-            item.appendChild(actions);
-            lista.appendChild(item);
-        });
+    try {
+      const res = await fetch('/api/proveedores', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json().catch(() => ({}));
+      const newId = data && data.id ? data.id : null;
+      if (newId) {
+        inputId.value = newId;
+        if (inputIdVisible) inputIdVisible.value = newId;
+      }
+      if (data && data.fecha_registro && inputFechaReg && !inputFechaReg.value) {
+        inputFechaReg.value = data.fecha_registro;
+      }
+      return newId;
+    } catch (e) {
+      console.error('No se pudo preparar el proveedor antes de agregar detalles', e);
+      alert('No se pudo preparar el proveedor. Revisa conexión antes de agregar detalles.');
+      inputId.value = '';
+      return null;
     }
+  }
 
-    openModalContacto(id = null) {
-        const modal = document.getElementById('modalContacto');
-        const title = document.getElementById('modalTitleContacto');
-        if (id) {
-            title.textContent = 'Editar Contacto';
-            const contacto = this.contactos.find(c => c.id === id);
-            if (contacto) this.fillModalContacto(contacto);
-        } else {
-            title.textContent = 'Agregar Contacto';
-            this.resetModalContacto();
-        }
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-        this.setupModalContactoEvents();
-    }
+  // Eventos de cierre/guardar del modal.
+  if (btnCerrarModal) btnCerrarModal.addEventListener('click', cerrarModal);
+  if (btnCancelar) btnCancelar.addEventListener('click', cerrarModal);
+  if (btnGuardar) btnGuardar.addEventListener('click', guardarProveedor);
+  if (form) form.addEventListener('submit', (e) => { e.preventDefault(); guardarProveedor(); });
 
-    closeModalContacto() {
-        const modal = document.getElementById('modalContacto');
-        modal.style.display = 'none';
-        document.body.style.overflow = '';
-    }
+    // Cierres de modales secundarios
+    if (btnCerrarModalServicio) btnCerrarModalServicio.addEventListener('click', cerrarModalServicio);
+    if (btnCancelarServicio) btnCancelarServicio.addEventListener('click', cerrarModalServicio);
+    if (btnCerrarModalSucursal) btnCerrarModalSucursal.addEventListener('click', cerrarModalSucursal);
+    if (btnCancelarSucursal) btnCancelarSucursal.addEventListener('click', cerrarModalSucursal);
+    if (btnCerrarModalContacto) btnCerrarModalContacto.addEventListener('click', cerrarModalContacto);
+    if (btnCancelarContacto) btnCancelarContacto.addEventListener('click', cerrarModalContacto);
 
-    resetModalContacto() {
-        document.getElementById('formContacto').reset();
-    }
-
-    fillModalContacto(contacto) {
-        document.getElementById('modalContactoArea').value = contacto.area || '';
-        document.getElementById('modalContactoNombre').value = contacto.nombre || '';
-        document.getElementById('modalContactoTelefono').value = contacto.telefono || '';
-        document.getElementById('modalContactoExt').value = contacto.ext || '';
-        document.getElementById('modalContactoCorreo').value = contacto.correo || '';
-        document.getElementById('modalContactoDato1').value = contacto.dato1 || '';
-        document.getElementById('modalContactoDato2').value = contacto.dato2 || '';
-    }
-
-    setupModalContactoEvents() {
-        document.getElementById('btnCloseModalContacto').onclick = () => this.closeModalContacto();
-        document.getElementById('btnCancelarContacto').onclick = (e) => {
-            e.preventDefault();
-            this.closeModalContacto();
-        };
-        document.getElementById('btnGuardarContacto').onclick = (e) => {
-            e.preventDefault();
-            this.saveContacto();
-        };
-
-        // Delegación para visualizar/editar
-        const lista = document.getElementById('listaContactos');
-        if (lista) {
-            lista.addEventListener('click', (e) => {
-                const target = e.target;
-                const item = target.closest('.contacto-item');
-                if (!item) return;
-                const id = item.dataset.id;
-                const contacto = this.contactos.find(c => c.id === id);
-                if (!contacto) return;
-
-                if (target.id === 'Ico_Visualizar') {
-                    this.fillModalContacto(contacto);
-                    this.openModalContacto();
-                }
-                if (target.id === 'Ico_Editar') {
-                    this.openModalContacto(id);
-                }
+  // Colapsar/expandir secciones "Servicios / Sucursales / Contactos" del modal.
+  document.querySelectorAll('.section-header-collapse').forEach(h => {
+    h.addEventListener('click', () => {
+      h.classList.toggle('collapsed');
+      
+      // ✅ Si se expande (collapsed se quita), verificar si el contenido está vacío
+      if (!h.classList.contains('collapsed')) {
+        const sectionBody = h.nextElementSibling; // .section-body
+        if (sectionBody && (!sectionBody.textContent.trim() || sectionBody.innerHTML.trim() === '<!-- Vacío - JavaScript lo llenará con "En Desarrollo" -->')) {
+          // Mostrar mensaje de desarrollo para secciones colapsables (versión COMPACTA)
+          if (typeof mostrarDesarrollo === 'function') {
+            sectionBody.innerHTML = mostrarDesarrollo({
+              titulo: 'Seccion desplegable en Desarrollo',
+              descripcion: 'Esta seccion desplegable está en desarrollo y estará disponible pronto.',
+              imagen: '/Imagenes/Ico_Construccion_03.png',
+              compacto: true  // ✅ Usar layout horizontal compacto
             });
+          }
         }
+      }
+    });
+  });
+
+  // Carga datos de un proveedor en el modal y dispara la carga
+  // de servicios, sucursales y contactos asociados.
+  function abrirModalEditar(prov) {
+    if (!modal) return;
+    if (tituloModal) tituloModal.textContent = 'Editar proveedor';
+    if (inputId) inputId.value = prov.id || '';
+    if (inputIdVisible) inputIdVisible.value = prov.id || '';
+    if (inputCodigo) inputCodigo.value = prov.codigo || '';
+    if (inputRFC) inputRFC.value = prov.rfc || '';
+    if (inputNombre) inputNombre.value = prov.nombre || '';
+    if (inputDireccion) inputDireccion.value = prov.direccion || '';
+    if (inputFechaReg) inputFechaReg.value = prov.fecha_registro || '';
+    if (inputActivo) inputActivo.checked = !!prov.activo;
+    modal.style.display = 'flex';
+    activarTab('tab-datos-generales');
+    
+    // ✅ Asegurar que solo la primera sección esté abierta
+    const allHeaders = modal.querySelectorAll('.section-header-collapse');
+    allHeaders.forEach((header, index) => {
+      if (index === 0) {
+        header.classList.remove('collapsed'); // Primera sección abierta
+      } else {
+        header.classList.add('collapsed'); // Resto colapsadas
+      }
+    });
+    
+    if (prov.id) {
+      cargarServicios(prov.id);
+      cargarSucursales(prov.id);
+      cargarContactos(prov.id);
     }
+  }
 
-    saveContacto() {
-        const id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now());
-        const contacto = {
-            id,
-            area: document.getElementById('modalContactoArea').value,
-            nombre: document.getElementById('modalContactoNombre').value,
-            telefono: document.getElementById('modalContactoTelefono').value,
-            ext: document.getElementById('modalContactoExt').value,
-            correo: document.getElementById('modalContactoCorreo').value,
-            dato1: document.getElementById('modalContactoDato1').value,
-            dato2: document.getElementById('modalContactoDato2').value
-        };
-        this.contactos.push(contacto);
-        this.saveToStorage();
-        this.renderContactos();
-        this.closeModalContacto();
+  // Trae servicios desde /api/proveedores/:id/servicios y los
+  // pinta en la tabla de la pestaña de servicios del modal.
+  async function cargarServicios(provId) {
+    if (!tbodyServicios) return;
+    tbodyServicios.innerHTML = '';
+    try {
+      const res = await fetch(`/api/proveedores/${encodeURIComponent(provId)}/servicios`);
+      if (!res.ok) throw new Error('Error al obtener servicios');
+      const data = await res.json();
+      (data || []).forEach(s => {
+        const txtServicio = s.servicio || s.SERVICIO || '';
+        const txtDescripcion = s.descripcion || s.DESCRIPCION || '';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <button type="button" class="btn btn-icon" data-del-servicio="${s.id}">🗑</button>
+          </td>
+          <td>${txtServicio}</td>
+          <td>${txtDescripcion}</td>
+        `;
+        tbodyServicios.appendChild(tr);
+      });
+
+      // Eventos de borrado de servicio por fila.
+      tbodyServicios.querySelectorAll('[data-del-servicio]').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const id = btn.getAttribute('data-del-servicio');
+          if (!id || !confirm('¿Eliminar servicio?')) return;
+          try {
+            await fetch(`/api/proveedores/${encodeURIComponent(provId)}/servicios/${encodeURIComponent(id)}`, { method: 'DELETE' });
+            cargarServicios(provId);
+          } catch (err) {
+            console.error('Error eliminando servicio', err);
+          }
+        });
+      });
+    } catch (e) {
+      console.error('Error cargando servicios', e);
     }
+  }
 
-    showNotification(msg,type='info'){ const n = document.createElement('div'); n.style.cssText = `position:fixed;top:20px;right:20px;padding:12px 16px;background:${type==='success'? '#28a745': type==='error'? '#dc3545':'#17a2b8'};color:white;border-radius:6px;z-index:10000;font-weight:600`; n.textContent=msg; document.body.appendChild(n); setTimeout(()=>n.remove(),4000); } // Notificación flotante
-}
+  // Trae sucursales desde /api/proveedores/:id/sucursales.
+  async function cargarSucursales(provId) {
+    if (!tbodySucursales) return;
+    tbodySucursales.innerHTML = '';
+    try {
+      const res = await fetch(`/api/proveedores/${encodeURIComponent(provId)}/sucursales`);
+      if (!res.ok) throw new Error('Error al obtener sucursales');
+      const data = await res.json();
+      (data || []).forEach(s => {
+        const txtTipo = s.tipo || s.TIPO || '';
+        const txtNombre = s.nombre || s.NOMBRE || '';
+        const txtPais = s.pais || s.PAIS || '';
+        const txtEstado = s.estado || s.ESTADO || '';
+        const txtMunicipio = s.municipio || s.MUNICIPIO || '';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <button type="button" class="btn btn-icon" data-del-sucursal="${s.id}">🗑</button>
+          </td>
+          <td>${txtTipo}</td>
+          <td>${txtNombre}</td>
+          <td>${txtPais}</td>
+          <td>${txtEstado}</td>
+          <td>${txtMunicipio}</td>
+        `;
+        tbodySucursales.appendChild(tr);
+      });
 
-// Funciones globales para contactos, similar a sucursales
-function openModalContacto(id = null) {
-    const overlay = document.getElementById('modalContacto');
-    if (overlay) {
-        overlay.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-        // Configurar desde la clase
-        if (window.ProveedoresManager) {
-            window.ProveedoresManager.setupModalContactoEvents();
-            if (id) {
-                const contacto = window.ProveedoresManager.contactos.find(c => c.id === id);
-                if (contacto) window.ProveedoresManager.fillModalContacto(contacto);
-                document.getElementById('modalTitleContacto').textContent = 'Editar Contacto';
-            } else {
-                window.ProveedoresManager.resetModalContacto();
-                document.getElementById('modalTitleContacto').textContent = 'Agregar Contacto';
-            }
-        }
+      // Eventos de borrado de sucursal.
+      tbodySucursales.querySelectorAll('[data-del-sucursal]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-del-sucursal');
+          if (!id || !confirm('¿Eliminar sucursal?')) return;
+          try {
+            await fetch(`/api/proveedores/${encodeURIComponent(provId)}/sucursales/${encodeURIComponent(id)}`, { method: 'DELETE' });
+            cargarSucursales(provId);
+          } catch (err) {
+            console.error('Error eliminando sucursal', err);
+          }
+        });
+      });
+    } catch (e) {
+      console.error('Error cargando sucursales', e);
     }
-}
+  }
 
-function closeModalContacto() {
-    const overlay = document.getElementById('modalContacto');
-    if (overlay) overlay.style.display = 'none';
-    document.body.style.overflow = '';
-}
+  // Trae contactos desde /api/proveedores/:id/contactos.
+  async function cargarContactos(provId) {
+    if (!tbodyContactos) return;
+    tbodyContactos.innerHTML = '';
+    try {
+      const res = await fetch(`/api/proveedores/${encodeURIComponent(provId)}/contactos`);
+      if (!res.ok) throw new Error('Error al obtener contactos');
+      const data = await res.json();
+      (data || []).forEach(c => {
+        const txtArea = c.area || c.AREA || '';
+        const txtNombre = c.nombre || c.NOMBRE || '';
+        const txtTel = c.telefono || c.TELEFONO || '';
+        const txtCorreo = c.correo || c.CORREO || '';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <button type="button" class="btn btn-icon" data-del-contacto="${c.id}">🗑</button>
+          </td>
+          <td>${txtArea}</td>
+          <td>${txtNombre}</td>
+          <td>${txtTel}</td>
+          <td>${txtCorreo}</td>
+        `;
+        tbodyContactos.appendChild(tr);
+      });
 
-// Inicializar
-document.addEventListener('DOMContentLoaded', ()=>{ try{ window.ProveedoresManager = new ProveedoresManager(); }catch(e){ console.error(e); } }); // Crea instancia al cargar
+      // Eventos de borrado de contacto.
+      tbodyContactos.querySelectorAll('[data-del-contacto]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-del-contacto');
+          if (!id || !confirm('¿Eliminar contacto?')) return;
+          try {
+            await fetch(`/api/proveedores/${encodeURIComponent(provId)}/contactos/${encodeURIComponent(id)}`, { method: 'DELETE' });
+            cargarContactos(provId);
+          } catch (err) {
+            console.error('Error eliminando contacto', err);
+          }
+        });
+      });
+    } catch (e) {
+      console.error('Error cargando contactos', e);
+    }
+  }
+
+  // Alta de servicio mediante formulario en modal secundario.
+  if (btnNuevoServicio) {
+    btnNuevoServicio.addEventListener('click', async () => {
+      if (!inputId || !inputId.value) {
+        const ensuredId = await ensureProveedorPersistido();
+        if (!ensuredId) return;
+      }
+      abrirModalServicio();
+    });
+  }
+
+  async function guardarServicioDetalle() {
+    if (!inputId || !inputId.value) return;
+    if (!inputSrvNombre) return;
+    const servicio = inputSrvNombre.value.trim();
+    const descripcion = (inputSrvDescripcion?.value || '').trim();
+    if (!servicio) {
+      alert('Captura el nombre del servicio.');
+      return;
+    }
+    try {
+      await fetch(`/api/proveedores/${encodeURIComponent(inputId.value)}/servicios`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ servicio, descripcion })
+      });
+      cerrarModalServicio();
+      cargarServicios(inputId.value);
+    } catch (e) {
+      console.error('Error agregando servicio', e);
+      alert('No se pudo agregar el servicio.');
+    }
+  }
+
+  if (btnGuardarServicio) {
+    btnGuardarServicio.addEventListener('click', guardarServicioDetalle);
+  }
+  if (formServicio) {
+    formServicio.addEventListener('submit', (e) => {
+      e.preventDefault();
+      guardarServicioDetalle();
+    });
+  }
+
+  // Alta de sucursal mediante formulario en modal secundario.
+  if (btnNuevaSucursal) {
+    btnNuevaSucursal.addEventListener('click', async () => {
+      if (!inputId || !inputId.value) {
+        const ensuredId = await ensureProveedorPersistido();
+        if (!ensuredId) return;
+      }
+      abrirModalSucursal();
+    });
+  }
+
+  async function guardarSucursalDetalle() {
+    if (!inputId || !inputId.value) return;
+    if (!inputSucNombre) return;
+    const body = {
+      id: `SUC-${Date.now()}`,
+      tipo: (inputSucTipo?.value || '').trim() || 'Sucursal',
+      nombre: inputSucNombre.value.trim(),
+      pais: (inputSucPais?.value || '').trim(),
+      estado: (inputSucEstado?.value || '').trim(),
+      municipio: (inputSucMunicipio?.value || '').trim(),
+      localidad: '',
+      calle: '',
+      colonia: '',
+      cp: '',
+      no_exterior: '',
+      no_interior: '',
+      codigo_colonia: '',
+      codigo_localidad: ''
+    };
+    if (!body.nombre) {
+      alert('Captura el nombre de la sucursal.');
+      return;
+    }
+    try {
+      await fetch(`/api/proveedores/${encodeURIComponent(inputId.value)}/sucursales`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      cerrarModalSucursal();
+      cargarSucursales(inputId.value);
+    } catch (e) {
+      console.error('Error agregando sucursal', e);
+      alert('No se pudo agregar la sucursal.');
+    }
+  }
+
+  if (btnGuardarSucursal) {
+    btnGuardarSucursal.addEventListener('click', guardarSucursalDetalle);
+  }
+  if (formSucursal) {
+    formSucursal.addEventListener('submit', (e) => {
+      e.preventDefault();
+      guardarSucursalDetalle();
+    });
+  }
+
+  // Alta de contacto mediante formulario en modal secundario.
+  if (btnNuevoContacto) {
+    btnNuevoContacto.addEventListener('click', async () => {
+      if (!inputId || !inputId.value) {
+        const ensuredId = await ensureProveedorPersistido();
+        if (!ensuredId) return;
+      }
+      abrirModalContacto();
+    });
+  }
+
+  async function guardarContactoDetalle() {
+    if (!inputId || !inputId.value) return;
+    if (!inputCtoNombre) return;
+    const body = {
+      id: `CTO-${Date.now()}`,
+      area: (inputCtoArea?.value || '').trim(),
+      nombre: inputCtoNombre.value.trim(),
+      telefono: (inputCtoTelefono?.value || '').trim(),
+      ext: '',
+      correo: (inputCtoCorreo?.value || '').trim(),
+      dato1: '',
+      dato2: ''
+    };
+    if (!body.nombre) {
+      alert('Captura el nombre del contacto.');
+      return;
+    }
+    try {
+      await fetch(`/api/proveedores/${encodeURIComponent(inputId.value)}/contactos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      cerrarModalContacto();
+      cargarContactos(inputId.value);
+    } catch (e) {
+      console.error('Error agregando contacto', e);
+      alert('No se pudo agregar el contacto.');
+    }
+  }
+
+  if (btnGuardarContacto) {
+    btnGuardarContacto.addEventListener('click', guardarContactoDetalle);
+  }
+  if (formContacto) {
+    formContacto.addEventListener('submit', (e) => {
+      e.preventDefault();
+      guardarContactoDetalle();
+    });
+  }
+
+  // Botón "Nuevo proveedor" abre el formulario modal en blanco.
+  const btnNuevo = document.getElementById('btnNuevoProveedor');
+  if (btnNuevo) {
+    btnNuevo.addEventListener('click', abrirModalNuevo);
+  }
+
+  // Al hacer clic en una fila de proveedor, se abre el modal en modo edición.
+  function wireRowClicks() {
+    if (!listaProveedores) return;
+    Array.from(listaProveedores.querySelectorAll('.proveedor-row')).forEach((row, idx) => {
+      const prov = (function() {
+        const term = (txtBuscar?.value || '').toLowerCase();
+        const filtrados = proveedores.filter(p => {
+          const texto = `${p.codigo || ''} ${p.nombre || ''} ${p.rfc || ''}`.toLowerCase();
+          return texto.includes(term);
+        });
+        return filtrados[idx];
+      })();
+      if (!prov) return;
+      row.style.cursor = 'pointer';
+      row.addEventListener('click', () => abrirModalEditar(prov));
+    });
+  }
+
+  // Re-wire row clicks después de cada render para que no se pierdan
+  // los eventos al reconstruir la lista de proveedores.
+  const oldRenderLista = renderLista;
+  renderLista = function(filtro = '') {
+    oldRenderLista(filtro);
+    wireRowClicks();
+  };
+
+  // Carga inicial
+  cargarProveedores();
+});

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Usuarios</title>
+    <link rel="stylesheet" href="../../Public/Style.css">
+    <link rel="stylesheet" href="../../Public/modules.css">
+    <style>
+        .admin-container {
+            padding: 20px;
+            height: 100%;
+            overflow-y: auto;
+            background: var(--background-color);
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .admin-header h2 {
+            font-size: 24px;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .btn-nuevo {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-nuevo:hover {
+            background-color: #1f2138;
+        }
+
+        .admin-content {
+            background: white;
+            border-radius: 4px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h2>⚙️ Administración de Usuarios</h2>
+            <button class="btn-nuevo" onclick="abrirModalNuevoUsuario()">+ Nuevo Usuario</button>
+        </div>
+
+        <div class="admin-content" id="contenedor-admin">
+            <p style="text-align: center; color: var(--text-muted); padding: 40px;">
+                📋 En desarrollo: Gestión de usuarios y roles
+            </p>
+        </div>
+    </div>
+
+    <script src="usuarios.js"></script>
+</body>
+</html>

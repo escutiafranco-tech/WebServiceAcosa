@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node server.js",
+    "start": "node Backend/server.js",
     "invoices:excel": "node scripts/generate-invoice-excel.js"
   },
   "dependencies": {

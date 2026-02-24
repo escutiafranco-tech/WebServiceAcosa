@@ -1,0 +1,195 @@
+[
+  {
+    "module": "Compras",
+    "menus": [
+      {
+        "name": "Proveedores",
+        "roles": ["Administrador"],
+        "submenus": [
+          {
+            "name": "Catalogo Proveedores",
+            "action": "modules/compras/proveedores/proveedores.html",
+            "roles": ["Administrador", "Compras"]
+          },
+          {
+            "name": "Reportes Compras",
+            "action": "modules/compras/proveedores/reportes.html",
+            "roles": ["Administrador", "Gerente"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "module": "Producción",
+    "menus": [
+      {
+        "name": "Lotes",
+        "roles": ["Administrador"],
+        "submenus": [
+          {
+            "name": "Control de Lotes",
+            "action": "modules/produccion/lotes/lotes.html",
+            "roles": ["Administrador", "Produccion"]
+          },
+          {
+            "name": "Reportes Producción",
+            "action": "modules/produccion/lotes/reportes.html",
+            "roles": ["Administrador", "Gerente"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "module": "Ventas",
+    "menus": [
+      {
+        "name": "Clientes",
+        "roles": ["Administrador"],
+        "submenus": [
+          {
+            "name": "Catalogo Clientes",
+            "action": "modules/ventas/clientes/clientes.html",
+            "roles": ["Administrador", "Ventas"]
+          },
+          {
+            "name": "Reportes Ventas",
+            "action": "modules/ventas/clientes/reportes.html",
+            "roles": ["Administrador", "Gerente"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "module": "Logística",
+    "menus": [
+      {
+        "name": "Expedientes de Carga",
+        "roles": ["Administrador", "Custodia"],
+        "submenus": [
+          {
+            "name": "Cargas",
+            "action": "modules/logistica/expedientes-carga/cargas/cargas.html",
+            "roles": ["Administrador", "Custodia", "Operador"]
+          },
+          {
+            "name": "Seguro",
+            "action": "modules/logistica/expedientes-carga/seguros-y-polizas/seguros.html",
+            "roles": ["Administrador", "Asegurador"]
+          },
+          {
+            "name": "Fletes",
+            "action": "modules/logistica/expedientes-carga/fletes/fletes.html", 
+            "roles": ["Administrador", "Transportista"]
+          },
+          {
+            "name": "Custodia",
+            "action": "modules/logistica/expedientes-carga/custodias/custodias.html",
+            "roles": ["Administrador", "Custodia"]
+          },
+          {
+            "name": "Bill of Landing",
+            "action": "modules/logistica/expedientes-carga/bill-of-landing/bill-of-landing.html",
+            "roles": ["Administrador", "Documentacion"]
+          },
+          {
+            "name": "Packing List",
+            "action": "modules/logistica/expedientes-carga/packing-list/packing-list.html",
+            "roles": ["Administrador", "Almacen"]
+          },
+          {
+            "name": "Reportes de Logística",
+            "action": "modules/logistica/expedientes-carga/reportes-logistica/reportes-logistica.html",
+            "roles": ["Administrador", "Gerente"]
+          }
+        ]
+      },
+      {
+        "name": "Expedientes de Descarga",
+        "roles": ["Administrador", "Custodia"],
+        "submenus": [
+          {
+            "name": "Control Descargas",
+            "action": "modules/logistica/expedientes-descarga/expedientes-descarga.html",
+            "roles": ["Administrador", "Custodia", "Operador"]
+          },
+          {
+            "name": "Reportes Descargas",
+            "action": "modules/logistica/expedientes-descarga/reportes.html",
+            "roles": ["Administrador", "Gerente"]
+          }
+        ]
+      },
+      {
+        "name": "Comercio Exterior",
+        "roles": ["Administrador", "Custodia"],
+        "submenus": [
+          {
+            "name": "Documentación Aduanal",
+            "action": "modules/logistica/comercio-exterior/comercio-exterior.html",
+            "roles": ["Administrador", "Aduanas"]
+          },
+          {
+            "name": "Gestión de Trámites",
+            "action": "modules/logistica/comercio-exterior/tramites.html",
+            "roles": ["Administrador", "Tramitador"]
+          },
+          {
+            "name": "Reportes Comercio Exterior",
+            "action": "modules/logistica/comercio-exterior/reportes.html",
+            "roles": ["Administrador", "Gerente"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "module": "Pagos",
+    "menus": [
+      {
+        "name": "Pagos a Clientes",
+        "roles": ["Administrador"],
+        "submenus": [
+          {
+            "name": "Registro Pagos Clientes",
+            "action": "modules/pagos/pagos-clientes/pagos-clientes.html",
+            "roles": ["Administrador", "Contabilidad"]
+          },
+          {
+            "name": "Conciliación",
+            "action": "modules/pagos/pagos-clientes/conciliacion.html",
+            "roles": ["Administrador", "Contabilidad"]
+          },
+          {
+            "name": "Reportes Pagos Clientes",
+            "action": "modules/pagos/pagos-clientes/reportes.html",
+            "roles": ["Administrador", "Gerente"]
+          }
+        ]
+      },
+      {
+        "name": "Pagos a Proveedores",
+        "roles": ["Administrador"],
+        "submenus": [
+          {
+            "name": "Registro Pagos Proveedores",
+            "action": "modules/pagos/pagos-proveedores/pagos-proveedores.html",
+            "roles": ["Administrador", "Contabilidad"]
+          },
+          {
+            "name": "Control Cuentas por Pagar",
+            "action": "modules/pagos/pagos-proveedores/cuentas-por-pagar.html",
+            "roles": ["Administrador", "Contabilidad"]
+          },
+          {
+            "name": "Reportes Pagos Proveedores",
+            "action": "modules/pagos/pagos-proveedores/reportes.html",
+            "roles": ["Administrador", "Gerente"]
+          }
+        ]
+      }
+    ]
+  }
+]

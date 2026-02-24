@@ -30,7 +30,27 @@
       const data = await res.json();
 
       if (res.ok && data.token) {
+        // ✅ NUEVO: Guardar token en sessionStorage
         sessionStorage.setItem('token', data.token);
+        
+        // ✅ NUEVO: Decodificar token y guardar usuario en localStorage
+        try {
+          const tokenParts = data.token.split('.');
+          const payload = JSON.parse(atob(tokenParts[1]));
+          
+          // Guardar información del usuario en localStorage
+          localStorage.setItem('usuario', JSON.stringify({
+            id: payload.id,
+            username: payload.username,
+            role: payload.role
+          }));
+          
+          // Guardar token en localStorage también (para API requests)
+          localStorage.setItem('token', data.token);
+        } catch (err) {
+          console.error('Error decodificando token:', err);
+        }
+        
         window.location.href = 'menu.html';
       } else {
         alert(data.message || 'Usuario o contraseña incorrectos');

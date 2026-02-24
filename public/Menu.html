@@ -75,6 +75,16 @@
     <div class="texto-carga">Actualizando sistema...</div>
   </div>
 
+  <!-- Ocultar pantalla de carga al finalizar la carga de la página -->
+  <script>
+    window.addEventListener('load', function() {
+      var pantallaCarga = document.getElementById('pantallaCarga');
+      if (pantallaCarga) {
+        pantallaCarga.classList.add('oculto');
+      }
+    });
+  </script>
+
   <!-- SOLO UN ARCHIVO JS -->
   <script src="menu.js"></script>
 </body>

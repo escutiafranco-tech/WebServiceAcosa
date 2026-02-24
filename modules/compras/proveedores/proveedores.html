@@ -1,404 +1,389 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- CONFIGURACIÓN BÁSICA DEL DOCUMENTO -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proveedores - ACOSA</title>
-  
-    <!-- ENLACES A HOJAS DE ESTILO -->
-    <!-- Cargar variables y estilos globales desde public -->
-    <link rel="stylesheet" href="/Style.css">  <!-- Variables globales y estilos base (normalizado según custodias) -->
-    <link rel="stylesheet" href="/modules.css"> <!-- Estilos de módulos -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Catálogo de Proveedores - ACOSA</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/modules.css">
 </head>
 <body>
-        <!-- CONTENEDOR PRINCIPAL DEL MÓDULO
-            Qué es: caja grande que envuelve toda la vista de Proveedores.
-            Para qué sirve: ordenar la barra, lista, barra inferior y el modal.
-            Cómo se usa: dentro van las secciones visuales del módulo. -->
-    <div class="module-container">
-        
-        <!-- ====================================== -->
-        <!-- BARRA DE ACCESOS RÁPIDOS -->
-        <!-- ====================================== -->
-      
-           <!-- BARRA DE ACCIONES (toolbar)
-               Qué es: botones rápidos (Nuevo, Filtros) y buscador.
-               Cómo se usa: el JS conecta estos IDs para abrir modales y buscar. -->
-           <div class="toolbar-module">
-            <button id="btnNuevo" class="toolbar-btn">
-                <img src="/Imagenes/Acc_Agregar.png" alt="Nuevo" class="toolbar-icon">
-                <span class="toolbar-label">Nuevo</span>
-            </button>
-            <button id="btnFiltroFechas" class="toolbar-btn">
-                <img src="/Imagenes/Acc_Filtrar.png" alt="Filtros" class="toolbar-icon">
-                <span class="toolbar-label">Filtros</span>
-            </button>
-            
-            <div class="toolbar-divider"></div>
-            <div class="toolbar-search">
-                <input type="text" id="buscar" placeholder="Buscar...">
-                <button id="btnBuscar" class="search-btn">
-                    <img src="/Imagenes/Acc_Filtrar.png" alt="Buscar" style="width:16px;height:16px;">
-                </button>
-            </div>
-        </div>    
-
-        <!-- Contenedor de lista mínimo (sin tablas) -->
-                 <!-- LISTA DE PROVEEDORES (como tabla)
-                     Qué es: una tabla para mostrar los proveedores.
-                     Cómo se usa: el JS agrega filas dentro del tbody. -->
-                 <div class="list-container">
-                    <table class="list-body" id="listaProveedores">
-                        <thead>
-                            <tr>
-                                <th>Acciones</th>
-                                <th data-sort="codigo">Código</th>
-                                <th data-sort="nombre">Nombre</th>
-                                <th data-sort="rfc">RFC</th>
-                                <th data-sort="direccion">Dirección fiscal</th>
-                                <th data-sort="activo">Estatus</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-
-                 <!-- BARRA INFERIOR (estadísticas + paginación)
-                     Qué es: indicadores (Activos/Inactivos) y controles de páginas.
-                     Cómo se usa: el JS actualiza los números y habilita botones. -->
-                 <div class="barra-inferior-unificada">
-                    <div class="estadisticas-inferiores">
-                        <div class="stat-item-inferior">
-                            <span class="stat-label-inferior">Activos:</span>
-                            <span class="stat-numero-inferior" id="enActivos">0</span>
-                        </div>
-                        <div class="stat-item-inferior">
-                            <span class="stat-label-inferior">Inactivos:</span>
-                            <span class="stat-numero-inferior" id="enInactivos">0</span>
-                        </div>
-                    </div>
-                    <div class="contador-registros">
-                        <span id="mostrandoRegistros">Mostrando 0 de 0</span>
-                        <button id="btnRecargar" class="btn btn-icon">🔄</button>
-                    </div>
-                    <div class="paginacion-inferior">
-                        <button id="btnAnterior" class="btn btn-outline" disabled>← Anterior</button>
-                        <span id="infoPagina">Página 1 de 1</span>
-                        <button id="btnSiguiente" class="btn btn-outline" disabled>Siguiente →</button>
-                    </div>
-                </div>
-
-        <!-- Overlay de carga (oculto por defecto) -->
-           <!-- OVERLAY DE CARGA DEL MÓDULO
-               Qué es: pantalla ligera que dice "Cargando proveedores...".
-               Cómo se usa: mostrar/ocultar desde JS cuando hay operaciones. -->
-           <div class="loading-overlay" id="loading" style="display:none;">
-            <div class="loading-spinner"></div>
-            <p>Cargando proveedores...</p>
-        </div>
-
-        <!-- MODAL: formulario de proveedor (misma estructura que custodias) -->
-           <!-- MODAL DE PROVEEDOR
-               Qué es: formulario con pestañas para capturar información.
-               Cómo se usa: el botón Nuevo abre este modal; el JS llena/guarda. -->
-           <div class="modal-overlay" id="modalProveedor" style="display:none;">
-            <div class="modal-container modal-compact">
-                <div class="modal-header">
-                    <div class="modal-title"><h2 id="modalTitleProveedor">ALTA DE PROVEEDORES</h2></div>
-                    <div class="modal-header-buttons"><button class="btn-header-icon" id="btnCloseModalProveedor" title="Cerrar">✕</button></div>
-                </div>
-
-                <div class="modal-tabs">
-                    <button class="tab-button active" data-tab="datosGenerales">Datos generales</button>
-                    <button class="tab-button" data-tab="expediente">Expediente</button>
-                    <button class="tab-button" data-tab="informacionComercial">Información comercial</button>
-                    <button class="tab-button" data-tab="informacionFinanciera">Información financiera</button>
-                </div>
-
-                <div class="modal-content-compact">
-                    <form id="formProveedor">
-                            <!-- PESTAÑA: DATOS GENERALES
-                                Contiene Información General y Sucursales. -->
-                            <div class="tab-content active" id="tabDatosGenerales">
-                               <!-- Sección: Datos Fiscales -->
-                               <div class="collapsible-section">
-                                <div class="section-header-collapse">
-                                    <span class="collapse-icon">▼</span>
-                                    <span class="section-title-text">Datos Fiscales</span>
-                                </div>
-                                <div class="section-body">
-                               <table class="form-table">
-                                <tr>
-                                    <td class="label-cell">ID</td>
-                                    <td class="input-cell"><input type="text" id="modalIdProveedor" readonly></td>
-                                    <td class="label-cell">Fecha de registro</td>
-                                    <td class="input-cell"><input id="modalFechaRegistro" type="text" readonly></td>
-                                </tr>
-                                <tr>
-                                    <td class="label-cell">Código</td>
-                                    <td class="input-cell"><input type="text" id="modalCodigo"></td>
-                                    <td class="label-cell">Estatus</td>
-                                    <td class="input-cell">
-                                        <select id="modalEstatus">
-                                            <option value="true">Activo</option>
-                                            <option value="false">Inactivo</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="label-cell">Nombre <span class="required">*</span></td>
-                                    <td class="input-cell" colspan="3"><input type="text" id="modalNombre" required></td>
-                                </tr>
-                                <tr>
-                                    <td class="label-cell">RFC <span class="required">*</span></td>
-                                    <td class="input-cell" colspan="3"><input id="modalRfc" type="text" required></td>
-                                </tr>
-                                <tr>
-                                    <td class="label-cell">Dirección fiscal <span class="required">*</span></td>
-                                    <td class="input-cell" colspan="3"><input id="modalDireccion" type="text" required></td>
-                                </tr>
-                            </table>
-                                </div>
-                            </div>
-                                                        <!-- Sección: Servicios Prestados -->
-                            <div class="collapsible-section">
-                                <div class="section-header-collapse">
-                                    <span class="collapse-icon">▼</span>
-                                    <span class="section-title-text">Servicios Prestados</span>
-                                </div>
-                                <div class="section-body">
-                                    <div class="en-desarrollo"><span>En desarrollo</span></div>
-                                    <div class="empty-tab"><small>Lista de servicios que presta el proveedor</small></div>
-                                </div>
-                            </div>
-                                                                 <!-- Sección: Sucursales -->
-                                         <!-- SUCURSALES-->
-                               <div class="collapsible-section">
-                                <div class="section-header-collapse">
-                                    <span class="collapse-icon">▼</span>
-                                    <span class="section-title-text">Sucursales</span>
-                                </div>
-                                <div class="section-body">
-                                    <!-- Barra de acciones de sucursales -->
-                                    <div class="toolbar-inline">
-                                        <button class="btn btn-primary btn-sm" id="btnAgregarSucursal" title="Agregar sucursal">+
-                                        </button>
-                                    </div>
-                                    <!-- Espacio en blanco simbólico y lista -->
-                                    <div class="sucursales-lista" id="listaSucursales">
-                                        <!-- Aquí se renderizarán las sucursales agregadas -->
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Sección: Agenda de Proveedor y Contactos -->
-                            <div class="collapsible-section">
-                                <div class="section-header-collapse">
-                                    <span class="collapse-icon">▼</span>
-                                    <span class="section-title-text">Agenda de Proveedor y Contactos</span>
-                                </div>
-                                <div class="section-body">
-                                    <!-- Barra de acciones de contactos -->
-                                    <div class="toolbar-inline">
-                                        <button class="btn btn-primary btn-sm" id="btnAgregarContacto" title="Agregar contacto" onclick="window.ProveedoresManager.openModalContacto();">+ 
-                                        </button>
-                                    </div>
-                                    <!-- Lista de contactos -->
-                                    <div class="contactos-lista" id="listaContactos">
-                                        <!-- Aquí se renderizarán los contactos agregados -->
-                                    </div>
-                                </div>
-                            </div>
-                            
-                        </div>
-                            <!-- PESTAÑA: EXPEDIENTE
-                                Información del expediente del proveedor. -->
-                            <div class="tab-content" id="tabExpediente">
-                            <div class="collapsible-section">
-                                <div class="section-header-collapse"><span class="collapse-icon">▼</span><span class="section-title-text">Información de expediente</span></div>
-                                <div class="section-body">
-                                    <table class="form-table">
-                                        <tr>
-                                            <td class="label-cell">Tipo</td>
-                                            <td class="input-cell"><input id="modalExpTipo" type="text"></td>
-                                            <td class="label-cell">Estado</td>
-                                            <td class="input-cell"><input id="modalExpEstado" type="text"></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="label-cell">Notas</td>
-                                            <td class="input-cell" colspan="3"><input id="modalExpNotas" type="text"></td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- PESTAÑA: INFORMACIÓN COMERCIAL -->
-                        <div class="tab-content" id="tabInformacionComercial">
-                            <div class="collapsible-section">
-                                <div class="section-header-collapse"><span class="collapse-icon">▼</span><span class="section-title-text">Información Comercial</span></div>
-                                <div class="section-body">
-                                    <div class="en-desarrollo"><span>En desarrollo</span></div>
-                                    <div class="empty-tab"><small>Resumen de Información Comercial</small></div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- PESTAÑA: INFORMACIÓN FINANCIERA -->
-                        <div class="tab-content" id="tabInformacionFinanciera">
-                            <div class="collapsible-section">
-                                <div class="section-header-collapse"><span class="collapse-icon">▼</span><span class="section-title-text">Información Financiera</span></div>
-                                <div class="section-body">
-                                    <div class="en-desarrollo"><span>En desarrollo</span></div>
-                                    <div class="empty-tab"><small>Resumen de Información Financiera</small></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-content" id="tabDocumentos"><div class="empty-tab"><p>📄 Sección de documentos</p></div></div>
-                    </form>
-                </div>
-
-                <div class="modal-footer">
-                    <button class="btn btn-primary" id="btnGuardarModalProveedor">GUARDAR</button>
-                </div>
-            </div>
-        </div>
-
+  <div class="module-container">
+    <!-- Barra de herramientas -->
+    <div class="toolbar-module">
+      <button id="btnNuevoProveedor" class="toolbar-btn">
+        <img src="/Imagenes/Acc_Agregar.png" alt="Nuevo" class="toolbar-icon">
+        <span class="toolbar-label">Nuevo</span>
+      </button>
+      <button id="btnRefrescarProveedores" class="toolbar-btn">
+        <img src="/Imagenes/Acc_Actualizar.png" alt="Refrescar" class="toolbar-icon">
+        <span class="toolbar-label">Refrescar</span>
+      </button>
+      <div class="toolbar-divider"></div>
+      <div class="toolbar-search">
+        <input type="text" id="buscarProveedor" placeholder="Buscar por código, nombre o RFC...">
+        <button id="btnBuscarProveedor" class="search-btn">
+          <img src="/Imagenes/Acc_Filtrar.png" alt="Buscar" style="width:16px;height:16px;">
+        </button>
+      </div>
     </div>
 
-    <!-- MODAL: Agregar/Editar Sucursal -->
-        <!-- MODAL DE SUCURSAL
-            Qué es: pequeño formulario para añadir/editar una sucursal.
-            Campos: Tipo, Nombre y dirección desglosada. -->
-        <div class="modal-overlay" id="modalSucursal" style="display:none;">
-        <div class="modal-container modal-compact">
-            <div class="modal-header">
-                <div class="modal-title"><h2 id="modalTitleSucursal">Agregar Sucursal</h2></div>
-                <div class="modal-header-buttons"><button class="btn-header-icon" id="btnCloseModalSucursal" title="Cerrar">✕</button></div>
-            </div>
-
-            <div class="modal-content-compact">
-                <form id="formSucursal">
-                    <table class="form-table">
-                        <tr>
-                            <td class="label-cell">Tipo</td>
-                            <td class="input-cell">
-                                <select id="modalSucursalTipo" required>
-                                    <option value="">Seleccione tipo</option>
-                                    <option value="corporativo">Corporativo</option>
-                                    <option value="oficinas">Oficinas</option>
-                                    <option value="almacen">Almacén</option>
-                                    <option value="punto-venta">Punto de Venta</option>
-                                </select>
-                            </td>
-                            <td class="label-cell">Nombre Sucursal</td>
-                            <td class="input-cell"><input id="modalSucursalNombre" type="text" required></td>
-                        </tr>
-                        <tr>
-                            <td class="label-cell">País</td>
-                            <td class="input-cell"><input id="modalSucursalPais" type="text" value="México"></td>
-                            <td class="label-cell">Estado</td>
-                            <td class="input-cell"><input id="modalSucursalEstado" type="text"></td>
-                        </tr>
-                        <tr>
-                            <td class="label-cell">Municipio</td>
-                            <td class="input-cell"><input id="modalSucursalMunicipio" type="text"></td>
-                            <td class="label-cell">Localidad</td>
-                            <td class="input-cell"><input id="modalSucursalLocalidad" type="text"></td>
-                        </tr>
-                        <tr>
-                            <td class="label-cell">Calle</td>
-                            <td class="input-cell"><input id="modalSucursalCalle" type="text"></td>
-                            <td class="label-cell">Colonia</td>
-                            <td class="input-cell"><input id="modalSucursalColonia" type="text"></td>
-                        </tr>
-                        <tr>
-                            <td class="label-cell">Código postal</td>
-                            <td class="input-cell"><input id="modalSucursalCP" type="text" maxlength="5"></td>
-                            <td class="label-cell">No. exterior</td>
-                            <td class="input-cell"><input id="modalSucursalNoExterior" type="text"></td>
-                        </tr>
-                        <tr>
-                            <td class="label-cell">No. interior</td>
-                            <td class="input-cell"><input id="modalSucursalNoInterior" type="text"></td>
-                            <td class="label-cell">Código Colonia (Opcional)</td>
-                            <td class="input-cell"><input id="modalSucursalCodigoColonia" type="text"></td>
-                        </tr>
-                        <tr>
-                            <td class="label-cell">Código Localidad (Opcional)</td>
-                            <td class="input-cell"><input id="modalSucursalCodigoLocalidad" type="text"></td>
-                            <td class="label-cell"></td>
-                            <td class="input-cell"></td>
-                        </tr>
-                    </table>
-                </form>
-            </div>
-
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="btnCancelarSucursal">Cancelar</button>
-                <button class="btn btn-primary" id="btnGuardarSucursal">Aceptar</button>
-            </div>
-        </div>
+    <!-- Listado principal -->
+    <div class="list-container">
+      <div class="list-body" id="listaProveedores"></div>
     </div>
 
-    <!-- MODAL: Agregar/Editar Contacto -->
-        <!-- MODAL DE CONTACTO
-            Campos: Área, Nombre, Teléfono, Ext., Correo, Dato1, Dato2. -->
-        <div class="modal-overlay" id="modalContacto" style="display:none;">
-        <div class="modal-container modal-compact">
-            <div class="modal-header">
-                <div class="modal-title"><h2 id="modalTitleContacto">Agregar Contacto</h2></div>
-                <div class="modal-header-buttons"><button class="btn-header-icon" id="btnCloseModalContacto" title="Cerrar">✕</button></div>
-            </div>
-
-            <div class="modal-content-compact">
-                <form id="formContacto">
-                    <table class="form-table">
-                        <tr>
-                            <td class="label-cell">Área</td>
-                            <td class="input-cell">
-                                <select id="modalContactoArea" required>
-                                    <option value="">Seleccionar...</option>
-                                    <option value="Ventas">Ventas</option>
-                                    <option value="Compras">Compras</option>
-                                    <option value="Administración">Administración</option>
-                                    <option value="Logística">Logística</option>
-                                    <option value="Finanzas">Finanzas</option>
-                                    <option value="Otro">Otro</option>
-                                </select>
-                            </td>
-                            <td class="label-cell">Nombre</td>
-                            <td class="input-cell"><input id="modalContactoNombre" type="text" required></td>
-                        </tr>
-                        <tr>
-                            <td class="label-cell">Teléfono</td>
-                            <td class="input-cell"><input id="modalContactoTelefono" type="text"></td>
-                            <td class="label-cell">Ext.</td>
-                            <td class="input-cell"><input id="modalContactoExt" type="text"></td>
-                        </tr>
-                        <tr>
-                            <td class="label-cell">Correo</td>
-                            <td class="input-cell" colspan="3"><input id="modalContactoCorreo" type="email"></td>
-                        </tr>
-                        <tr>
-                            <td class="label-cell">Dato 1</td>
-                            <td class="input-cell"><input id="modalContactoDato1" type="text"></td>
-                            <td class="label-cell">Dato 2</td>
-                            <td class="input-cell"><input id="modalContactoDato2" type="text"></td>
-                        </tr>
-                    </table>
-                </form>
-            </div>
-
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="btnCancelarContacto">Cancelar</button>
-                <button class="btn btn-primary" id="btnGuardarContacto">Aceptar</button>
-            </div>
+    <!-- Barra inferior -->
+    <div class="barra-inferior-unificada">
+      <div class="estadisticas-inferiores">
+        <div class="stat-item-inferior">
+          <span class="stat-label-inferior">Activos:</span>
+          <span class="stat-numero-inferior" id="proveedoresActivos">0</span>
         </div>
+        <div class="stat-item-inferior">
+          <span class="stat-label-inferior">Inactivos:</span>
+          <span class="stat-numero-inferior" id="proveedoresInactivos">0</span>
+        </div>
+      </div>
+      <div class="contador-registros">
+        <span id="mostrandoProveedores">Mostrando 0 de 0</span>
+      </div>
+      <div class="paginacion-inferior">
+        <button id="btnAnteriorProveedores" class="btn btn-outline" disabled>← Anterior</button>
+        <span id="infoPaginaProveedores">Página 1 de 1</span>
+        <button id="btnSiguienteProveedores" class="btn btn-outline" disabled>Siguiente →</button>
+      </div>
     </div>
 
-    <!-- Tabla desactivada globalmente: no se cargan utilidades de tabla -->
-    <!-- Corregido path del script: carpeta en minúsculas -->
-    <script src="/modules/compras/proveedores/proveedores.js"></script>
+    <!-- Overlay de carga -->
+    <div class="loading-overlay" id="loadingProveedores" style="display:none;">
+      <div class="loading-spinner"></div>
+      <p>Cargando proveedores...</p>
+    </div>
+  </div>
+
+  <!-- Modal para alta/edición de proveedor -->
+  <div id="modalProveedor" class="modal-overlay" style="display:none;">
+    <div class="modal-container modal-compact">
+      <div class="modal-header">
+        <div class="modal-title">
+          <h2 id="tituloModalProveedor">Nuevo proveedor</h2>
+        </div>
+        <div class="modal-header-buttons">
+          <button id="btnCerrarModalProveedor" class="btn-header-icon" title="Cerrar">×</button>
+        </div>
+      </div>
+
+      <!-- Pestañas superiores del modal -->
+      <div class="modal-tabs">
+        <button type="button" class="tab-button active" data-tab="tab-datos-generales">Datos generales</button>
+        <button type="button" class="tab-button" data-tab="tab-expediente">Expediente</button>
+        <button type="button" class="tab-button" data-tab="tab-ventas">Ventas y saldos</button>
+      </div>
+
+      <div class="modal-content-compact">
+        <form id="formProveedor" class="form-container" onsubmit="return false;">
+          <input type="hidden" id="provId">
+
+          <!-- TAB: DATOS GENERALES -->
+          <div id="tab-datos-generales" class="tab-content active">
+            <div class="collapsible-section">
+              <div class="section-header-collapse">
+                <span class="collapse-icon">▼</span>
+                <span class="section-title-text">Información general</span>
+              </div>
+              <div class="section-body">
+                <table class="tabla-formulario-general" style="width:100%; border-collapse:collapse;">
+                  <tr>
+                    <td style="width:18%;"><strong>Id. Proveedor</strong></td>
+                    <td style="width:32%;"><input type="text" id="provIdVisible" class="form-control" readonly></td>
+                    <td style="width:18%;"><strong>Estatus</strong></td>
+                    <td style="width:32%;">
+                      <label style="display:flex;align-items:center;gap:4px;">
+                        <input type="checkbox" id="provActivo" checked>
+                        <span>Activo</span>
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>Nombre *</strong></td>
+                    <td><input type="text" id="provNombre" class="form-control" required></td>
+                    <td><strong>RFC</strong></td>
+                    <td><input type="text" id="provRFC" class="form-control"></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Dirección</strong></td>
+                    <td colspan="2"><input type="text" id="provDireccion" class="form-control"></td>
+                    <td>
+                      <strong>Fecha registro</strong>
+                      <div style="margin-top:4px;">
+                        <input type="text" id="provFechaRegistro" class="form-control" readonly>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+
+            <!-- Secciones de servicios, sucursales y agenda dentro de Datos generales -->
+            <div class="collapsible-section">
+              <div class="section-header-collapse collapsed">
+                <span class="collapse-icon">▼</span>
+                <span class="section-title-text">Servicios prestados</span>
+                <div style="margin-left:auto; display:flex; gap:6px;">
+                  <button type="button" id="btnNuevoServicio" class="btn btn-primary btn-small">Agregar servicio</button>
+                </div>
+              </div>
+              <div class="section-body">
+                <table class="table-servicios" style="width:100%; border-collapse:collapse;">
+                  <thead>
+                    <tr>
+                      <th style="text-align:left;">Acciones</th>
+                      <th style="text-align:left;">Servicio</th>
+                      <th style="text-align:left;">Descripción</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tbodyServicios"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="collapsible-section">
+              <div class="section-header-collapse collapsed">
+                <span class="collapse-icon">▼</span>
+                <span class="section-title-text">Sucursales</span>
+                <div style="margin-left:auto; display:flex; gap:6px;">
+                  <button type="button" id="btnNuevaSucursal" class="btn btn-primary btn-small">Agregar sucursal</button>
+                </div>
+              </div>
+              <div class="section-body">
+                <table class="table-sucursales" style="width:100%; border-collapse:collapse;">
+                  <thead>
+                    <tr>
+                      <th style="text-align:left;">Acciones</th>
+                      <th style="text-align:left;">Tipo</th>
+                      <th style="text-align:left;">Nombre</th>
+                      <th style="text-align:left;">País</th>
+                      <th style="text-align:left;">Estado</th>
+                      <th style="text-align:left;">Municipio</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tbodySucursales"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="collapsible-section">
+              <div class="section-header-collapse collapsed">
+                <span class="collapse-icon">▼</span>
+                <span class="section-title-text">Agenda de contactos</span>
+                <div style="margin-left:auto; display:flex; gap:6px;">
+                  <button type="button" id="btnNuevoContacto" class="btn btn-primary btn-small">Agregar contacto</button>
+                </div>
+              </div>
+              <div class="section-body">
+                <table class="table-contactos" style="width:100%; border-collapse:collapse;">
+                  <thead>
+                    <tr>
+                      <th style="text-align:left;">Acciones</th>
+                      <th style="text-align:left;">Área</th>
+                      <th style="text-align:left;">Nombre</th>
+                      <th style="text-align:left;">Teléfono</th>
+                      <th style="text-align:left;">Correo</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tbodyContactos"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB: EXPEDIENTE (placeholder simple) -->
+          <div id="tab-expediente" class="tab-content">
+            <div class="collapsible-section">
+              <div class="section-header-collapse">
+                <span class="collapse-icon">▼</span>
+                <span class="section-title-text">Información de Expediente</span>
+              </div>
+              <div class="section-body">
+                <table style="width:100%; border-collapse:collapse;">
+                  <tr>
+                    <td style="width:15%;"><strong>Tipo</strong></td>
+                    <td style="width:35%;"><input type="text" id="expTipo" class="form-control"></td>
+                    <td style="width:15%;"><strong>Estado</strong></td>
+                    <td style="width:35%;"><input type="text" id="expEstado" class="form-control"></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Notas</strong></td>
+                    <td colspan="3"><input type="text" id="expNotas" class="form-control"></td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB: VENTAS Y SALDOS (placeholder por ahora) -->
+          <div id="tab-ventas" class="tab-content">
+            <div class="collapsible-section">
+              <div class="section-header-collapse">
+                <span class="collapse-icon">▼</span>
+                <span class="section-title-text">Condiciones comerciales</span>
+              </div>
+              <div class="section-body">
+                <!-- Vacío - JavaScript lo llenará con "En Desarrollo" -->
+              </div>
+            </div>
+            <div class="collapsible-section">
+              <div class="section-header-collapse collapsed">
+                <span class="collapse-icon">▼</span>
+                <span class="section-title-text">Saldos y Cuentas</span>
+              </div>
+              <div class="section-body">
+                <!-- Vacío - JavaScript lo llenará con "En Desarrollo" -->
+              </div>
+            </div>
+          </div>
+
+          
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btnCancelarProveedor" class="btn btn-outline">Cancelar</button>
+        <button id="btnGuardarProveedor" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal secundario: Agregar servicio al proveedor -->
+  <div id="modalServicio" class="modal-overlay" style="display:none;">
+    <div class="modal-container modal-compact modal-small">
+      <div class="modal-header">
+        <div class="modal-title">
+          <h2>Agregar servicio</h2>
+        </div>
+        <div class="modal-header-buttons">
+          <button id="btnCerrarModalServicio" class="btn-header-icon" title="Cerrar">×</button>
+        </div>
+      </div>
+      <div class="modal-content-small">
+        <form id="formServicio" class="form-container" onsubmit="return false;">
+          <div class="collapsible-section">
+            <div class="section-body">
+              <table style="width:100%; border-collapse:collapse;">
+                <tr>
+                  <td style="width:25%;"><strong>Servicio</strong></td>
+                  <td style="width:75%;"><input type="text" id="srvNombre" class="form-control" required></td>
+                </tr>
+                <tr>
+                  <td><strong>Descripción</strong></td>
+                  <td><input type="text" id="srvDescripcion" class="form-control"></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="btnGuardarServicio" class="btn btn-primary">Guardar</button>
+        <button id="btnCancelarServicio" class="btn btn-outline">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal secundario: Agregar sucursal al proveedor -->
+  <div id="modalSucursal" class="modal-overlay" style="display:none;">
+    <div class="modal-container modal-compact modal-small">
+      <div class="modal-header">
+        <div class="modal-title">
+          <h2>Agregar sucursal</h2>
+        </div>
+        <div class="modal-header-buttons">
+          <button id="btnCerrarModalSucursal" class="btn-header-icon" title="Cerrar">×</button>
+        </div>
+      </div>
+      <div class="modal-content-small">
+        <form id="formSucursal" class="form-container" onsubmit="return false;">
+          <div class="collapsible-section">
+            <div class="section-body">
+              <table style="width:100%; border-collapse:collapse;">
+                <tr>
+                  <td style="width:25%;"><strong>Tipo</strong></td>
+                  <td style="width:75%;"><input type="text" id="sucTipo" class="form-control" value="Sucursal"></td>
+                </tr>
+                <tr>
+                  <td><strong>Nombre</strong></td>
+                  <td><input type="text" id="sucNombre" class="form-control" required></td>
+                </tr>
+                <tr>
+                  <td><strong>País</strong></td>
+                  <td><input type="text" id="sucPais" class="form-control"></td>
+                </tr>
+                <tr>
+                  <td><strong>Estado</strong></td>
+                  <td><input type="text" id="sucEstado" class="form-control"></td>
+                </tr>
+                <tr>
+                  <td><strong>Municipio</strong></td>
+                  <td><input type="text" id="sucMunicipio" class="form-control"></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="btnGuardarSucursal" class="btn btn-primary">Guardar</button>
+        <button id="btnCancelarSucursal" class="btn btn-outline">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal secundario: Agregar contacto al proveedor -->
+  <div id="modalContacto" class="modal-overlay" style="display:none;">
+    <div class="modal-container modal-compact modal-small">
+      <div class="modal-header">
+        <div class="modal-title">
+          <h2>Agregar contacto</h2>
+        </div>
+        <div class="modal-header-buttons">
+          <button id="btnCerrarModalContacto" class="btn-header-icon" title="Cerrar">×</button>
+        </div>
+      </div>
+      <div class="modal-content-small">
+        <form id="formContacto" class="form-container" onsubmit="return false;">
+          <div class="collapsible-section">
+            <div class="section-body">
+              <table style="width:100%; border-collapse:collapse;">
+                <tr>
+                  <td style="width:25%;"><strong>Área</strong></td>
+                  <td style="width:75%;"><input type="text" id="ctoArea" class="form-control"></td>
+                </tr>
+                <tr>
+                  <td><strong>Nombre</strong></td>
+                  <td><input type="text" id="ctoNombre" class="form-control" required></td>
+                </tr>
+                <tr>
+                  <td><strong>Teléfono</strong></td>
+                  <td><input type="text" id="ctoTelefono" class="form-control"></td>
+                </tr>
+                <tr>
+                  <td><strong>Correo</strong></td>
+                  <td><input type="email" id="ctoCorreo" class="form-control"></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="btnGuardarContacto" class="btn btn-primary">Guardar</button>
+        <button id="btnCancelarContacto" class="btn btn-outline">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/desarrollo.js"></script>
+  <script src="/modules/compras/proveedores/proveedores.js"></script>
 </body>
 </html>

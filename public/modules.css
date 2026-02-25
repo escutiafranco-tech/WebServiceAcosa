@@ -99,6 +99,32 @@ table.list-body tbody tr,
     display: none;                    /* Evita títulos redundantes */
 }
 
+/* ==========================================================================
+   TABLA DE FORMULARIO - ESTILOS HOMOLOGADOS
+   ========================================================================== */
+/* Aplica tamaño y fuente consistentes a todos los inputs en tablas de formulario */
+.tabla-formulario-general input[type="text"],
+.tabla-formulario-general input[type="email"],
+.tabla-formulario-general input[type="password"],
+.tabla-formulario-general input[type="number"],
+.tabla-formulario-general input[type="date"],
+.tabla-formulario-general select,
+table.tabla-formulario-general input,
+table.tabla-formulario-general select,
+table.tabla-formulario-general textarea {
+    font-family: var(--font-family);              /* Fuente corporativa */
+    font-size: var(--Comp-FormControl-Size);      /* Tamaño homologado 12px */
+    line-height: var(--Comp-FormControl-LineHeight); /* Alto de línea 1.15 */
+}
+
+/* Strong en tablas de formulario */
+.tabla-formulario-general strong,
+table.tabla-formulario-general strong {
+    font-family: var(--font-family);              /* Fuente corporativa */
+    font-weight: var(--font-weight-semibold);     /* Semi-negrita 600 */
+    font-size: var(--Comp-FormLabel-Size);        /* Tamaño de etiqueta 12px */
+}
+
 /*** Secciones colapsables (global) Agrupan campos con header clickeable */
 
 .collapsible-section {
@@ -209,6 +235,7 @@ table.list-body tbody tr,
     padding: 8px 12px;                /* Padding interno */
     flex: 1;                          /* Ocupa todo el espacio disponible */
     outline: none;                    /* Sin outline por defecto */
+    font-family: var(--font-family);  /* Fuente corporativa */
     font-size: var(--Comp-FormControl-Size, var(--text-size-normal)); /* Tamaño de fuente desde componentes */
     line-height: var(--Comp-FormControl-LineHeight, 1.2);       /* Altura de línea homogénea para inputs */
 }
@@ -229,6 +256,7 @@ table.list-body tbody tr,
     border: none;                       /* Sin borde propio */
     padding: 8px 0;                     /* Padding vertical */
     outline: none;                      /* Sin outline */
+    font-family: var(--font-family);    /* Fuente corporativa */
     font-size: var(--Comp-FormControl-Size, var(--text-size-normal)); /* Tamaño de control desde componentes */
     line-height: var(--Comp-FormControl-LineHeight, 1.2);       /* Altura de línea homogénea para inputs */
     width: 110px;                       /* Ancho fijo para inputs de fecha */
@@ -421,6 +449,7 @@ table.list-body tbody tr,
     padding: 6px 12px;                       /* Altura y aire interno */
     border: 1.5px solid var(--border-color); /* Borde del input */
     border-radius: var(--border-radius);     /* Esquinas redondeadas */
+    font-family: var(--font-family);         /* Fuente corporativa */
     font-size: var(--Comp-FormControl-Size, 13px); /* Tamaño de fuente del input desde componentes */
     line-height: var(--Comp-FormControl-LineHeight, 1.2);       /* Altura de línea homogénea para inputs */
     transition: border-color 0.2s;           /* Cambio de borde al focus */
@@ -946,7 +975,7 @@ table.list-body tbody tr,
     border: 1.5px solid var(--border-color);     /* Borde homogéneo */
     border-radius: var(--border-radius);         /* Esquinas redondeadas */
     font-size: var(--ty-form-control-size, 12px); /* Tamaño de texto homologado */
-    font-family: inherit;                        /* Hereda la fuente */
+    font-family: var(--font-family);             /* Fuente corporativa */
     line-height: var(--ty-form-line, 1.2);       /* Altura de línea homologada */
     transition: border-color 0.2s;               /* Cambio suave al focus */
     background: white;                           /* Fondo blanco */
@@ -987,7 +1016,7 @@ select.table-input {
 /* Textarea en tablas */
 textarea.table-input {
     resize: vertical;                            /* Permite ajustar altura */
-    font-family: inherit;                        /* Hereda la fuente */
+    font-family: var(--font-family);             /* Fuente corporativa */
 }
 
 /* ==========================================================================
@@ -1310,6 +1339,7 @@ textarea.table-input {
 }
 
 .collapsible-section .section-body table input.form-control {
+    font-family: var(--font-family);    /* Fuente corporativa */
     font-size: var(--Comp-FormControl-Size, 12px);  /* Tamaño compacto y legible desde componentes */
     line-height: var(--Comp-FormControl-LineHeight, 1.2);         /* Altura de línea homogénea para inputs */
 }
@@ -1325,7 +1355,7 @@ textarea.table-input {
     border: 1px solid #c0c0c0;       /* Borde clásico SAE */
     border-radius: 2px;              /* Bordes ligeramente redondeados */
     font-size: var(--ty-form-control-size, 12px); /* Tamaño de control */
-    font-family: inherit;            /* Hereda fuente del sistema */
+    font-family: var(--font-family); /* Fuente corporativa */
     line-height: var(--ty-form-line, 1.2); /* Altura de línea control */
 }
 
@@ -1485,8 +1515,8 @@ textarea.table-input {
     padding: 6px 8px;                /* Espaciado interno */
     border: 1px solid #c0c0c0;       /* Borde clásico */
     border-radius: 2px;              /* Bordes suaves */
+    font-family: var(--font-family); /* Fuente corporativa */
     font-size: 12px;                 /* Texto un poco más grande que inputs */
-    font-family: inherit;            /* Hereda fuente */
     resize: vertical;                /* Permite cambiar altura */
 }
 

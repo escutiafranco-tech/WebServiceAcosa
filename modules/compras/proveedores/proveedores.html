@@ -94,32 +94,44 @@
               </div>
               <div class="section-body">
                 <table class="tabla-formulario-general" style="width:100%; border-collapse:collapse;">
+                  <!-- Línea 1: Id, Fecha Registro, Estatus -->
                   <tr>
-                    <td style="width:18%;"><strong>Id. Proveedor</strong></td>
-                    <td style="width:32%;"><input type="text" id="provIdVisible" class="form-control" readonly></td>
-                    <td style="width:18%;"><strong>Estatus</strong></td>
-                    <td style="width:32%;">
+                    <td style="width:25%;"><strong>Id. Proveedor</strong></td>
+                    <td style="width:25%;"><input type="text" id="provIdVisible" class="form-control" readonly></td>
+                    <td style="width:25%;"><strong>Fecha registro</strong></td>
+                    <td style="width:25%;">
+                      <input type="text" id="provFechaRegistro" class="form-control" readonly>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td style="width:25%;"><strong>Estatus</strong></td>
+                    <td style="width:25%;">
                       <label style="display:flex;align-items:center;gap:4px;">
                         <input type="checkbox" id="provActivo" checked>
                         <span>Activo</span>
                       </label>
                     </td>
                   </tr>
+                  
+                  <!-- Línea 2: Código Proveedor y RFC -->
                   <tr>
-                    <td><strong>Nombre *</strong></td>
-                    <td><input type="text" id="provNombre" class="form-control" required></td>
-                    <td><strong>RFC</strong></td>
-                    <td><input type="text" id="provRFC" class="form-control"></td>
+                    <td style="width:25%;"><strong>Código Proveedor</strong></td>
+                    <td style="width:25%;"><input type="text" id="provCodigo" class="form-control"></td>
+                    <td style="width:25%;"><strong>RFC</strong></td>
+                    <td style="width:25%;"><input type="text" id="provRFC" class="form-control"></td>
                   </tr>
+                  
+                  <!-- Línea 3: Nombre (completo) -->
                   <tr>
-                    <td><strong>Dirección</strong></td>
-                    <td colspan="2"><input type="text" id="provDireccion" class="form-control"></td>
-                    <td>
-                      <strong>Fecha registro</strong>
-                      <div style="margin-top:4px;">
-                        <input type="text" id="provFechaRegistro" class="form-control" readonly>
-                      </div>
-                    </td>
+                    <td style="width:25%;"><strong>Nombre *</strong></td>
+                    <td colspan="3"><input type="text" id="provNombre" class="form-control" required></td>
+                  </tr>
+                  
+                  <!-- Línea 4: Dirección -->
+                  <tr>
+                    <td style="width:25%;"><strong>Dirección</strong></td>
+                    <td colspan="3"><input type="text" id="provDireccion" class="form-control"></td>
                   </tr>
                 </table>
               </div>

@@ -148,6 +148,57 @@ body {
 }
 
 /* ================================ */
+/* 2.1 ESTILOS DE FORMULARIOS       */
+/* ================================ */
+/* Asegura que TODOS los elementos de formularios usen la fuente corporativa */
+input,
+select,
+textarea,
+button,
+label,
+.form-control,
+.form-select {
+    font-family: var(--font-family);    /* Fuente corporativa en controles */
+    font-size: inherit;                 /* Hereda tamaño definido en clase específica */
+}
+
+/* Regla base para .form-control con tamaño homologado */
+.form-control {
+    font-size: var(--Comp-FormControl-Size);      /* Tamaño homologado 12px */
+    line-height: var(--Comp-FormControl-LineHeight); /* Alto de línea homologado 1.15 */
+    font-family: var(--font-family);              /* Asegura fuente corporativa nuevamente */
+}
+
+/* Inputs genéricos sin clase - aplica tamaño homologado */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+input[type="tel"],
+input[type="url"],
+select,
+textarea {
+    font-size: var(--Comp-FormControl-Size);      /* Tamaño homologado 12px */
+    line-height: var(--Comp-FormControl-LineHeight); /* Alto de línea homologado 1.15 */
+    font-family: var(--font-family);              /* Fuente corporativa */
+}
+
+/* Labels y etiquetas - fuente corporativa + tamaño */
+label {
+    font-size: var(--Comp-FormLabel-Size);        /* Tamaño de etiqueta 12px */
+    font-family: var(--font-family);              /* Fuente corporativa */
+}
+
+/* Strong en tablas de formulario (etiquetas) */
+strong,
+td > strong {
+    font-family: var(--font-family);              /* Fuente corporativa */
+    font-weight: var(--font-weight-semibold);     /* Semi-negrita consistente */
+}
+
+/* ================================ */
 /* 3. HEADER PROFESIONAL CON LOGO   */
 /* ================================ */
 header {
@@ -1002,11 +1053,13 @@ header {
 }
 
 .ty-form-lbl { 
+    font-family: var(--font-family);                /* Fuente corporativa */
     font-size: var(--Comp-FormLabel-Size); 
     font-weight: var(--font-weight-semibold);       /* Etiquetas en formularios */
 }
 
 .ty-form-ctl { 
+    font-family: var(--font-family);                /* Fuente corporativa */
     font-size: var(--Comp-FormControl-Size);        /* Controles (inputs) en formularios */
 }
 

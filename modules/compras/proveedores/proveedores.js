@@ -1,10 +1,13 @@
 // Módulo de Proveedores (Compras)
 // -------------------------------
 // Controla la pantalla de catálogo de proveedores:
-//  - Carga la lista desde la API /api/proveedores.
+//  - Carga la lista desde la API /api/datos/TBL_PROV_GLOBAL (tabla de consulta dinámica).
+//  - Genera encabezados dinámicamente desde metadata.
 //  - Aplica filtro de texto en memoria.
 //  - Abre un modal para alta/edición de proveedor.
-//  - Gestiona servicios, sucursales y contactos asociados vía API.
+
+const TABLA_CONSULTA = 'TBL_PROV_GLOBAL';  // ✅ Tabla de consulta dinámica
+let metadataTabla = null;                   // Almacena metadata cargada
 
 document.addEventListener('DOMContentLoaded', () => {
   // Referencias a elementos del DOM usados en la pantalla.
@@ -118,16 +121,22 @@ document.addEventListener('DOMContentLoaded', () => {
     loading.style.display = show ? 'flex' : 'none';
   }
 
-  // Dibuja la lista de proveedores en el contenedor principal.
-  // Aplica un filtro de texto (por código, nombre o RFC) en memoria.
+  // Dibuja la lista de proveedores con columnas dinámicas.
+  // Aplica un filtro de texto en memoria.
   function renderLista(filtro = '') {
     if (!listaProveedores) return;
     const term = (filtro || '').toLowerCase();
+    
+    // Filtrar basándose en todas las columnas visibles
+    const columnasVisibles = metadataTabla?.columnas_visibles || ['CODIGO', 'NOMBRE', 'RFC', 'ACTIVO'];
+    
+    // Filtro: buscar en cualquier columna visible
     const filtrados = proveedores.filter(p => {
-      const texto = `${p.codigo || ''} ${p.nombre || ''} ${p.rfc || ''}`.toLowerCase();
-      const coincideTexto = texto.includes(term);
-      // si en el futuro quieres volver a filtrar por activos, puedes reusar soloActivos aquí
-      return coincideTexto;
+      const textoBusqueda = columnasVisibles
+        .map(col => String(p[col.toLowerCase()] || ''))
+        .join(' ')
+        .toLowerCase();
+      return textoBusqueda.includes(term);
     });
 
     listaProveedores.innerHTML = '';
@@ -141,18 +150,29 @@ document.addEventListener('DOMContentLoaded', () => {
       filtrados.forEach(p => {
         const row = document.createElement('div');
         row.className = 'table-row proveedor-row';
-        row.innerHTML = `
-          <div class="col-codigo">${p.codigo || ''}</div>
-          <div class="col-nombre">${p.nombre || ''}</div>
-          <div class="col-rfc">${p.rfc || ''}</div>
-          <div class="col-activo">${p.activo ? 'Activo' : 'Inactivo'}</div>
-        `;
+        
+        // Generar celdas dinámicamente según columnas visibles
+        columnasVisibles.forEach(col => {
+          const colNombre = col.toLowerCase();
+          let valor = p[colNombre] || '';
+          
+          // Formatear según tipo de columna
+          if (colNombre === 'activo') {
+            valor = valor === true || valor === 1 ? 'Activo' : 'Inactivo';
+          }
+          
+          const cell = document.createElement('div');
+          cell.className = `col-${colNombre}`;
+          cell.textContent = valor;
+          row.appendChild(cell);
+        });
+        
         listaProveedores.appendChild(row);
       });
     }
 
-    // Se recalculan totales de activos/inactivos en base al filtrado.
-    const activos = filtrados.filter(p => p.activo).length;
+    // Se recalculan totales de activos/inactivos
+    const activos = filtrados.filter(p => p.activo === true || p.activo === 1).length;
     const inactivos = filtrados.length - activos;
 
     if (lblActivos) lblActivos.textContent = activos;
@@ -160,29 +180,83 @@ document.addEventListener('DOMContentLoaded', () => {
     if (lblMostrando) lblMostrando.textContent = `Mostrando ${filtrados.length} de ${proveedores.length}`;
   }
 
-  // Llama al backend para obtener la lista de proveedores
-  // y la adapta a la estructura usada en el frontend.
+  // Carga metadata de la tabla de consulta TBL_PROV_GLOBAL
+  async function cargarMetadata() {
+    try {
+      const res = await fetch(`/api/datos/${TABLA_CONSULTA}/schema`);
+      if (!res.ok) throw new Error('Error al obtener schema');
+      metadataTabla = await res.json();
+      
+      console.log('✓ Metadata cargada:', metadataTabla);
+      // ✅ Generar encabezados dinámicamente basados en columnas_visibles
+      generarEncabezados();
+    } catch (e) {
+      console.error('Error cargando metadata:', e);
+    }
+  }
+
+  // Genera los encabezados dinámicamente
+  function generarEncabezados() {
+    const headersContainer = document.querySelector('.header-row');
+    if (!headersContainer || !metadataTabla) {
+      console.log('⚠️ No se pudo generar encabezados:', { headersContainer, metadataTabla });
+      return;
+    }
+    
+    headersContainer.innerHTML = '';
+    const columnasVisibles = metadataTabla.columnas_visibles || [];
+    const todasLasColumnas = metadataTabla.todas_las_columnas || [];
+    
+    console.log('📊 Generando encabezados para columnas:', columnasVisibles);
+    console.log('📋 Todas las columnas disponibles:', todasLasColumnas);
+    
+    if (columnasVisibles.length === 0) {
+      console.warn('⚠️ columnas_visibles está vacío en metadata');
+      return;
+    }
+    
+    columnasVisibles.forEach(colNombre => {
+      const colMetadata = todasLasColumnas.find(c => c.nombre === colNombre);
+      const etiqueta = colMetadata?.etiqueta || colNombre;
+      const headerDiv = document.createElement('div');
+      headerDiv.className = `col-${colNombre.toLowerCase()}`;
+      headerDiv.innerHTML = `<strong>${etiqueta}</strong>`;
+      headersContainer.appendChild(headerDiv);
+      console.log(`✓ Encabezado añadido: ${colNombre} (${etiqueta})`);
+    });
+  }
+
+  // Llama al backend para obtener los datos de TBL_PROV_GLOBAL
   async function cargarProveedores() {
     try {
       mostrarLoading(true);
-      const res = await fetch('/api/proveedores');
+      
+      // Cargar metadata primero si no está cargada
+      if (!metadataTabla) {
+        await cargarMetadata();
+      }
+      
+      // Cargar datos desde tabla de consulta dinámica
+      const res = await fetch(`/api/datos/${TABLA_CONSULTA}`);
       if (!res.ok) throw new Error('Error al obtener proveedores');
-      const data = await res.json();
+      const respuesta = await res.json();
+      const data = respuesta.datos || [];
 
-      // Adaptar estructura desde API (solo datos fiscales + activo)
-      proveedores = (data || []).map(p => ({
-        id: p.id,
-        codigo: p.codigo,
-        nombre: p.nombre,
-        rfc: p.rfc,
-        direccion: p.direccion,
-        fecha_registro: p.fecha_registro,
-        activo: p.activo === true || p.activo === 1
+      // Adaptar estructura (ahora con columnas dinámicas)
+      // ✅ Si ID está vacío, usar CODIGO como ID
+      proveedores = data.map(p => ({
+        id: p.ID || p.CODIGO,  // Fallback a CODIGO si ID está vacío
+        codigo: p.CODIGO,
+        nombre: p.NOMBRE,
+        rfc: p.RFC,
+        direccion: p.DIRECCION,
+        fecha_registro: p.FECHA_REGISTRO,
+        activo: p.ACTIVO === true || p.ACTIVO === 1
       }));
 
       renderLista(txtBuscar ? txtBuscar.value : '');
     } catch (e) {
-      console.error('Error cargando proveedores', e);
+      console.error('Error cargando proveedores:', e);
     } finally {
       mostrarLoading(false);
     }
@@ -744,6 +818,121 @@ document.addEventListener('DOMContentLoaded', () => {
   renderLista = function(filtro = '') {
     oldRenderLista(filtro);
     wireRowClicks();
+  };
+
+  // ========================================
+  // FUNCIONALIDAD DE REDIMENSIONAMIENTO DE COLUMNAS
+  // ========================================
+  const STORAGE_KEY = 'PROV_COLUMN_WIDTHS';
+  const MIN_WIDTH = 80;   // Mínimo ancho de columna
+  const MAX_WIDTH = 500;  // Máximo ancho de columna
+
+  function guardarAnchosColumnas() {
+    const headerDivs = document.querySelectorAll('.header-row > div');
+    const anchos = {};
+    headerDivs.forEach(div => {
+      const className = div.className;
+      const width = div.offsetWidth;
+      anchos[className] = width;
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(anchos));
+    console.log('✓ Anchos de columnas guardados:', anchos);
+  }
+
+  function restaurarAnchosColumnas() {
+    const anchos = localStorage.getItem(STORAGE_KEY);
+    if (!anchos) return;
+    
+    try {
+      const anchosObj = JSON.parse(anchos);
+      Object.entries(anchosObj).forEach(([className, width]) => {
+        const divs = document.querySelectorAll(`.${className}`);
+        divs.forEach(div => {
+          if (width >= MIN_WIDTH && width <= MAX_WIDTH) {
+            div.style.flex = `0 0 ${width}px`;
+            div.style.minWidth = `${MIN_WIDTH}px`;
+            div.style.maxWidth = `${MAX_WIDTH}px`;
+          }
+        });
+      });
+      console.log('✓ Anchos de columnas restaurados:', anchosObj);
+    } catch (e) {
+      console.warn('⚠️ Error restaurando anchos:', e);
+    }
+  }
+
+  function inicializarRedimensionamiento() {
+    const headerRow = document.querySelector('.header-row');
+    if (!headerRow) return;
+
+    const headerDivs = headerRow.querySelectorAll('> div');
+    headerDivs.forEach((header, index) => {
+      // Aplicar min/max width
+      header.style.minWidth = `${MIN_WIDTH}px`;
+      header.style.maxWidth = `${MAX_WIDTH}px`;
+
+      // Crear área de drag invisible en el borde derecho
+      if (index < headerDivs.length - 1) { // No última columna
+        header.addEventListener('mouseover', function() {
+          this.style.cursor = 'col-resize';
+        });
+
+        header.addEventListener('mouseout', function() {
+          this.style.cursor = 'grab';
+        });
+
+        header.addEventListener('mousedown', (e) => {
+          // Solo si está en el borde derecho (últimos 5px)
+          if (e.offsetX < header.offsetWidth - 5) return;
+
+          let startX = e.pageX;
+          let startWidth = header.offsetWidth;
+
+          function mouseMoveHandler(moveEvent) {
+            const diff = moveEvent.pageX - startX;
+            let newWidth = startWidth + diff;
+
+            // Aplicar límites
+            newWidth = Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, newWidth));
+
+            header.style.flex = `0 0 ${newWidth}px`;
+            header.style.minWidth = `${MIN_WIDTH}px`;
+            header.style.maxWidth = `${MAX_WIDTH}px`;
+            
+            // También aplicar al div correspondiente en .table-row
+            const colClass = header.className;
+            document.querySelectorAll(`.table-row .${colClass}`).forEach(cell => {
+              cell.style.flex = `0 0 ${newWidth}px`;
+              cell.style.minWidth = `${MIN_WIDTH}px`;
+              cell.style.maxWidth = `${MAX_WIDTH}px`;
+            });
+          }
+
+          function mouseUpHandler() {
+            document.removeEventListener('mousemove', mouseMoveHandler);
+            document.removeEventListener('mouseup', mouseUpHandler);
+            guardarAnchosColumnas();
+          }
+
+          document.addEventListener('mousemove', mouseMoveHandler);
+          document.addEventListener('mouseup', mouseUpHandler);
+          e.preventDefault();
+        });
+      }
+    });
+  }
+
+  // Restaurar anchos al cargar, luego inicializar
+  restaurarAnchosColumnas();
+  
+  // Reinicializar redimensionamiento después de cada render
+  const originalCargarProveedores = cargarProveedores;
+  cargarProveedores = async function() {
+    await originalCargarProveedores.call(this);
+    setTimeout(() => {
+      inicializarRedimensionamiento();
+      // ✅ CSS Grid maneja automáticamente la alineación - no necesita sincronización
+    }, 100);
   };
 
   // Carga inicial

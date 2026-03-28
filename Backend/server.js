@@ -7,6 +7,7 @@ const http = require('http');       // Servidor HTTP simple (fall‑back si HTTP
 const https = require('https');     // Servidor HTTPS con certificados locales
 const express = require('express'); // Framework web principal
 const path = require('path');       // Construcción segura de rutas
+const { exec } = require('child_process'); // Para abrir el navegador
 const Firebird = require('node-firebird'); // Driver para base de datos Firebird
 
 /**
@@ -87,6 +88,7 @@ function findFileRecursive(startDir, target) {
 const authRoutes = require('./routes/auth');
 const menuRoutes = require('./routes/menus');
 const usuariosRoutes = require('./routes/usuarios');  // ✅ Consolidado: solo usuarios.js para todo
+const { router: catalogosRoutes, setDatabaseConnection } = require('./routes/catalogos');  // ✅ Catálogos dinámicos
 
 // Middleware global para parsear JSON en peticiones de la API
 app.use(express.json());
@@ -299,6 +301,17 @@ ensureSchema().catch((e) => console.error('Error inicializando esquema:', e.mess
 app.use('/auth', authRoutes);
 app.use('/menus', menuRoutes);
 app.use('/api/usuarios', usuariosRoutes);  // ✅ Consolidado: todas las operaciones de usuarios aquí
+
+// ✅ Middleware para inyectar conexión BD en tablas de consulta
+app.use('/api/datos', (req, res, next) => {
+  if (useSqlite && sqliteDb) {
+    setDatabaseConnection(sqliteDb);
+  }
+  next();
+});
+
+// Montar ruta de tablas de consulta dinámicas
+app.use('/api/datos', catalogosRoutes);
 
 // ==========================================
 // RUTAS API: CLIENTES (VENTAS)
@@ -970,17 +983,34 @@ if (fs.existsSync(certFile) && fs.existsSync(keyFile)) {
       cert: fs.readFileSync(certFile)
     };
     https.createServer(options, app).listen(PORT, HOST, () => {
-      console.log(`Servidor HTTPS corriendo en https://localhost:${PORT}`);
+      const url = `https://localhost:${PORT}/login.html`;
+      console.log(`Servidor HTTPS corriendo en ${url}`);
+      // Abre automáticamente el navegador en el login
+      exec(`start ${url}`, { shell: 'powershell.exe' }, (err) => {
+        if (err) console.warn('No se pudo abrir el navegador automáticamente');
+      });
     });
   } catch (err) {
     // Si falla la lectura/uso de certificados se cae a HTTP simple
     console.error('Error al leer certificados, arrancando HTTP en su lugar:', err);
-    app.listen(PORT, HOST, () => console.log(`Servidor HTTP corriendo en http://localhost:${PORT}`));
+    app.listen(PORT, HOST, () => {
+      const url = `http://localhost:${PORT}/login.html`;
+      console.log(`Servidor HTTP corriendo en ${url}`);
+      // Abre automáticamente el navegador en el login
+      exec(`start ${url}`, { shell: 'powershell.exe' }, (err) => {
+        if (err) console.warn('No se pudo abrir el navegador automáticamente');
+      });
+    });
   }
 } else {
   // Si no hay certificados, se arranca directamente en HTTP (comportamiento por defecto)
   app.listen(PORT, HOST, () => {
-    console.log(`Servidor HTTP corriendo en http://localhost:${PORT}`);
+    const url = `http://localhost:${PORT}/login.html`;
+    console.log(`Servidor HTTP corriendo en ${url}`);
     console.log('Nota: no se encontraron certificados en ./certs — para HTTPS coloque server.pem y server-key.pem en esa carpeta');
+    // Abre automáticamente el navegador en el login
+    exec(`start ${url}`, { shell: 'powershell.exe' }, (err) => {
+      if (err) console.warn('No se pudo abrir el navegador automáticamente');
+    });
   });
 }

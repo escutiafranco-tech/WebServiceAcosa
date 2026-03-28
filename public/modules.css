@@ -33,6 +33,9 @@
     min-height: 0;    /* permite que los hijos con overflow hagan scroll correctamente */
     padding: 0;
     margin: 0;
+    overflow-x: scroll; /* Scroll HORIZONTAL SIEMPRE VISIBLE como Excel */
+    overflow-y: hidden; /* Scroll vertical lo maneja table-body */
+    scrollbar-gutter: stable; /* Reserva espacio para scrollbars - no se pisan entre sí */
 }
 
 /* Elementos que representan tablas (clásicas o con clase específica) */
@@ -57,11 +60,10 @@ table.list-body thead,
 /* Cuerpo con scroll interno */
 table.list-body tbody,
 [class$="-table"] tbody,
-.list-body tbody,
-.table-body {
+.list-body tbody {
     display: block;
     overflow-y: auto;
-    overflow-x: auto;
+    overflow-x: hidden;
     min-height: 0;
     max-height: 100%;
 }
@@ -569,87 +571,70 @@ table.tabla-formulario-general strong {
 /* Cuerpo de tabla con scroll */
 .table-body-scroll,
 .table-body {
-    flex: 1;                          /* Ocupa espacio disponible */
-    overflow-y: auto;                 /* Scroll vertical */
-    overflow-x: auto;                 /* Scroll horizontal */
-    min-height: 0;                    /* Permite reducción */
-    min-width: max-content;
-    display: flex;                    /* Flexbox para contenido */
-    flex-direction: column;           /* Dirección vertical */
-    padding: 0;                       /* Sin padding */
-    margin: 0;                        /* Sin margen */
+    flex: 1;
+    overflow-y: scroll;               /* Scroll VERTICAL SIEMPRE VISIBLE */
+    overflow-x: hidden;               /* No scrollear horizontalmente aquí - el padre lo maneja */
+    min-height: 0;
+    min-width: fit-content;           /* Expandir si las filas lo requieren */
+    padding: 0;
+    margin: 0;
+    scrollbar-gutter: stable;         /* Reserva espacio para scrollbar vertical - no desaparece */
 }
 
 /* ==========================================================================
-   SISTEMA DE GRILLA Y FILAS DE TABLA
+   SISTEMA DE GRILLA Y FILAS DE TABLA (CSS GRID) - SIMPLE COMO EXCEL
    ========================================================================== */
 
 /**
- * Sistema de grilla para filas de tabla
- * 7 columnas con tamaños responsivos mínimos y máximos
+ * Grid template definido en el contenedor
  */
-.table-row {
-    /* Usar layout tipo tabla: hace que header y filas se alineen automáticamente.
-       Las celdas se comportan como table-cell y los anchos se controlan por clases.
-       Esto permite centralizar el control en modules.css. */
+.list-container {
+    --grid-template: 
+        100px      /* col-id */
+        120px      /* col-codigo */
+        200px      /* col-nombre */
+        140px      /* col-rfc */
+        280px      /* col-direccion */
+        100px      /* col-activo */
+        160px;     /* col-fecha_registro */
+}
+
+/* Header row usa CSS Grid - STICKY PARA QUE QUEDE FIJO AL SCROLLEAR */
+.header-row {
     display: grid;
-    width: 100%;
+    grid-template-columns: var(--grid-template);
+    background: #f8f9fa !important;
+    color: var(--text-color) !important;
+    font-weight: 600;
+    font-size: var(--table-header-font-size, var(--text-size-large));
+    position: sticky;
+    top: 0px;
+    z-index: 10;
+    border-bottom: 2px solid #dee2e6;
+    min-height: 36px;
+    padding: 0;
+    gap: 0;
+    /* NO usar min-width: fit-content aquí - header debe ser flexible */
 }
 
-/* El contenedor de la tabla actúa como tabla para alineación */
-[class$="-table"] {
-    display: table;
-    table-layout: fixed; /* usa anchos definidos por clases */
-    width: 100%;
-}
-
-/**
- * Estilos comunes para celdas de tabla y header
- */
-.table-row > div,
+/* Cada celda del header */
 .header-row > div {
-    display: block;                   /* Celda como bloque para usar grid */
-    padding: 6px 10px;               /* Padding interno */
-    vertical-align: middle;
+    display: flex;                    /* Contenedor flex para alineación interna */
+    align-items: center;              /* Centra contenido verticalmente */
+    padding: 6px 10px;                /* Padding interno */
+    justify-content: flex-start;      /* Alinea contenido a la izquierda */
+    box-sizing: border-box;           /* El padding está INCLUIDO en el tamaño */
     overflow: hidden;                 /* Oculta overflow */
     text-overflow: ellipsis;          /* Texto largo con puntos suspensivos */
     white-space: nowrap;              /* Sin wrap de texto */
     border-right: 1px solid #f0f0f0;  /* Borde derecho sutil */
     position: relative;
     font-size: var(--table-font-size, var(--text-size-normal)) !important;
-}
-
-/* ==========================================================================
-   CABECERA DE TABLA CON REDIMENSIONAMIENTO Y ARRASTRE
-   ========================================================================== */
-
-/*** Fila de cabecera de tabla con funcionalidad de redimensionamiento*/
-.header-row {
-    background: #f8f9fa !important;  /* Fondo claro de encabezado */
-    color: var(--text-color) !important; /* Color de texto */
-    font-weight: 300;                /* Peso ligero */
-    font-size: var(--table-header-font-size, var(--text-size-large)); /* Tamaño del header */
-    position: sticky;                /* Se mantiene visible al hacer scroll */
-    top: 0px;                        /* Pegado al borde superior */
-    z-index: 10;                     /* Por encima de las filas */
-    margin: 2px solid #dee2e6;       /* Borde sutil */
-    display: grid;                   /* Alineación en grid con filas */
-    grid-template-columns: var(--table-cols, auto); /* Plantilla compartida con el cuerpo */
-    gap: 0;                          /* Sin separación entre columnas */
-}
-
-
-.header-row > div {
+    /* Estilos específicos del header */
     cursor: grab;                     /* Permite arrastrar para reordenar */
     user-select: none;                /* Bloquea selección de texto */
-    position: relative;               /* Necesario para pseudo-elemento de resize */
-    border-width: 1px 1px 1px 1px;    /* Borde alrededor del header */
-    border-style: solid;              /* Tipo de borde */
-    border-color: #e0dfdf;            /* Color del borde */
     background: #f5f5f5;              /* Fondo gris claro */
-    padding: 6px 8px;                 /* Padding del encabezado */
 }
-
 
 .header-row > div:hover {
     background: #ebebeb;              /* Oscurece al pasar el cursor */
@@ -702,11 +687,37 @@ table.tabla-formulario-general strong {
 }
 
 /* ==========================================================================
-   CUERPO DE TABLA Y ESTADOS VISUALES
+   FILAS DE TABLA CON CSS GRID
    ========================================================================== */
 
-/*** Filas del cuerpo de la tabla*/
+/* Cada fila de tabla heredará la definición de grid del contenedor */
+.table-row {
+    display: grid;
+    grid-template-columns: var(--grid-template);
+    align-items: center;
+    gap: 0;
+    min-width: fit-content;          /* Expande si el contenido es ancho */
+    width: 100%;                     /* Ancho inicial 100% del contenedor */
+}
 
+/**
+ * Estilos comunes para celdas de datos
+ */
+.table-row > div {
+    display: flex;                    /* Contenedor flex para alineación interna */
+    align-items: center;              /* Centra contenido verticalmente */
+    padding: 6px 10px;               /* Padding interno */
+    justify-content: flex-start;      /* Alinea contenido a la izquierda */
+    box-sizing: border-box;           /* El padding está INCLUIDO en el tamaño */
+    overflow: hidden;                 /* Oculta overflow */
+    text-overflow: ellipsis;          /* Texto largo con puntos suspensivos */
+    white-space: nowrap;              /* Sin wrap de texto */
+    border-right: 1px solid #f0f0f0;  /* Borde derecho sutil */
+    position: relative;
+    font-size: var(--table-font-size, var(--text-size-normal)) !important;
+}
+
+/* Estilos de filas en el cuerpo de tabla */
 .table-body .table-row {
     border-bottom: 1px solid var(--border-color); /* Línea separadora entre filas */
     transition: var(--transition);                  /* Transición en hover/estado */
@@ -745,16 +756,18 @@ table.tabla-formulario-general strong {
     gap: 6px;                         /* Separación entre botones */
 }
 
-/* Anchos por columna centralizados: modificar aquí para afectar todos los módulos */
-.col-acciones { width: 60px; }                                  /* Ancho fijo columna Acciones */
-.col-acciones { position: sticky; left: 0; z-index: 5; background: var(--table-row-bg); } /* Fija a la izquierda */
-.col-id { width: 100px; }
-.col-codigo { width: 140px; }
-.col-nombre { width: 360px; }
-.col-contacto { width: 200px; }
-.col-telefono { width: 160px; }
-.col-email { width: 260px; }
-.col-activo { width: 100px; }
+/* Anchos de columnas - se aplican a todos los .col-* que aparezcan en cualquier fila */
+.col-acciones { flex: 0 0 60px; min-width: 60px; }
+.col-acciones { position: sticky; left: 0; z-index: 5; background: var(--table-row-bg); }
+.col-id { flex: 0 0 100px; min-width: 100px; }
+.col-codigo { flex: 0 0 120px; min-width: 120px; }
+.col-nombre { flex: 0 0 200px; min-width: 200px; }
+.col-rfc { flex: 0 0 140px; min-width: 140px; }
+.col-direccion { flex: 0 0 280px; min-width: 280px; }
+.col-email { flex: 0 0 260px; min-width: 260px; }
+.col-contacto { flex: 0 0 200px; min-width: 200px; }
+.col-telefono { flex: 0 0 160px; min-width: 160px; }
+.col-activo { flex: 0 0 100px; min-width: 100px; }
 .col-fecha { width: 140px; }
 .col-tipo { width: 140px; }
 .col-ubicacion { width: 240px; }
@@ -1429,46 +1442,62 @@ textarea.table-input {
     min-height: 20px;
 }
 
-/* Ajustes para listas basadas en <table> (ej. Proveedores) */
+/* Ajustes para listas basadas en divs flexbox (ej. Proveedores) */
+.list-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow-x: scroll;    /* Scroll horizontal SIEMPRE VISIBLE como Excel */
+    overflow-y: hidden;    /* Scroll vertical en .table-body */
+    padding: 0;
+    margin: 0;
+}
+
 .list-body {
-    width: 100%;
-    border-collapse: collapse;
-    display: block;               /* Permite separar thead/tbody para scroll interno */
-}
-
-.list-body thead {
-    display: table;
-    width: 100%;
-    table-layout: fixed;          /* Usa anchos definidos por columnas para estabilidad */
-}
-
-.list-body tbody {
-    display: block;
-    overflow-y: auto;            /* Scroll interno solo en el cuerpo */
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow-y: auto;
     overflow-x: auto;
-    flex: 1 1 auto;
-    max-height: calc(100%);      /* Ocupa el resto del alto disponible */
-    min-height: 0;
+    padding: 0;
+    margin: 0;
+    width: 100%;
 }
 
-.list-body thead th,
-.list-body tbody td {
+.header-row {
+    display: flex;
+    width: 100%;
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    flex-shrink: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.header-row > div,
+.table-row > div {
+    display: flex;
+    align-items: center;
     padding: 8px 10px;
-    text-overflow: ellipsis;
     overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
-    border-bottom: 1px solid var(--border-color);
+    border-right: 1px solid #f0f0f0;
+    flex-shrink: 0;
 }
 
-/* Forzar anchos para columnas no-flexibles; dejar la columna Nombre (3) flexible */
-.list-body thead th:nth-child(1), .list-body tbody td:nth-child(1) { width: 60px; }
-.list-body thead th:nth-child(2), .list-body tbody td:nth-child(2) { width: 140px; }
-.list-body thead th:nth-child(4), .list-body tbody td:nth-child(4) { width: 160px; }
-.list-body thead th:nth-child(6), .list-body tbody td:nth-child(6) { width: 120px; }
+.table-row {
+    display: flex;
+    width: 100%;
+    border-bottom: 1px solid var(--border-color);
+    align-items: center;
+    padding: 0;
+    margin: 0;
+}
 
-/* Asegurar filas del tbody con layout estable */
-.list-body tbody tr { display: table; width: 100%; table-layout: fixed; }
-
+.table-row:hover {
+    background: #f8f9fa;
+}
 
 /* Estado de enfoque en inputs/selects */
 .input-cell input:focus,
@@ -1570,17 +1599,9 @@ textarea.table-input {
  * Tablet: 1024px y menos
  */
 @media (max-width: 1024px) {
-    /* Ajustes para tablet: usa plantilla de columnas centralizada
-       Define --table-cols en el contenedor de la tabla para controlar anchos.
-       Ejemplo: --table-cols: 60px 100px 140px 1fr 160px 260px 120px; */
+    /* En tablet mantenemos flexbox pero ajustamos tamaños */
     .header-row {
-        font-size: var(--text-size-normal);   /* Reduce tamaño del header */
-    }
-    .table-row {
-        display: grid;                        /* Mantiene grid */
-        width: 100%;                          /* Ocupa ancho completo */
-        grid-template-columns: var(--table-cols, auto); /* Usa plantilla definida */
-        gap: 0;                               /* Sin separación entre columnas */
+        font-size: var(--text-size-normal);
     }
 }
 
@@ -1589,25 +1610,25 @@ textarea.table-input {
  */
 @media (max-width: 768px) {
     .header-row > div { 
-        cursor: default;               /* Cursor normal en móvil */
+        cursor: default;
     }
     .header-row > div::after { 
-        display: none;                 /* Oculta redimensionamiento en móvil */
+        display: none;
     }
     .barra-superior-modulo { 
-        flex-direction: column;        /* Disposición vertical */
+        flex-direction: column;
         gap: 12px; 
         padding: 12px 15px; 
     }
     .barra-izquierda, .barra-derecha { 
         width: 100%; 
-        justify-content: center;       /* Centra contenido */
+        justify-content: center;
     }
     .search-box { 
-        min-width: 250px;              /* Ancho reducido */
+        min-width: 250px;
     }
     .filtro-fechas { 
-        min-width: 200px;              /* Ancho reducido */
+        min-width: 200px;
     }
     .main-content { 
         padding: 0 5px; 
@@ -1619,36 +1640,36 @@ textarea.table-input {
     .estadisticas-inferiores { 
         gap: 15px; 
         width: 100%; 
-        justify-content: space-between; /* Distribuye espacio */
-        order: 1;                      /* Primera posición */
-        flex: none;                    /* Tamaño fijo */
+        justify-content: space-between;
+        order: 1;
+        flex: none;
     }
     .stat-item-inferior { 
         flex: 1; 
         min-width: 110px; 
-        justify-content: center;       /* Centra contenido */
+        justify-content: center;
     }
     .contador-registros { 
         width: 100%; 
-        justify-content: space-between; /* Distribuye espacio */
-        order: 2;                      /* Segunda posición */
+        justify-content: space-between;
+        order: 2;
         flex: none; 
     }
     .list-container {
         padding-bottom: 10px;
     }
     .table-row { 
-        grid-template-columns: 1fr;    /* Una columna en móvil */
+        flex-direction: column;
         gap: 8px; 
-        text-align: center;            /* Texto centrado */
+        text-align: center;
         padding: 10px 12px; 
     }
     .col-acciones { 
-        justify-content: center;       /* Centra botones */
+        justify-content: center;
     }
     .empty-state { 
         padding: 40px 15px; 
-        min-height: 150px;             /* Altura reducida */
+        min-height: 150px;
     }
 }
 
@@ -1705,48 +1726,9 @@ textarea.table-input {
     }
 }
 
-/* ==========================================================================
-   ESTILOS PARA TABLA DE PROVEEDORES
-   ========================================================================== */
-.list-container {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0; /* Quitar padding lateral para que la tabla llegue al borde del contenedor */
-    margin: 0;  /* Asegurar que no exista margen que desplace la tabla */
-}
-
-.list-body {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: var(--ty-body-size, 14px);
-    margin: 0; /* Evitar centrar la tabla con margin:auto */
-}
-
-.list-body th,
-.list-body td {
-    padding: 8px 12px;
-    text-align: left;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.list-body th {
-    background: var(--background-color);
-    font-weight: 600;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-
-.list-body tr:hover {
-    background: var(--hover-color, #f5f5f5);
-}
-
-.list-body button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    margin: 0 2px;
+/* NOTA: Reglas de .list-body y tablas clásicas se han movido al final del archivo
+   para evitar conflictos. La estructura moderna usa .table-body con flexbox.
+   Ver secciones: "SISTEMA DE GRILLA Y FILAS DE TABLA" */
     padding: 4px;
     border-radius: 4px;
 }

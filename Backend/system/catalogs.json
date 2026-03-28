@@ -1,0 +1,54 @@
+{
+  "tablas_consulta": {
+    "TBL_PROV_GLOBAL": {
+      "descripcion": "Tabla global de proveedores con todas sus dimensiones",
+      "tabla_base": "TBL_PROV_DFISCALES",
+      "alias_base": "p",
+      "columnas_base": [
+        { "nombre": "ID", "etiqueta": "ID", "tipo": "TEXT" },
+        { "nombre": "CODIGO", "etiqueta": "Código", "tipo": "TEXT" },
+        { "nombre": "NOMBRE", "etiqueta": "Nombre", "tipo": "TEXT" },
+        { "nombre": "RFC", "etiqueta": "RFC", "tipo": "TEXT" },
+        { "nombre": "DIRECCION", "etiqueta": "Dirección", "tipo": "TEXT" },
+        { "nombre": "ACTIVO", "etiqueta": "Estado", "tipo": "INTEGER" },
+        { "nombre": "FECHA_REGISTRO", "etiqueta": "Fecha Registro", "tipo": "TEXT" }
+      ],
+      "columnas_visibles": ["ID", "CODIGO", "NOMBRE", "RFC", "DIRECCION", "ACTIVO", "FECHA_REGISTRO"],
+      "joins": [
+        {
+          "tabla": "TBL_PROV_DSERVICIOS",
+          "alias": "srv",
+          "tipo": "LEFT",
+          "on": "p.ID = srv.PROVEEDOR_ID",
+          "columnas": [
+            { "nombre": "SERVICIO", "etiqueta": "Servicio" }
+          ],
+          "activo": false,
+          "nota": "Se activará cuando TBL_PROV_DSERVICIOS esté consolidada"
+        },
+        {
+          "tabla": "TBL_PROV_DCONDICIONES",
+          "alias": "cond",
+          "tipo": "LEFT",
+          "on": "p.ID = cond.PROVEEDOR_ID",
+          "columnas": [
+            { "nombre": "PLAZO_PAGO", "etiqueta": "Plazo Pago" },
+            { "nombre": "DESCUENTO", "etiqueta": "Descuento" },
+            { "nombre": "LIMITE_CREDITO", "etiqueta": "Límite Crédito" }
+          ],
+          "activo": false,
+          "nota": "Se activará cuando TBL_PROV_DCONDICIONES esté lista"
+        }
+      ]
+    },
+    "TBL_CLI_GLOBAL": {
+      "descripcion": "Tabla global de clientes",
+      "tabla_base": "TBL_CLI_DATOS",
+      "alias_base": "c",
+      "columnas_base": [],
+      "columnas_visibles": [],
+      "joins": [],
+      "nota": "Tabla aún no creada, será completada en siguiente fase"
+    }
+  }
+}

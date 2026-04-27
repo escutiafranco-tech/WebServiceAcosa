@@ -6,6 +6,7 @@
   <title>Catálogo de Proveedores - ACOSA</title>
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/modules.css">
+  <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
   <div class="module-container">
@@ -14,6 +15,14 @@
       <button id="btnNuevoProveedor" class="toolbar-btn">
         <img src="/Imagenes/Acc_Agregar.png" alt="Nuevo" class="toolbar-icon">
         <span class="toolbar-label">Nuevo</span>
+      </button>
+      <button id="btnExportarProveedores" class="toolbar-btn">
+        <img src="/Imagenes/Acc_Exportar.png" alt="Exportar" class="toolbar-icon">
+        <span class="toolbar-label">Exportar</span>
+      </button>
+      <button id="btnImportarProveedores" class="toolbar-btn">
+        <img src="/Imagenes/Acc_Importar.png" alt="Importar" class="toolbar-icon">
+        <span class="toolbar-label">Importar</span>
       </button>
       <button id="btnRefrescarProveedores" class="toolbar-btn">
         <img src="/Imagenes/Acc_Actualizar.png" alt="Refrescar" class="toolbar-icon">
@@ -28,12 +37,9 @@
       </div>
     </div>
 
-    <!-- Listado principal -->
+    <!-- Listado principal - Tabla unificada (headers + datos en mismo grid) -->
     <div class="list-container">
-      <!-- Encabezado de tabla (se genera dinámicamente desde JavaScript) -->
-      <div class="header-row"></div>
-      <!-- Contenedor de datos dinámicos con clase table-body -->
-      <div class="table-body" id="listaProveedores"></div>
+      <div class="tabla-unificada" id="listaProveedores"></div>
     </div>
 
     <!-- Barra inferior -->
@@ -52,9 +58,9 @@
         <span id="mostrandoProveedores">Mostrando 0 de 0</span>
       </div>
       <div class="paginacion-inferior">
-        <button id="btnAnteriorProveedores" class="btn btn-outline" disabled>← Anterior</button>
+        <button id="btnAnteriorProveedores" class="btn btn-outline" disabled>❮ Anterior</button>
         <span id="infoPaginaProveedores">Página 1 de 1</span>
-        <button id="btnSiguienteProveedores" class="btn btn-outline" disabled>Siguiente →</button>
+        <button id="btnSiguienteProveedores" class="btn btn-outline" disabled>Siguiente ❯</button>
       </div>
     </div>
 
@@ -62,6 +68,86 @@
     <div class="loading-overlay" id="loadingProveedores" style="display:none;">
       <div class="loading-spinner"></div>
       <p>Cargando proveedores...</p>
+    </div>
+  </div>
+
+  <!-- Modal para seleccionar tablas a exportar -->
+  <div id="modalExportarTablas" class="modal-overlay" style="display:none;">
+    <div class="modal-container" style="max-width: 500px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <h2>Seleccionar tablas a exportar</h2>
+        </div>
+        <div class="modal-header-buttons">
+          <button id="btnCerrarModalExport" class="btn-header-icon" title="Cerrar">×</button>
+        </div>
+      </div>
+
+      <div class="modal-content-compact" style="padding: 20px;">
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" id="chkExportProveedores" checked>
+            <span><strong>Proveedores</strong> - Catálogo principal</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" id="chkExportServicios">
+            <span><strong>Servicios</strong> - Servicios prestados por proveedor</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" id="chkExportSucursales">
+            <span><strong>Sucursales</strong> - Sucursales por proveedor</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" id="chkExportContactos">
+            <span><strong>Contactos</strong> - Agenda de contactos</span>
+          </label>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+          <button id="btnCancelarExport" class="btn btn-outline">Cancelar</button>
+          <button id="btnConfirmarExport" class="btn btn-primary">Exportar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para seleccionar tabla a importar -->
+  <div id="modalImportarTablas" class="modal-overlay" style="display:none;">
+    <div class="modal-container" style="max-width: 500px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <h2>Seleccionar tablas a importar</h2>
+        </div>
+        <div class="modal-header-buttons">
+          <button id="btnCerrarModalImport" class="btn-header-icon" title="Cerrar">×</button>
+        </div>
+      </div>
+
+      <div class="modal-content-compact" style="padding: 20px;">
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" id="chkImportProveedores" checked>
+            <span><strong>Proveedores</strong> - Actualizar/agregar proveedores</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" id="chkImportServicios">
+            <span><strong>Servicios</strong> - Agregar servicios a proveedores</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" id="chkImportSucursales">
+            <span><strong>Sucursales</strong> - Agregar sucursales a proveedores</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" id="chkImportContactos">
+            <span><strong>Contactos</strong> - Agregar contactos a proveedores</span>
+          </label>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+          <button id="btnCancelarImport" class="btn btn-outline">Cancelar</button>
+          <button id="btnConfirmarImport" class="btn btn-primary">Continuar</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -106,8 +192,10 @@
                       <input type="text" id="provFechaRegistro" class="form-control" readonly>
                     </td>
                   </tr>
+                  <!-- Línea 2: RFC y Estatus -->
                   <tr>
-                    <td colspan="2"></td>
+                    <td style="width:25%;"><strong>RFC</strong></td>
+                    <td style="width:25%;"><input type="text" id="provRFC" class="form-control"></td>
                     <td style="width:25%;"><strong>Estatus</strong></td>
                     <td style="width:25%;">
                       <label style="display:flex;align-items:center;gap:4px;">
@@ -115,14 +203,6 @@
                         <span>Activo</span>
                       </label>
                     </td>
-                  </tr>
-                  
-                  <!-- Línea 2: Código Proveedor y RFC -->
-                  <tr>
-                    <td style="width:25%;"><strong>Código Proveedor</strong></td>
-                    <td style="width:25%;"><input type="text" id="provCodigo" class="form-control"></td>
-                    <td style="width:25%;"><strong>RFC</strong></td>
-                    <td style="width:25%;"><input type="text" id="provRFC" class="form-control"></td>
                   </tr>
                   
                   <!-- Línea 3: Nombre (completo) -->

@@ -7,10 +7,15 @@
     "invoices:excel": "node scripts/generate-invoice-excel.js"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
     "dotenv": "^16.4.5",
     "exceljs": "^4.3.0",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.4.0",
+    "express-validator": "^7.3.2",
     "fast-xml-parser": "^4.5.0",
+    "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
     "node-firebird": "^1.0.5",
     "sqlite3": "^5.1.7"

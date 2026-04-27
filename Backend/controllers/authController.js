@@ -4,62 +4,163 @@
 
 const path = require('path');                 // Módulo nativo para trabajar con rutas de archivos
 const jwt = require('jsonwebtoken');          // Librería para generar y firmar tokens JWT
-const sqlite3 = require('sqlite3').verbose(); // Driver de SQLite en modo "verbose" (más mensajes de depuración)
+const bcrypt = require('bcryptjs');           // 🔒 NUEVO: Hashing de contraseñas
+const { getSQLiteInstance, get } = require('../utils/database'); // Pool centralizado
+const { 
+  isValidUsername, 
+  createErrorResponse, 
+  createSuccessResponse 
+} = require('../utils/security'); // Validación y seguridad
 
-// Ruta absoluta a la base de datos SQLite
+// Obtener instancia de BD (reutilizable)
+const dbPath = path.join(__dirname, '..', '..', 'Database', 'acosa_local.db');
+let db = null;
 
-const dbPath = path.join(__dirname, '..', '..', 'Database', 'acosa_local.db'); // Coincide con la que se utiliza en Backend/server.js (../Database/acosa_local.db)
-const db = new sqlite3.Database(dbPath); // Instancia de conexión contra esa base de datos
+// Inicializar BD de forma lazy (al primer uso)
+function getDb() {
+  if (!db) {
+    db = getSQLiteInstance(dbPath);
+  }
+  return db;
+}
 
 /* ================================ */
 /* 2. CONTROLADOR: LOGIN DE USUARIO */
 /* ================================ */
 
-// Endpoint: POST /auth/login
+/**
+ * POST /auth/login
+ * Autentica usuario contra la tabla USERS usando bcryptjs
+ * 
+ * @param {Object} req - Request con { username, password } en body
+ * @param {Object} res - Response con token JWT o error
+ */
+exports.login = (req, res) => {
+  const { username, password } = req.body;
 
-// - Si es correcto, genera y devuelve un token JWT
-exports.login = (req, res) => { // - Valida usuario y contraseña contra la tabla USERS de SQLite
-  const { username, password } = req.body;   // Extraemos credenciales enviadas en el cuerpo de la petición
-
-
+  // 🔒 VALIDACIÓN MEJORADA
   if (!username || !password) {
-    return res.status(400).json({ message: 'Usuario y contraseña son requeridos' });
-  }    // Validación rápida de que vengan ambos campos
+    const { statusCode, body } = createErrorResponse('Usuario y contraseña son requeridos');
+    return res.status(statusCode).json(body);
+  }
 
-  // Consulta SQL: busca un usuario activo que coincida con usuario y contraseña
-  // NOTA: Actualmente compara contraseña en texto plano (pendiente: usar hashes)
-  db.get(
-    'SELECT id, username, password, role, activo FROM USERS WHERE username = ? AND password = ? LIMIT 1',
-    [username, password],
-    (err, row) => {
-      // Si hubo error al consultar la BD, devolvemos 500
+  // Validar formato de usuario
+  if (!isValidUsername(username)) {
+    const { statusCode, body } = createErrorResponse('Usuario inválido');
+    return res.status(statusCode).json(body);
+  }
+
+  // Limitar longitud de entrada (prevención de DoS)
+  if (password.length > 100) {
+    const { statusCode, body } = createErrorResponse('Credenciales inválidas');
+    return res.status(statusCode).json(body);
+  }
+
+  // 🔒 CAMBIO: Obtener SOLO el usuario (no comparar contraseña en SQL)
+  // Se compara con bcryptjs después
+  getDb().get(
+    'SELECT id, username, password_hash, role, activo FROM USERS WHERE username = ? LIMIT 1',
+    [username],
+    async (err, row) => {
+      // Manejo de errores de BD
       if (err) {
         console.error('Error consultando USERS:', err.message);
-        return res.status(500).json({ message: 'Error interno de autenticación' });
+        const { statusCode, body } = createErrorResponse('Error interno de autenticación', 500);
+        return res.status(statusCode).json(body);
       }
 
-      // Si no encontró ningún usuario, credenciales inválidas
+      // Usuario no encontrado
       if (!row) {
-        return res.status(401).json({ message: 'Usuario o contraseña incorrecto' });
+        // 🔒 Mismo mensaje genérico (no revelamos si usuario existe)
+        const { statusCode, body } = createErrorResponse('Usuario o contraseña incorrecto', 401);
+        return res.status(statusCode).json(body);
       }
 
-      // Si el usuario está marcado como inactivo, bloqueamos el acceso
+      // Usuario inactivo
       if (row.activo === 0) {
-        return res.status(403).json({ message: 'Usuario inactivo' });
+        const { statusCode, body } = createErrorResponse('Usuario inactivo. Contacte al administrador.', 403);
+        return res.status(statusCode).json(body);
       }
 
-      // Secreto usado para firmar el JWT (se recomienda definir JWT_SECRET en .env)
-      const JWT_SECRET = process.env.JWT_SECRET || 'dev_insecure_secret_change_me';
+      // 🔒 NUEVO: Comparar contraseña con hash usando bcryptjs
+      try {
+        const passwordMatch = await bcrypt.compare(password, row.password_hash);
+        
+        if (!passwordMatch) {
+          // Contraseña incorrecta
+          const { statusCode, body } = createErrorResponse('Usuario o contraseña incorrecto', 401);
+          return res.status(statusCode).json(body);
+        }
 
-      // Cargamos en el payload datos mínimos del usuario (id, username, rol)
-      const token = jwt.sign(
-        { id: row.id, username: row.username, role: row.role },
-        JWT_SECRET,
-        { expiresIn: '2h' } // El token caduca en 2 horas
-      );
+        // 🔒 JWT_SECRET seguro desde .env (DEBE estar configurado)
+        const JWT_SECRET = process.env.JWT_SECRET;
+        
+        if (!JWT_SECRET || JWT_SECRET.length < 32) {
+          console.error('❌ JWT_SECRET no configurado correctamente en .env');
+          const { statusCode, body } = createErrorResponse('Error interno de autenticación', 500);
+          return res.status(statusCode).json(body);
+        }
 
-      // Devolvemos el token al frontend
-      res.json({ token });
+        // Generar token JWT
+        const token = jwt.sign(
+          { 
+            id: row.id, 
+            username: row.username, 
+            role: row.role 
+          },
+          JWT_SECRET,
+          { 
+            expiresIn: process.env.JWT_EXPIRES_IN || '24h',
+            algorithm: 'HS256'  // 🔒 Especificar algoritmo
+          }
+        );
+
+        // Actualizar último login
+        getDb().run(
+          'UPDATE USERS SET last_login = ? WHERE id = ?',
+          [new Date().toISOString(), row.id],
+          (updateErr) => {
+            if (updateErr) {
+              console.warn('No se pudo actualizar last_login:', updateErr.message);
+            }
+          }
+        );
+
+        // Respuesta exitosa
+        res.json(createSuccessResponse(
+          {
+            token,
+            usuario: {
+              id: row.id,
+              username: row.username,
+              rol: row.role
+            }
+          },
+          'Autenticación exitosa'
+        ));
+
+      } catch (bcryptErr) {
+        console.error('Error comparando contraseña:', bcryptErr.message);
+        const { statusCode, body } = createErrorResponse('Error interno de autenticación', 500);
+        return res.status(statusCode).json(body);
+      }
     }
   );
+};
+
+/**
+ * UTILIDAD: Hashear contraseña
+ * Se usa para crear nuevos usuarios o cambiar contraseña
+ * 
+ * @param {string} password - Contraseña en texto plano
+ * @returns {Promise<string>} - Contraseña hasheada
+ */
+exports.hashPassword = async (password) => {
+  try {
+    // Rounds: 10 es estándar (más alto = más seguro pero lento)
+    const saltRounds = 10;
+    return await bcrypt.hash(password, saltRounds);
+  } catch (err) {
+    throw new Error('Error al hashear contraseña: ' + err.message);
+  }
 };

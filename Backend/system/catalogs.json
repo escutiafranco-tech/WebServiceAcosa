@@ -49,6 +49,20 @@
       "columnas_visibles": [],
       "joins": [],
       "nota": "Tabla aún no creada, será completada en siguiente fase"
+    },
+    "TBL_PROD_SERVICIOS": {
+      "descripcion": "Catálogo de Productos y Servicios",
+      "tabla_base": "TBL_PROD_SERVICIOS",
+      "alias_base": "ps",
+      "columnas_base": [
+        { "nombre": "ID", "etiqueta": "ID", "tipo": "TEXT" },
+        { "nombre": "NOMBRE", "etiqueta": "Nombre", "tipo": "TEXT" },
+        { "nombre": "DESCRIPCION", "etiqueta": "Descripción", "tipo": "TEXT" },
+        { "nombre": "ACTIVO", "etiqueta": "Activo", "tipo": "INTEGER" },
+        { "nombre": "FECHA_REGISTRO", "etiqueta": "Fecha Registro", "tipo": "TEXT" }
+      ],
+      "columnas_visibles": ["ID", "NOMBRE", "DESCRIPCION", "ACTIVO", "FECHA_REGISTRO"],
+      "joins": []
     }
   }
 }

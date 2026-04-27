@@ -665,7 +665,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Botón para ir a la izquierda
         const btnIzq = document.createElement('button');
         btnIzq.className = 'btn-nav-pestanas';
-        btnIzq.innerHTML = '◀';
+        btnIzq.innerHTML = '❮';
         btnIzq.title = 'Navegar izquierda';
         btnIzq.onclick = () => {
             const barra = contenedor.querySelector('.barra-pestañas');
@@ -681,7 +681,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Botón para ir a la derecha
         const btnDer = document.createElement('button');
         btnDer.className = 'btn-nav-pestanas';
-        btnDer.innerHTML = '▶';
+        btnDer.innerHTML = '❯';
         btnDer.title = 'Navegar derecha';
         btnDer.onclick = () => {
             const barra = contenedor.querySelector('.barra-pestañas');

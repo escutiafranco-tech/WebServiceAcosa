@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Catálogo de Productos y Servicios - ACOSA</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/modules.css">
+  <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="module-container">
+    <!-- Barra de herramientas -->
+    <div class="toolbar-module">
+      <button id="btnNuevoProdServicio" class="toolbar-btn">
+        <img src="/Imagenes/Acc_Agregar.png" alt="Nuevo" class="toolbar-icon">
+        <span class="toolbar-label">Nuevo</span>
+      </button>
+      <button id="btnExportarProdServicios" class="toolbar-btn">
+        <img src="/Imagenes/Acc_Exportar.png" alt="Exportar" class="toolbar-icon">
+        <span class="toolbar-label">Exportar</span>
+      </button>
+      <button id="btnImportarProdServicios" class="toolbar-btn">
+        <img src="/Imagenes/Acc_Importar.png" alt="Importar" class="toolbar-icon">
+        <span class="toolbar-label">Importar</span>
+      </button>
+      <button id="btnRefrescarProdServicios" class="toolbar-btn">
+        <img src="/Imagenes/Acc_Actualizar.png" alt="Refrescar" class="toolbar-icon">
+        <span class="toolbar-label">Refrescar</span>
+      </button>
+      <div class="toolbar-divider"></div>
+      <div class="toolbar-search">
+        <input type="text" id="buscarProdServicio" placeholder="Buscar por nombre o descripción...">
+        <button id="btnBuscarProdServicio" class="search-btn">
+          <img src="/Imagenes/Acc_Filtrar.png" alt="Buscar" style="width:16px;height:16px;">
+        </button>
+      </div>
+    </div>
+
+    <!-- Listado principal - Tabla unificada -->
+    <div class="list-container">
+      <div class="tabla-unificada" id="listaProdServicios"></div>
+    </div>
+
+    <!-- Barra inferior -->
+    <div class="barra-inferior-unificada">
+      <div class="estadisticas-inferiores">
+        <div class="stat-item-inferior">
+          <span class="stat-label-inferior">Activos:</span>
+          <span class="stat-numero-inferior" id="prodServiciosActivos">0</span>
+        </div>
+        <div class="stat-item-inferior">
+          <span class="stat-label-inferior">Inactivos:</span>
+          <span class="stat-numero-inferior" id="prodServiciosInactivos">0</span>
+        </div>
+      </div>
+      <div class="contador-registros">
+        <span id="mostrandoProdServicios">Mostrando 0 de 0</span>
+      </div>
+    </div>
+
+    <!-- Overlay de carga -->
+    <div class="loading-overlay" id="loadingProdServicios" style="display:none;">
+      <div class="loading-spinner"></div>
+      <p>Cargando productos y servicios...</p>
+    </div>
+  </div>
+
+  <!-- Modal para crear/editar producto-servicio -->
+  <div id="modalServicio" class="modal-overlay" style="display:none;">
+    <div class="modal-container modal-compact modal-small">
+      <div class="modal-header">
+        <div class="modal-title">
+          <h2 id="tituloModalServicio">Nuevo Producto/Servicio</h2>
+        </div>
+        <div class="modal-header-buttons">
+          <button id="btnCerrarModalServicio" class="btn-header-icon" title="Cerrar">×</button>
+        </div>
+      </div>
+
+      <div class="modal-content-small">
+        <form id="formServicio" class="form-container" onsubmit="return false;">
+          <div class="collapsible-section">
+            <div class="section-body">
+              <table style="width:100%; border-collapse:collapse;">
+                <tbody>
+                  <tr>
+                    <td style="width:25%;"><strong>ID</strong></td>
+                    <td style="width:75%;"><input type="text" id="srvId" class="form-control" readonly></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Nombre</strong></td>
+                    <td><input type="text" id="srvNombre" class="form-control" required></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Descripción</strong></td>
+                    <td><textarea id="srvDescripcion" class="form-control" rows="3" style="resize:vertical;"></textarea></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Activo</strong></td>
+                    <td><input type="checkbox" id="srvActivo" checked></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button id="btnCancelarServicio" type="button" class="btn btn-outline">Cancelar</button>
+            <button id="btnGuardarServicio" type="button" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input file oculto para importar -->
+  <input type="file" id="inputImportarProdServicios" style="display:none;" accept=".xlsx,.xls">
+
+  <script src="productos-servicios.js"></script>
+</body>
+</html>

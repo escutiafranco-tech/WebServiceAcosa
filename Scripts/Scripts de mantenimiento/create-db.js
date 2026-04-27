@@ -1,6 +1,7 @@
 const Firebird = require('node-firebird');
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '..', 'Config', '.env') });
 
 const dbDir = path.join(__dirname, 'DataBase');
 const dbPath = path.join(dbDir, 'acosa.fdb');
@@ -17,8 +18,8 @@ const connectionString = 'firebird://' + dbPath.replace(/\\/g, '/');
 // Configuración Firebird - modo local
 const fbConfig = {
   database: connectionString,
-  user: 'SYSDBA',
-  password: 'masterkey',
+  user: process.env.FB_USER || 'SYSDBA',
+  password: process.env.FB_PASSWORD || 'acosa_firebird_2026_secure',
   lowercase_keys: true,
   pageSize: 8192
 };
@@ -35,8 +36,8 @@ Firebird.attach(fbConfig, (err, db) => {
     console.log('\n🔧 Intentando crear DB con fbembed (embedded)...');
     const dbOptions = {
       database: dbPath,
-      user: 'SYSDBA',
-      password: 'masterkey',
+      user: process.env.FB_USER || 'SYSDBA',
+      password: process.env.FB_PASSWORD || 'acosa_firebird_2026_secure',
       lowercase_keys: true,
       pageSize: 8192,
       libraries: 'fbembed'

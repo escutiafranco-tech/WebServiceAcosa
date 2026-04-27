@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reportes de Compras - ACOSA</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/modules.css">
+  <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="module-container">
+    <!-- Filtros de reporte -->
+    <div class="toolbar-module">
+      <div class="toolbar-filter-section">
+        <label for="tipoReporte">Tipo de Reporte:</label>
+        <select id="tipoReporte" class="form-control">
+          <option value="proveedores">Proveedores</option>
+          <option value="productos-servicios">Productos y Servicios</option>
+          <option value="asignaciones">Asignaciones por Proveedor</option>
+        </select>
+      </div>
+      
+      <button id="btnGenerarReporte" class="toolbar-btn">
+        <img src="/Imagenes/Acc_Actualizar.png" alt="Generar" class="toolbar-icon">
+        <span class="toolbar-label">Generar</span>
+      </button>
+      <button id="btnExportarReporte" class="toolbar-btn">
+        <img src="/Imagenes/Acc_Exportar.png" alt="Exportar" class="toolbar-icon">
+        <span class="toolbar-label">Exportar</span>
+      </button>
+      
+      <div class="toolbar-divider"></div>
+      <div class="toolbar-search">
+        <input type="text" id="buscarReporte" placeholder="Buscar en reporte...">
+        <button id="btnBuscarReporte" class="search-btn">
+          <img src="/Imagenes/Acc_Filtrar.png" alt="Buscar" style="width:16px;height:16px;">
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabla de resultados -->
+    <div class="list-container">
+      <div class="tabla-unificada" id="tablaReporte"></div>
+    </div>
+
+    <!-- Barra inferior -->
+    <div class="barra-inferior-unificada">
+      <div class="estadisticas-inferiores">
+        <div class="stat-item-inferior">
+          <span class="stat-label-inferior">Total Registros:</span>
+          <span class="stat-numero-inferior" id="reporteTotal">0</span>
+        </div>
+      </div>
+      <div class="contador-registros">
+        <span id="mostrandoReporte">Mostrando 0 de 0</span>
+      </div>
+    </div>
+
+    <!-- Overlay de carga -->
+    <div class="loading-overlay" id="loadingReporte" style="display:none;">
+      <div class="loading-spinner"></div>
+      <p>Generando reporte...</p>
+    </div>
+  </div>
+
+  <style>
+    .toolbar-filter-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-right: 20px;
+    }
+    .toolbar-filter-section label {
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .toolbar-filter-section select {
+      min-width: 250px;
+    }
+  </style>
+
+  <script src="reportes.js"></script>
+</body>
+</html>

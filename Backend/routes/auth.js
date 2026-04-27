@@ -1,15 +1,48 @@
-/* ================================ */
-/* RUTA: AUTENTICACIÓN (LOGIN)     */
-/* ================================ */
+/**
+ * RUTA: AUTENTICACIÓN (LOGIN)
+ * 
+ * Endpoints de autenticación con validación y seguridad
+ */
 
-const express = require('express');                         // Framework HTTP
-const router = express.Router();                            // Instancia de router de Express
-const { login } = require('../controllers/authController'); // Controlador con la lógica de login
+const express = require('express');
+const router = express.Router();
+const { login } = require('../controllers/authController');
+const { validateLogin } = require('../middleware/validationMiddleware');
+const rateLimit = require('express-rate-limit');
 
-// POST /auth/login
-// - Recibe { username, password } en el cuerpo de la petición
-// - Delegamos la validación y generación de token a authController.login
-router.post('/login', login);
+/**
+ * Rate Limiting para login (prevenir fuerza bruta)
+ * Máximo 5 intentos cada 15 minutos por IP
+ */
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,  // 15 minutos
+  max: 5,                     // 5 intentos máximo
+  message: {
+    message: 'Demasiados intentos de login. Intenta en 15 minutos.'
+  },
+  standardHeaders: true,      // Incluir RateLimit-* headers
+  legacyHeaders: false,       // Deshabilitar X-RateLimit-* headers
+  skip: (req) => {
+    // En desarrollo, opcional saltar rate limit
+    return process.env.NODE_ENV === 'development' && process.env.DEBUG === 'true';
+  }
+});
 
-// Exportamos el router para que Backend/server.js lo monte en /auth
+/**
+ * POST /auth/login
+ * Autentica usuario y devuelve JWT token
+ * 
+ * @body {string} username - Nombre de usuario
+ * @body {string} password - Contraseña
+ * 
+ * @returns {Object} token y datos de usuario
+ * @throws {400} Validación fallida
+ * @throws {401} Credenciales inválidas
+ * @throws {403} Usuario inactivo
+ * @throws {429} Demasiados intentos
+ * @throws {500} Error interno del servidor
+ */
+router.post('/login', loginLimiter, validateLogin, login);
+
+// Exportar router
 module.exports = router;

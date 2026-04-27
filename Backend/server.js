@@ -10,6 +10,17 @@ const path = require('path');       // Construcción segura de rutas
 const { exec } = require('child_process'); // Para abrir el navegador
 const Firebird = require('node-firebird'); // Driver para base de datos Firebird
 
+// 🔒 SEGURIDAD: Importar librerías de seguridad
+const helmet = require('helmet');              // Headers HTTP seguros
+const cors = require('cors');                  // Control de CORS
+const rateLimit = require('express-rate-limit'); // Rate limiting
+
+// 📦 MÓDULOS LOCALES: Gestión de base de datos centralizada
+const { getSQLiteInstance, closeSQLite } = require('./utils/database');
+
+// RUTAS Y MIDDLEWARE
+const paginationMiddleware = require('./middleware/paginationMiddleware');
+
 /**
  * Servidor principal del WebService ACOSA.
  *
@@ -17,27 +28,25 @@ const Firebird = require('node-firebird'); // Driver para base de datos Firebird
  *  - Inicializa las tablas mínimas cuando se usa SQLite (proveedores, servicios, agenda, usuarios).
  *  - Expone API REST para proveedores y catálogos, más rutas de autenticación y menús.
  *  - Sirve la app web (HTML/JS/CSS) desde la carpeta Public y otros recursos estáticos.
+ *  - 🔒 Implementa seguridad: HTTPS, JWT, validación, rate limiting, CORS
  */
-// Bandera para decidir el motor de BD
-//  - true  => se usa SIEMPRE SQLite (modo desarrollo)
-//  - false => se intenta usar Firebird (modo producción)
 
-const useSqlite = true;
-if (process.env.USE_SQLITE && process.env.USE_SQLITE !== 'true') {
-  // Aviso: aunque en .env se haya puesto otro valor, aquí se fuerza SQLite
-  console.warn('Advertencia: se fuerza uso de SQLite ignorando USE_SQLITE en .env');
-}
+const useSqlite = process.env.USE_SQLITE !== 'false';
+
+console.log(`🚀 Iniciando ACOSA en modo ${process.env.NODE_ENV || 'development'}`);
+console.log(`📦 Base de datos: ${useSqlite ? 'SQLite' : 'Firebird'}`);
+
+// 🔧 Inicializar variables globales de base de datos
 let sqliteDb = null;
+
+// Crea la instancia principal de la aplicación Express
+const app = express();
 if (useSqlite) {
-  // Carga driver SQLite solo si realmente se va a usar
-  const sqlite3 = require('sqlite3').verbose();
   // Ruta del archivo físico de SQLite en la carpeta Database de la raíz del proyecto
   const sqlitePath = path.join(__dirname, '..', 'Database', 'acosa_local.db');
-  // Asegura que la carpeta Database exista antes de abrir/crear el archivo .db
-  const dbDir = path.dirname(sqlitePath);
-  if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
-  // Abre (o crea si no existe) la base de datos SQLite
-  sqliteDb = new sqlite3.Database(sqlitePath);
+  
+  // Obtener instancia única de SQLite (pool pattern)
+  sqliteDb = getSQLiteInstance(sqlitePath);
 
   // Solo sembrar usuario admin por defecto si la tabla USERS ya existe y está vacía
   sqliteDb.serialize(() => {
@@ -65,10 +74,98 @@ if (useSqlite) {
   });
 }
 
-// Crea la instancia principal de la aplicación Express
-const app = express();
+// 🔒 SEGURIDAD: Configuración de Helmet (headers HTTP seguros)
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", 'data:', 'https:'],
+      connectSrc: ["'self'", 'https://localhost:3001']
+    }
+  },
+  hsts: {
+    maxAge: 31536000, // 1 año
+    includeSubDomains: true,
+    preload: true
+  },
+  frameguard: { action: 'deny' },
+  noSniff: true,
+  xssFilter: true,
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
+}));
 
-// Buscador simple de ficheros para cargar rutas aunque se hayan movido (hoy casi no se usa)
+// 🔒 SEGURIDAD: Configuración de CORS
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'https://localhost:3001').split(',');
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS no permitido'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  maxAge: 3600
+}));
+
+// 🔒 SEGURIDAD: Rate Limiting Global (máximo 100 requests por 15 minutos)
+const globalLimiter = rateLimit({
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || 900000), // 15 minutos
+  max: parseInt(process.env.RATE_LIMIT_REQUESTS || 100),
+  message: {
+    message: 'Demasiadas solicitudes. Intenta más tarde.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => {
+    // En desarrollo, saltarlo si DEBUG=true
+    return process.env.NODE_ENV === 'development' && process.env.DEBUG === 'true';
+  }
+});
+app.use(globalLimiter);
+
+// Middleware para parsear JSON con límite de tamaño
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+// 🔒 SEGURIDAD: Sanitizar headers potencialmente peligrosos
+app.use((req, res, next) => {
+  // Remover headers que podrían revelar información del servidor
+  res.removeHeader('X-Powered-By');
+  res.removeHeader('Server');
+  
+  // Establecer headers de seguridad adicionales
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  
+  next();
+});
+
+// 🔒 SEGURIDAD: Validar JWT_SECRET en startup
+if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
+  console.error('❌ ERROR CRÍTICO: JWT_SECRET no está configurado correctamente');
+  console.error('   Debe tener mínimo 32 caracteres');
+  console.error('   Ejecutar: node -e "console.log(require(\'crypto\').randomBytes(32).toString(\'hex\'))"');
+  console.error('   Luego configurar en Config/.env');
+  process.exit(1);
+}
+console.log('✅ JWT_SECRET configurado correctamente');
+
+// 🔒 SEGURIDAD: Validar contraseña de Firebird en modo producción
+if (process.env.NODE_ENV === 'production' && !useSqlite) {
+  if (!process.env.FB_PASSWORD || process.env.FB_PASSWORD === 'masterkey') {
+    console.error('❌ ERROR CRÍTICO: Contraseña de Firebird no está segura para producción');
+    console.error('   Cambiar FB_PASSWORD en Config/.env a una contraseña fuerte');
+    process.exit(1);
+  }
+  console.log('✅ Contraseña de Firebird configurada correctamente');
+}
+
 function findFileRecursive(startDir, target) {
   const items = fs.readdirSync(startDir, { withFileTypes: true });
   for (const it of items) {
@@ -93,6 +190,9 @@ const { router: catalogosRoutes, setDatabaseConnection } = require('./routes/cat
 // Middleware global para parsear JSON en peticiones de la API
 app.use(express.json());
 
+// 📊 MIDDLEWARE: Normalizar parámetros de paginación (?page=1&pageSize=20)
+app.use(paginationMiddleware);
+
 // Sirve los archivos estáticos de la app web (HTML, JS, CSS) desde Public
 app.use(express.static(path.join(__dirname, '..', 'Public')));
 
@@ -111,9 +211,9 @@ app.use('/data', express.static(path.join(__dirname, '..', 'Database')));
 const fbConfig = {
   host: process.env.FB_HOST || 'localhost',
   port: parseInt(process.env.FB_PORT || '3050', 10),
-  database: process.env.FB_DB || path.join(__dirname, '..', 'Database', 'acosa.fdb'),
+  database: process.env.FB_DATABASE || path.join(__dirname, '..', 'Database', 'acosa.fdb'),
   user: process.env.FB_USER || 'SYSDBA',
-  password: process.env.FB_PASSWORD || 'masterkey',
+  password: process.env.FB_PASSWORD || '', // ⚠️ No usar fallback de contraseña - debe estar en .env
   lowercase_keys: true,
   role: null,
   pageSize: 8192,
@@ -252,6 +352,26 @@ async function ensureSchema() {
       ID INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
       MODULO VARCHAR(100),
       SUBMODULO VARCHAR(100)
+    )`);
+
+    // Agregar tabla de productos y servicios
+    ddlStatements.push(`CREATE TABLE TBL_PROD_SERVICIOS (
+      ID VARCHAR(50) NOT NULL PRIMARY KEY,
+      NOMBRE VARCHAR(255) NOT NULL,
+      DESCRIPCION BLOB SUB_TYPE TEXT,
+      ACTIVO SMALLINT DEFAULT 1,
+      FECHA_REGISTRO VARCHAR(50)
+    )`);
+
+    // Agregar tabla de relación proveedor-productos/servicios
+    ddlStatements.push(`CREATE TABLE TBL_PROV_PROD_SERVICIOS (
+      ID INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+      PROVEEDOR_ID VARCHAR(50) NOT NULL,
+      PROD_SERVICIO_ID VARCHAR(50) NOT NULL,
+      FECHA_ASIGNACION VARCHAR(50),
+      CONSTRAINT FK_PROV_PROD_PROV FOREIGN KEY (PROVEEDOR_ID) REFERENCES TBL_PROV_DFISCALES(ID) ON DELETE CASCADE,
+      CONSTRAINT FK_PROV_PROD_PROD FOREIGN KEY (PROD_SERVICIO_ID) REFERENCES TBL_PROD_SERVICIOS(ID) ON DELETE CASCADE,
+      CONSTRAINT UK_PROV_PROD UNIQUE (PROVEEDOR_ID, PROD_SERVICIO_ID)
     )`);
 
     // Ejecuta de forma segura cada sentencia de creación de tabla en Firebird

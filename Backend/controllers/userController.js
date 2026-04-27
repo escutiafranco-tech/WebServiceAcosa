@@ -3,9 +3,29 @@
 /* ================================ */
 
 const path = require('path');                    // Módulo nativo para manejar rutas de archivos
-const sqlite3 = require('sqlite3').verbose();    // Driver SQLite en modo "verbose" para mayor detalle
-const dbPath = path.join(__dirname, '..', '..', 'Database', 'acosa_local.db'); // Ruta a la misma base SQLite que usa el backend (../Database/acosa_local.db)
-const db = new sqlite3.Database(dbPath);         // Instancia de conexión a la base de datos
+const bcrypt = require('bcryptjs');              // Hashing de contraseñas
+const { getSQLiteInstance } = require('../utils/database'); // Pool centralizado
+const { 
+  isValidUsername, 
+  isValidPassword, 
+  isValidEmail, 
+  isValidName,
+  isValidId,
+  createErrorResponse, 
+  createSuccessResponse,
+  safeHandler 
+} = require('../utils/security'); // Validación y seguridad
+
+// Inicializar BD de forma lazy
+const dbPath = path.join(__dirname, '..', '..', 'Database', 'acosa_local.db');
+let db = null;
+
+function getDb() {
+  if (!db) {
+    db = getSQLiteInstance(dbPath);
+  }
+  return db;
+}
 
 /* ================================ */
 /* 2. CONTROLADOR: LISTAR USUARIOS */
@@ -13,19 +33,54 @@ const db = new sqlite3.Database(dbPath);         // Instancia de conexión a la 
 
 // Endpoint: GET /users - Devuelve todos los usuarios (para administración)
 // O GET /api/users - Devuelve solo usuarios activos (para menú)
+// Con paginación: ?page=1&pageSize=20
 exports.getAllUsers = (req, res) => {
   const isAdmin = req.user && req.user.role === 'Administrador';
+  const { page = 1, pageSize = 20 } = req.pagination || {};
   
-  const query = isAdmin
+  // Parámetros validados
+  const currentPage = Math.max(1, parseInt(page) || 1);
+  const size = Math.min(100, Math.max(1, parseInt(pageSize) || 20));
+  const offset = (currentPage - 1) * size;
+
+  const baseQuery = isAdmin
     ? 'SELECT id, username, nombre, email, role, activo, created_at FROM USERS ORDER BY username ASC'
     : 'SELECT id, username, role FROM USERS WHERE activo = 1 ORDER BY username';
 
-  db.all(query, [], (err, rows) => {
-    if (err) {
-      console.error('Error leyendo usuarios desde SQLite:', err.message);
+  // Obtener total de registros
+  const countQuery = `SELECT COUNT(*) as total FROM (${baseQuery}) as count_table`;
+  
+  getDb().get(countQuery, [], (countErr, countResult) => {
+    if (countErr) {
+      console.error('Error contando usuarios:', countErr.message);
       return res.status(500).json({ error: 'Error obteniendo usuarios' });
     }
-    res.json(rows || []);
+
+    const total = countResult?.total || 0;
+
+    // Obtener registros paginados
+    const paginatedQuery = `${baseQuery} LIMIT ? OFFSET ?`;
+    
+    getDb().all(paginatedQuery, [size, offset], (err, rows) => {
+      if (err) {
+        console.error('Error leyendo usuarios desde SQLite:', err.message);
+        return res.status(500).json({ error: 'Error obteniendo usuarios' });
+      }
+      
+      // Respuesta con datos paginados
+      res.json(createSuccessResponse(
+        {
+          usuarios: rows || [],
+          paginacion: {
+            pagina: currentPage,
+            tamanoPagina: size,
+            total,
+            totalPaginas: Math.ceil(total / size)
+          }
+        },
+        'Usuarios obtenidos exitosamente'
+      ));
+    });
   });
 };
 
@@ -33,20 +88,28 @@ exports.getAllUsers = (req, res) => {
 exports.getUserById = (req, res) => {
   const { id } = req.params;
 
-  db.get(
+  // 🔒 Validar ID
+  if (!isValidId(id)) {
+    const { statusCode, body } = createErrorResponse('ID de usuario inválido');
+    return res.status(statusCode).json(body);
+  }
+
+  getDb().get(
     'SELECT id, username, nombre, email, role, activo, created_at FROM USERS WHERE id = ?',
     [id],
     (err, row) => {
       if (err) {
         console.error('Error obteniendo usuario:', err.message);
-        return res.status(500).json({ message: 'Error al obtener usuario' });
+        const { statusCode, body } = createErrorResponse('Error al obtener usuario', 500);
+        return res.status(statusCode).json(body);
       }
 
       if (!row) {
-        return res.status(404).json({ message: 'Usuario no encontrado' });
+        const { statusCode, body } = createErrorResponse('Usuario no encontrado', 404);
+        return res.status(statusCode).json(body);
       }
 
-      res.json(row);
+      res.json(createSuccessResponse(row, 'Usuario obtenido exitosamente'));
     }
   );
 };
@@ -55,54 +118,102 @@ exports.getUserById = (req, res) => {
 exports.createUser = (req, res) => {
   const { username, password, nombre, email, rol, activo } = req.body;
 
-  // Validaciones
+  // 🔒 VALIDACIONES MEJORADAS
   if (!username || !password || !nombre || !email || !rol) {
-    return res.status(400).json({ message: 'Campos obligatorios faltantes' });
+    const { statusCode, body } = createErrorResponse('Campos obligatorios faltantes');
+    return res.status(statusCode).json(body);
   }
 
-  if (password.length < 4) {
-    return res.status(400).json({ message: 'La contraseña debe tener al menos 4 caracteres' });
+  // Validar username
+  if (!isValidUsername(username)) {
+    const { statusCode, body } = createErrorResponse(
+      'Username inválido: 3-50 caracteres, solo alfanumérico, guiones y guiones bajos'
+    );
+    return res.status(statusCode).json(body);
   }
 
-  // Validar que el usuario no exista
-  db.get(
+  // Validar contraseña (fuerza mínima)
+  if (!isValidPassword(password, 8)) {
+    const { statusCode, body } = createErrorResponse(
+      'Contraseña débil: mínimo 8 caracteres, debe incluir mayúsculas, minúsculas y números'
+    );
+    return res.status(statusCode).json(body);
+  }
+
+  // Validar nombre
+  if (!isValidName(nombre)) {
+    const { statusCode, body } = createErrorResponse(
+      'Nombre inválido: 2-100 caracteres, solo letras y espacios'
+    );
+    return res.status(statusCode).json(body);
+  }
+
+  // Validar email
+  if (!isValidEmail(email)) {
+    const { statusCode, body } = createErrorResponse('Email inválido');
+    return res.status(statusCode).json(body);
+  }
+
+  // Validar rol
+  const rolesValidos = ['Administrador', 'Supervisor', 'Usuario'];
+  if (!rolesValidos.includes(rol)) {
+    const { statusCode, body } = createErrorResponse(
+      `Rol inválido. Debe ser uno de: ${rolesValidos.join(', ')}`
+    );
+    return res.status(statusCode).json(body);
+  }
+
+  // Verificar que el usuario no exista
+  getDb().get(
     'SELECT id FROM USERS WHERE username = ?',
     [username],
     (err, row) => {
       if (err) {
         console.error('Error verificando usuario:', err.message);
-        return res.status(500).json({ message: 'Error interno' });
+        const { statusCode, body } = createErrorResponse('Error al verificar usuario', 500);
+        return res.status(statusCode).json(body);
       }
 
       if (row) {
-        return res.status(409).json({ message: 'El nombre de usuario ya existe' });
+        const { statusCode, body } = createErrorResponse('El nombre de usuario ya existe', 409);
+        return res.status(statusCode).json(body);
       }
 
-      // Crear el usuario
-      const now = new Date().toISOString();
-      const nuevoId = `usr_${Date.now()}`;
-      const activoValue = activo !== undefined ? (activo ? 1 : 0) : 1;
-
-      db.run(
-        'INSERT INTO USERS (id, username, password, nombre, email, role, activo, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [nuevoId, username, password, nombre, email, rol || 'Usuario', activoValue, now],
-        function(insErr) {
-          if (insErr) {
-            console.error('Error creando usuario:', insErr.message);
-            return res.status(500).json({ message: 'Error al crear usuario' });
-          }
-
-          res.status(201).json({
-            id: nuevoId,
-            username,
-            nombre,
-            email,
-            role: rol || 'Usuario',
-            activo: activoValue,
-            created_at: now
-          });
+      // 🔒 HASHEAR CONTRASEÑA antes de guardar
+      bcrypt.hash(password, 10, (hashErr, passwordHash) => {
+        if (hashErr) {
+          console.error('Error hasheando contraseña:', hashErr.message);
+          const { statusCode, body } = createErrorResponse('Error al crear usuario', 500);
+          return res.status(statusCode).json(body);
         }
-      );
+
+        // Crear el usuario
+        const now = new Date().toISOString();
+        const nuevoId = `usr_${Date.now()}`;
+        const activoValue = activo !== undefined ? (activo ? 1 : 0) : 1;
+
+        getDb().run(
+          'INSERT INTO USERS (id, username, password_hash, nombre, email, role, activo, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+          [nuevoId, username, passwordHash, nombre, email, rol, activoValue, now],
+          function(insErr) {
+            if (insErr) {
+              console.error('Error creando usuario:', insErr.message);
+              const { statusCode, body } = createErrorResponse('Error al crear usuario', 500);
+              return res.status(statusCode).json(body);
+            }
+
+            res.status(201).json(createSuccessResponse({
+              id: nuevoId,
+              username,
+              nombre,
+              email,
+              role: rol,
+              activo: activoValue,
+              created_at: now
+            }, 'Usuario creado exitosamente'));
+          }
+        );
+      });
     }
   );
 };
@@ -152,7 +263,7 @@ exports.updateUser = (req, res) => {
 
   updateValues.push(id);
 
-  db.run(
+  getDb().run(
     `UPDATE USERS SET ${updateFields.join(', ')} WHERE id = ?`,
     updateValues,
     function(err) {
@@ -179,7 +290,7 @@ exports.toggleUserStatus = (req, res) => {
     return res.status(400).json({ message: 'El campo activo es requerido' });
   }
 
-  db.run(
+  getDb().run(
     'UPDATE USERS SET activo = ? WHERE id = ?',
     [activo ? 1 : 0, id],
     function(err) {
@@ -206,7 +317,7 @@ exports.deleteUser = (req, res) => {
     return res.status(403).json({ message: 'No se puede eliminar el usuario admin' });
   }
 
-  db.run(
+  getDb().run(
     'DELETE FROM USERS WHERE id = ?',
     [id],
     function(err) {

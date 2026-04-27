@@ -129,6 +129,49 @@
     --modal-compact-max-width: 720px;   /* Ancho máximo de modales compactos */
     --modal-compact-max-height: 85vh;   /* Altura máxima de modales compactos */
   
+    /* ====================================== */
+    /* CONFIGURACIÓN GLOBAL PARA TABLAS UNIFICADAS (Reusable en todos los módulos) */
+    /* ====================================== */
+    /* Estructura: Tabla responsiva con columnas dinámicas, drag-drop, resize, scroll horizontal */
+    
+    /* TABLA CONTAINER */
+    --tabla-min-row-height: 25px;       /* Altura mínima de filas */
+    
+    /* ENCABEZADOS */
+    --tabla-header-bg: #f5f5f5;         /* Color de fondo de headers */
+    --tabla-header-bg-hover: #ececec;   /* Color hover de headers */
+    --tabla-header-color: var(--text-color); /* Color texto headers */
+    --tabla-header-font-weight: 700;    /* Peso fuente headers (semi-negrita) */
+    --tabla-header-border-bottom: 2px solid #333333; /* Borde inferior headers */
+    --tabla-header-border-top: 1px solid #e5e5e5;    /* Borde superior headers */
+    --tabla-header-border-right: 1px solid #555555;  /* Borde derecho headers */
+    --tabla-header-padding: 8px 10px 8px 12px;       /* Padding headers (t r b l) */
+    --tabla-header-z-index: 10;         /* Z-index para headers sticky */
+    --tabla-header-icon-color: #4a90e2; /* Color del icono de drag */
+    --tabla-header-icon-size: 12px;     /* Tamaño icono drag */
+    
+    /* CELDAS DE DATOS */
+    --tabla-data-bg: #ffffff;           /* Color fondo celdas */
+    --tabla-data-color: var(--text-color); /* Color texto celdas */
+    --tabla-data-border-right: 1px solid #999999; /* Borde derecho celdas */
+    --tabla-data-border-bottom: 1px solid var(--border-color); /* Borde inferior celdas */
+    --tabla-data-padding: 8px 10px 8px 12px;      /* Padding celdas (igual a headers) */
+    
+    /* FILAS - HOVER */
+    --tabla-row-bg-hover: #f0f5ff;      /* Color fondo al pasar sobre fila */
+    --tabla-row-cursor: pointer;        /* Cursor al pasar sobre fila */
+    
+    /* ESPACIADO GLOBAL */
+    --tabla-gap: 0;                     /* Gap entre celdas (0 para sin espacios) */
+    --tabla-padding-global: 0;          /* Padding global de la tabla */
+    --tabla-margin-global: 0;           /* Margen global de la tabla */
+    
+    /* BORDE Y SOMBRA */
+    --tabla-border-color: #d0d0d0;      /* Color borde tabla */
+    --tabla-border-width: 1px;          /* Ancho borde tabla */
+    --tabla-border-radius: 4px;         /* Radio borde tabla */
+    --tabla-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); /* Sombra tabla */
+  
     }
 
 /* ================================ */
@@ -818,22 +861,22 @@ header {
 }
 
 .btn-nav-pestanas {
-    background: rgba(47, 49, 88, 0.1);  /* Fondo semi-transparente gris claro */
-    color: var(--primary-color);        /* Texto en color primario */
-    border: 1px solid rgba(47, 49, 88, 0.2); /* Borde sutil */
-    width: 20px;                        /* Ancho más pequeño */
-    height: 32px;                       /* Alto más pequeño */
-    cursor: pointer;                    /* Cursor de mano */
-    display: flex;                      /* Flexbox para centrar */
-    align-items: center;                /* Centra verticalmente */
-    justify-content: center;             /* Centra horizontalmente */
-    border-radius: 3px;                 /* Bordes ligeramente redondeados */
-    transition: all 0.2s ease;          /* Transición suave */
-    flex-shrink: 0;                     /* No se reduce */
-    margin: 0 3px;                      /* Margen de separación pequeño */
-    font-size: 12px;                    /* Tamaño del icono más pequeño */
-    padding: 0;                         /* Sin padding */
-    min-width: 20px;                    /* Ancho mínimo */
+    background: rgba(47, 49, 88, 0.1);
+    color: var(--primary-color);
+    border: 1px solid rgba(47, 49, 88, 0.2);
+    width: 16px;
+    height: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    margin: 0 3px;
+    font-size: 12px;
+    padding: 0;
+    min-width: 16px;
 }
 
 .btn-nav-pestanas:hover {

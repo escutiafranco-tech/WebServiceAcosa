@@ -10,10 +10,27 @@
             "name": "Catalogo Proveedores",
             "action": "modules/compras/proveedores/proveedores.html",
             "roles": ["Administrador", "Compras"]
-          },
+          }
+        ]
+      },
+      {
+        "name": "Productos y Servicios",
+        "roles": ["Administrador"],
+        "submenus": [
           {
-            "name": "Reportes Compras",
-            "action": "modules/compras/proveedores/reportes.html",
+            "name": "Catalogo Productos y Servicios",
+            "action": "modules/compras/productos-servicios/productos-servicios.html",
+            "roles": ["Administrador", "Compras"]
+          }
+        ]
+      },
+      {
+        "name": "Reportes de Compras",
+        "roles": ["Administrador"],
+        "submenus": [
+          {
+            "name": "Reporte General de Compras",
+            "action": "modules/compras/reportes-compras/reportes.html",
             "roles": ["Administrador", "Gerente"]
           }
         ]

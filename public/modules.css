@@ -3,7 +3,7 @@
    ========================================================================== */
 
    .module-container,
-.form-container {
+   .form-container {
     height: 100vh;                    /* Altura de viewport completa */
     max-height: 100%;                 /* No excede el 100% del padre */
     background: var(--white-color);   /* Fondo blanco legible */
@@ -33,8 +33,7 @@
     min-height: 0;    /* permite que los hijos con overflow hagan scroll correctamente */
     padding: 0;
     margin: 0;
-    overflow-x: scroll; /* Scroll HORIZONTAL SIEMPRE VISIBLE como Excel */
-    overflow-y: hidden; /* Scroll vertical lo maneja table-body */
+    overflow: scroll;  /* AMBAS scrollbars SIEMPRE VISIBLES (horizontal Y vertical) */
     scrollbar-gutter: stable; /* Reserva espacio para scrollbars - no se pisan entre sí */
     background: #ffffff;
     border: 1px solid #d0d0d0;
@@ -575,13 +574,11 @@ table.tabla-formulario-general strong {
 .table-body-scroll,
 .table-body {
     flex: 1;
-    overflow-y: scroll;               /* Scroll VERTICAL SIEMPRE VISIBLE */
-    overflow-x: hidden;               /* No scrollear horizontalmente aquí - el padre lo maneja */
+    overflow: hidden;                /* El scroll lo maneja el padre .list-container */
     min-height: 0;
     min-width: fit-content;           /* Expandir si las filas lo requieren */
     padding: 0;
     margin: 0;
-    scrollbar-gutter: stable;         /* Reserva espacio para scrollbar vertical - no desaparece */
 }
 
 /* ==========================================================================
@@ -600,6 +597,129 @@ table.tabla-formulario-general strong {
         1fr      /* col-direccion */
         1fr      /* col-activo */
         1fr;     /* col-fecha_registro */
+    
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: scroll;
+    scrollbar-gutter: stable;
+    scrollbar-width: auto;
+    scrollbar-color: #bbb #f5f5f5;
+    padding: 0;
+    margin: 0;
+    background: #ffffff;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* ========================================================================
+   TABLA UNIFICADA - Grid único con headers y datos
+   ======================================================================== */
+
+.tabla-unificada {
+    display: grid;
+    grid-template-columns: var(--grid-template);
+    gap: var(--tabla-gap);
+    padding: var(--tabla-padding-global);
+    margin: var(--tabla-margin-global);
+    width: max-content;              /* Permite que la tabla se expanda horizontalmente como en Excel */
+    min-width: 100%;                 /* Pero siempre ocupa al menos el 100% del contenedor */
+    auto-rows: minmax(var(--tabla-min-row-height), auto);  /* Altura mínima configurable */
+}
+
+/* Headers pegados al top (primeras N celdas) */
+.tabla-unificada .header-cell {
+    display: flex;
+    align-items: center;
+    padding: var(--tabla-header-padding);
+    background: var(--tabla-header-bg);
+    color: var(--tabla-header-color);
+    font-weight: var(--tabla-header-font-weight);
+    font-size: var(--text-size-large);
+    position: sticky;
+    top: 0;
+    z-index: var(--tabla-header-z-index);
+    border-bottom: var(--tabla-header-border-bottom);
+    border-top: var(--tabla-header-border-top);
+    border-right: var(--tabla-header-border-right);
+    border-left: 2px solid transparent;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s ease, opacity 0.2s ease;
+}
+
+.tabla-unificada .header-cell:hover {
+    background: var(--tabla-header-bg-hover);
+}
+
+/* Estilos para drag-and-drop */
+.tabla-unificada .header-cell[draggable="true"]:active {
+    cursor: move;
+}
+
+.tabla-unificada .header-cell[draggable="true"]:hover::before {
+    content: '↕';
+    position: absolute;
+    left: 3px;
+    font-size: var(--tabla-header-icon-size);
+    color: var(--tabla-header-icon-color);
+}
+
+/* Indicadores de orden en headers */
+.tabla-unificada .header-cell.sorted-asc::after { 
+    content: '▲';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.tabla-unificada .header-cell.sorted-desc::after { 
+    content: '▼';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Celdas de datos */
+.tabla-unificada .data-cell {
+    display: flex;
+    align-items: center;
+    padding: var(--tabla-data-padding);
+    background: var(--tabla-data-bg);
+    color: var(--tabla-data-color);
+    font-size: var(--text-size-normal);
+    border-right: var(--tabla-data-border-right);
+    border-bottom: var(--tabla-data-border-bottom);
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Filas completas (incluye todas las celdas de una fila) */
+.tabla-unificada .data-row {
+    display: contents;  /* Permite que las celdas hijas creen las columnas del grid */
+}
+
+.tabla-unificada .data-row:hover .data-cell {
+    background: var(--tabla-row-bg-hover);
+}
+
+/* Mensaje de tabla vacía */
+.tabla-unificada.vacia {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    color: #999;
+    font-style: italic;
 }
 
 /* Header row usa CSS Grid - STICKY PARA QUE QUEDE FIJO AL SCROLLEAR */
@@ -613,7 +733,7 @@ table.tabla-formulario-general strong {
     position: sticky;
     top: 0px;
     z-index: 10;
-    border-bottom: 2px solid #d8d8d8;
+    border-bottom: 2px solid #333333;  /* Línea más oscura para mejor contraste */
     border-top: 1px solid #e5e5e5;
     min-height: 40px;
     padding: 0;
@@ -632,7 +752,7 @@ table.tabla-formulario-general strong {
     overflow: hidden;                 /* Oculta overflow */
     text-overflow: ellipsis;          /* Texto largo con puntos suspensivos */
     white-space: nowrap;              /* Sin wrap de texto */
-    border-right: 1px solid #999999;  /* Borde derecho más oscuro */
+    border-right: 1px solid #555555;  /* Borde derecho más oscuro para mejor visibilidad */
     position: relative;
     font-size: var(--table-font-size, var(--text-size-normal)) !important;
     font-weight: 700;
@@ -984,6 +1104,29 @@ table.tabla-formulario-general strong {
     font-size: 11px;                  /* Tamaño del texto */
     justify-content: flex-end;        /* Alineado a la derecha */
     flex: 1;                          /* Ocupa espacio disponible */
+}
+
+/* Botones de paginación - Solo flechas, sin texto */
+#btnAnteriorProveedores,
+#btnSiguienteProveedores {
+    font-size: 0;  /* Oculta el texto */
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#btnAnteriorProveedores::before {
+    content: '←';
+    font-size: 16px;
+}
+
+#btnSiguienteProveedores::before {
+    content: '→';
+    font-size: 16px;
 }
 
 /* ==========================================================================
@@ -1455,8 +1598,10 @@ textarea.table-input {
     display: flex;
     flex-direction: column;
     flex: 1;
-    overflow-x: scroll;    /* Scroll horizontal SIEMPRE VISIBLE como Excel */
-    overflow-y: hidden;    /* Scroll vertical en .table-body */
+    overflow: scroll;  /* AMBAS scrollbars SIEMPRE VISIBLES (como Excel) */
+    scrollbar-gutter: stable; /* Reserva espacio para ambas scrollbars */
+    scrollbar-width: auto;  /* Hacer visible la barra */
+    scrollbar-color: #bbb #f5f5f5;  /* Color de barra más visible */
     padding: 0;
     margin: 0;
     background: #ffffff;

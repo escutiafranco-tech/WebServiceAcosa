@@ -2,6 +2,7 @@
 const odbc = require('odbc');
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '..', 'Config', '.env') });
 
 const dbDir = path.join(__dirname, 'DataBase');
 const dbPath = path.join(dbDir, 'acosa.fdb');
@@ -13,7 +14,9 @@ if (!fs.existsSync(dbDir)) {
 }
 
 // Cadena de conexión para Firebird ODBC
-const connectionString = 'Driver={Firebird/InterBase(r) driver};dbname=' + dbPath + ';user=SYSDBA;password=masterkey;';
+const fbUser = process.env.FB_USER || 'SYSDBA';
+const fbPassword = process.env.FB_PASSWORD || 'acosa_firebird_2026_secure';
+const connectionString = 'Driver={Firebird/InterBase(r) driver};dbname=' + dbPath + ';user=' + fbUser + ';password=' + fbPassword + ';';
 
 console.log('📁 Ruta de BD:', dbPath);
 console.log('🔄 Intentando crear base de datos con ODBC...');
@@ -28,8 +31,8 @@ odbc.connect(connectionString, function(err, conn) {
     try {
       const spawn = require('child_process').spawn;
       const gsec = spawn('"C:\\Program Files\\Firebird\\Firebird_3_0\\bin\\gsec.exe"', [
-        '-user', 'SYSDBA',
-        '-password', 'masterkey',
+        '-user', fbUser,
+        '-password', fbPassword,
         '-database', dbPath,
         '-add', 'test',
         '-pw', 'test'

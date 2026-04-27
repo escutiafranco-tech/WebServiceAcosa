@@ -39,8 +39,8 @@ const validateLogin = [
     .withMessage('Usuario solo puede contener letras, números, guiones y guiones bajos'),
   
   body('password')
-    .isLength({ min: 6, max: 100 })
-    .withMessage('Contraseña debe tener entre 6 y 100 caracteres')
+    .isLength({ min: 1, max: 100 })  // ✅ Permitir cualquier longitud (validación real en bcrypt)
+    .withMessage('Contraseña es requerida')
     .notEmpty()
     .withMessage('Contraseña es requerida'),
   

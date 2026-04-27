@@ -82,6 +82,7 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrcAttr: ["'self'", "'unsafe-inline'"],  // ✅ Permite event handlers inline (onclick, etc)
       imgSrc: ["'self'", 'data:', 'https:'],
       connectSrc: ["'self'", 'https://localhost:3001']
     }

@@ -17,6 +17,7 @@ const rateLimit = require('express-rate-limit'); // Rate limiting
 
 // 📦 MÓDULOS LOCALES: Gestión de base de datos centralizada
 const { getSQLiteInstance, closeSQLite } = require('./utils/database');
+const logger = require('./utils/logger');
 
 // RUTAS Y MIDDLEWARE
 const paginationMiddleware = require('./middleware/paginationMiddleware');
@@ -33,8 +34,8 @@ const paginationMiddleware = require('./middleware/paginationMiddleware');
 
 const useSqlite = process.env.USE_SQLITE !== 'false';
 
-console.log(`🚀 Iniciando ACOSA en modo ${process.env.NODE_ENV || 'development'}`);
-console.log(`📦 Base de datos: ${useSqlite ? 'SQLite' : 'Firebird'}`);
+logger.info(`🚀 Iniciando ACOSA en modo ${process.env.NODE_ENV || 'development'}`);
+logger.info(`📦 Base de datos: ${useSqlite ? 'SQLite' : 'Firebird'}`);
 
 // 🔧 Inicializar variables globales de base de datos
 let sqliteDb = null;
@@ -53,7 +54,7 @@ if (useSqlite) {
     sqliteDb.get('SELECT COUNT(*) AS cnt FROM USERS', [], (err, row) => {
       if (err) {
         // Si falla (por ejemplo, porque la tabla USERS no existe), solo se registra y se continúa
-        console.warn('No se pudo verificar la tabla USERS para sembrar admin (¿existe la tabla?):', err.message);
+        logger.warn('No se pudo verificar la tabla USERS para sembrar admin', { error: err.message, event: 'init.users_table' });
         return;
       }
       if (row && row.cnt === 0) {
@@ -63,9 +64,9 @@ if (useSqlite) {
           ['admin', 'admin', 'admin', 'Administrador', 'Administrador', 'admin@example.com', 1, now],
           (insErr) => {
             if (insErr) {
-              console.error('Error insertando usuario admin por defecto:', insErr.message);
+              logger.error('Error insertando usuario admin por defecto', { error: insErr.message, event: 'init.admin_user' });
             } else {
-              console.log('Usuario admin por defecto creado (admin/admin)');
+              logger.info('Usuario admin por defecto creado (admin/admin)', { event: 'init.admin_user_success' });
             }
           }
         );
@@ -148,22 +149,23 @@ app.use((req, res, next) => {
 
 // 🔒 SEGURIDAD: Validar JWT_SECRET en startup
 if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
-  console.error('❌ ERROR CRÍTICO: JWT_SECRET no está configurado correctamente');
-  console.error('   Debe tener mínimo 32 caracteres');
-  console.error('   Ejecutar: node -e "console.log(require(\'crypto\').randomBytes(32).toString(\'hex\'))"');
-  console.error('   Luego configurar en Config/.env');
+  logger.error('ERROR CRÍTICO: JWT_SECRET no está configurado correctamente', {
+    details: 'Mínimo 32 caracteres requerido',
+    event: 'security.jwt_invalid'
+  });
   process.exit(1);
 }
-console.log('✅ JWT_SECRET configurado correctamente');
+logger.info('JWT_SECRET configurado correctamente', { event: 'security.jwt_valid' });
 
 // 🔒 SEGURIDAD: Validar contraseña de Firebird en modo producción
 if (process.env.NODE_ENV === 'production' && !useSqlite) {
   if (!process.env.FB_PASSWORD || process.env.FB_PASSWORD === 'masterkey') {
-    console.error('❌ ERROR CRÍTICO: Contraseña de Firebird no está segura para producción');
-    console.error('   Cambiar FB_PASSWORD en Config/.env a una contraseña fuerte');
+    logger.error('ERROR CRÍTICO: Contraseña de Firebird no está segura para producción', { 
+      event: 'security.firebird_invalid' 
+    });
     process.exit(1);
   }
-  console.log('✅ Contraseña de Firebird configurada correctamente');
+  logger.info('Contraseña de Firebird configurada correctamente', { event: 'security.firebird_valid' });
 }
 
 function findFileRecursive(startDir, target) {
@@ -380,7 +382,7 @@ async function ensureSchema() {
         await runQuery(sql);
       } catch (err) {
         if (!`${err.message}`.toLowerCase().includes('already exist')) {
-          console.error('Error creando tabla:', err.message);
+          logger.error('Error creando tabla', { error: err.message, table: 'PROVEEDORES', event: 'db.create_table_failed' });
         }
       }
     }
@@ -411,11 +413,11 @@ async function ensureSchema() {
   } catch (err) {
     // algunos drivers retornan estructuras distintas; ignorar errores no críticos
   }
-  console.log(`Tablas de proveedores verificadas en ${useSqlite ? 'SQLite' : 'Firebird'}`);
+  logger.info(`Tablas de proveedores verificadas`, { database: useSqlite ? 'SQLite' : 'Firebird', event: 'init.schema_verified' });
 }
 
 // Inicializa el esquema de base de datos al arrancar el servidor
-ensureSchema().catch((e) => console.error('Error inicializando esquema:', e.message));
+ensureSchema().catch((e) => logger.error('Error inicializando esquema', { error: e.message, event: 'init.schema_error' }));
 
 // Rutas de alto nivel (montan los routers definidos en Backend/routes)
 app.use('/auth', authRoutes);
@@ -452,7 +454,7 @@ app.get('/api/clientes', async (req, res) => {
       [],
       (err, rows) => {
         if (err) {
-          console.error('Error leyendo clientes desde SQLite:', err.message);
+          logger.error('Error leyendo clientes', { error: err.message, event: 'db.read_error' });
           return res.status(500).json({ error: 'Error obteniendo clientes' });
         }
         const mapped = rows.map((row) => ({
@@ -499,7 +501,7 @@ app.post('/api/clientes', (req, res) => {
 
   sqliteDb.run(sql, params, (err) => {
     if (err) {
-      console.error('Error guardando cliente en SQLite:', err.message);
+      logger.error('Error guardando cliente', { error: err.message, event: 'db.write_error' });
       return res.status(500).json({ error: 'Error guardando cliente' });
     }
     res.json({ id });
@@ -515,7 +517,7 @@ app.delete('/api/clientes/:id', (req, res) => {
   const id = req.params.id;
   sqliteDb.run('DELETE FROM TLB_CLIE_DFISCALES WHERE id = ?', [id], function(err) {
     if (err) {
-      console.error('Error eliminando cliente en SQLite:', err.message);
+      logger.error('Error eliminando cliente', { error: err.message, event: 'db.delete_error' });
       return res.status(500).json({ error: 'Error eliminando cliente' });
     }
     res.json({ deleted: this.changes || 0 });
@@ -1104,10 +1106,10 @@ if (fs.existsSync(certFile) && fs.existsSync(keyFile)) {
     };
     https.createServer(options, app).listen(PORT, HOST, () => {
       const url = `https://localhost:${PORT}/login.html`;
-      console.log(`Servidor HTTPS corriendo en ${url}`);
+      logger.info(`Servidor HTTPS corriendo en ${url}`, { port: PORT, event: 'server.https_started' });
       // Abre automáticamente el navegador en el login
       exec(`start ${url}`, { shell: 'powershell.exe' }, (err) => {
-        if (err) console.warn('No se pudo abrir el navegador automáticamente');
+        if (err) logger.warn('No se pudo abrir el navegador automáticamente', { error: err.message, event: 'server.browser_error' });
       });
     });
   } catch (err) {

@@ -6,6 +6,7 @@ const path = require('path');                 // Módulo nativo para trabajar co
 const jwt = require('jsonwebtoken');          // Librería para generar y firmar tokens JWT
 const bcrypt = require('bcryptjs');           // 🔒 NUEVO: Hashing de contraseñas
 const { getSQLiteInstance, get } = require('../utils/database'); // Pool centralizado
+const logger = require('../utils/logger');    // 📝 NUEVO: Logging centralizado
 const { 
   isValidUsername, 
   createErrorResponse, 
@@ -64,7 +65,7 @@ exports.login = (req, res) => {
     async (err, row) => {
       // Manejo de errores de BD
       if (err) {
-        console.error('Error consultando USERS:', err.message);
+        logger.error('Error consultando USERS', { error: err.message, username, event: 'auth.db_error' });
         const { statusCode, body } = createErrorResponse('Error interno de autenticación', 500);
         return res.status(statusCode).json(body);
       }
@@ -72,12 +73,14 @@ exports.login = (req, res) => {
       // Usuario no encontrado
       if (!row) {
         // 🔒 Mismo mensaje genérico (no revelamos si usuario existe)
+        logger.authentication.failure(username, 'usuario_no_encontrado');
         const { statusCode, body } = createErrorResponse('Usuario o contraseña incorrecto', 401);
         return res.status(statusCode).json(body);
       }
 
       // Usuario inactivo
       if (row.activo === 0) {
+        logger.warn('Usuario inactivo intentó acceder', { username, event: 'auth.inactive_user' });
         const { statusCode, body } = createErrorResponse('Usuario inactivo. Contacte al administrador.', 403);
         return res.status(statusCode).json(body);
       }
@@ -88,6 +91,7 @@ exports.login = (req, res) => {
         
         if (!passwordMatch) {
           // Contraseña incorrecta
+          logger.authentication.invalidCredentials(username);
           const { statusCode, body } = createErrorResponse('Usuario o contraseña incorrecto', 401);
           return res.status(statusCode).json(body);
         }
@@ -96,7 +100,7 @@ exports.login = (req, res) => {
         const JWT_SECRET = process.env.JWT_SECRET;
         
         if (!JWT_SECRET || JWT_SECRET.length < 32) {
-          console.error('❌ JWT_SECRET no configurado correctamente en .env');
+          logger.error('JWT_SECRET no configurado correctamente', { event: 'auth.jwt_config_error' });
           const { statusCode, body } = createErrorResponse('Error interno de autenticación', 500);
           return res.status(statusCode).json(body);
         }
@@ -127,6 +131,7 @@ exports.login = (req, res) => {
         );
 
         // Respuesta exitosa
+        logger.authentication.success(username);
         res.json(createSuccessResponse(
           {
             token,
@@ -140,7 +145,7 @@ exports.login = (req, res) => {
         ));
 
       } catch (bcryptErr) {
-        console.error('Error comparando contraseña:', bcryptErr.message);
+        logger.error('Error comparando contraseña', { error: bcryptErr.message, username, event: 'auth.bcrypt_error' });
         const { statusCode, body } = createErrorResponse('Error interno de autenticación', 500);
         return res.status(statusCode).json(body);
       }

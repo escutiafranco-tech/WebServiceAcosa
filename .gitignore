@@ -7,3 +7,6 @@ npm-debug.log*
 dist/
 coverage/
 *.log
+logs/
+*.db-shm
+*.db-wal

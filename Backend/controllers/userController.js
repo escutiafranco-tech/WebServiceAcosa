@@ -5,6 +5,7 @@
 const path = require('path');                    // Módulo nativo para manejar rutas de archivos
 const bcrypt = require('bcryptjs');              // Hashing de contraseñas
 const { getSQLiteInstance } = require('../utils/database'); // Pool centralizado
+const logger = require('../utils/logger');       // 📝 Logging centralizado
 const { 
   isValidUsername, 
   isValidPassword, 
@@ -52,7 +53,7 @@ exports.getAllUsers = (req, res) => {
   
   getDb().get(countQuery, [], (countErr, countResult) => {
     if (countErr) {
-      console.error('Error contando usuarios:', countErr.message);
+      logger.error('Error contando usuarios', { error: countErr.message, event: 'user.count_error' });
       return res.status(500).json({ error: 'Error obteniendo usuarios' });
     }
 
@@ -63,7 +64,7 @@ exports.getAllUsers = (req, res) => {
     
     getDb().all(paginatedQuery, [size, offset], (err, rows) => {
       if (err) {
-        console.error('Error leyendo usuarios desde SQLite:', err.message);
+        logger.error('Error leyendo usuarios', { error: err.message, event: 'user.read_error' });
         return res.status(500).json({ error: 'Error obteniendo usuarios' });
       }
       
@@ -99,7 +100,7 @@ exports.getUserById = (req, res) => {
     [id],
     (err, row) => {
       if (err) {
-        console.error('Error obteniendo usuario:', err.message);
+        logger.error('Error obteniendo usuario', { error: err.message, userId: id, event: 'user.get_error' });
         const { statusCode, body } = createErrorResponse('Error al obtener usuario', 500);
         return res.status(statusCode).json(body);
       }
@@ -169,7 +170,7 @@ exports.createUser = (req, res) => {
     [username],
     (err, row) => {
       if (err) {
-        console.error('Error verificando usuario:', err.message);
+        logger.error('Error verificando usuario', { error: err.message, username, event: 'user.verify_error' });
         const { statusCode, body } = createErrorResponse('Error al verificar usuario', 500);
         return res.status(statusCode).json(body);
       }
@@ -182,7 +183,7 @@ exports.createUser = (req, res) => {
       // 🔒 HASHEAR CONTRASEÑA antes de guardar
       bcrypt.hash(password, 10, (hashErr, passwordHash) => {
         if (hashErr) {
-          console.error('Error hasheando contraseña:', hashErr.message);
+          logger.error('Error hasheando contraseña', { error: hashErr.message, username, event: 'user.hash_error' });
           const { statusCode, body } = createErrorResponse('Error al crear usuario', 500);
           return res.status(statusCode).json(body);
         }
@@ -197,11 +198,12 @@ exports.createUser = (req, res) => {
           [nuevoId, username, passwordHash, nombre, email, rol, activoValue, now],
           function(insErr) {
             if (insErr) {
-              console.error('Error creando usuario:', insErr.message);
+              logger.error('Error creando usuario', { error: insErr.message, username, event: 'user.create_error' });
               const { statusCode, body } = createErrorResponse('Error al crear usuario', 500);
               return res.status(statusCode).json(body);
             }
 
+            logger.info('Usuario creado exitosamente', { username, userId: nuevoId, event: 'user.create_success' });
             res.status(201).json(createSuccessResponse({
               id: nuevoId,
               username,
@@ -268,7 +270,7 @@ exports.updateUser = (req, res) => {
     updateValues,
     function(err) {
       if (err) {
-        console.error('Error actualizando usuario:', err.message);
+        logger.error('Error actualizando usuario', { error: err.message, userId: id, event: 'user.update_error' });
         return res.status(500).json({ message: 'Error al actualizar usuario' });
       }
 
@@ -295,7 +297,7 @@ exports.toggleUserStatus = (req, res) => {
     [activo ? 1 : 0, id],
     function(err) {
       if (err) {
-        console.error('Error actualizando estado:', err.message);
+        logger.error('Error actualizando estado', { error: err.message, userId: id, event: 'user.status_error' });
         return res.status(500).json({ message: 'Error al actualizar estado' });
       }
 
@@ -322,7 +324,7 @@ exports.deleteUser = (req, res) => {
     [id],
     function(err) {
       if (err) {
-        console.error('Error eliminando usuario:', err.message);
+        logger.error('Error eliminando usuario', { error: err.message, userId: id, event: 'user.delete_error' });
         return res.status(500).json({ message: 'Error al eliminar usuario' });
       }
 
@@ -330,6 +332,7 @@ exports.deleteUser = (req, res) => {
         return res.status(404).json({ message: 'Usuario no encontrado' });
       }
 
+      logger.info('Usuario eliminado exitosamente', { userId: id, event: 'user.delete_success' });
       res.json({ message: 'Usuario eliminado correctamente' });
     }
   );
